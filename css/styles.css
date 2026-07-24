@@ -1791,6 +1791,8 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .reviews__deck-hint {
@@ -1825,7 +1827,12 @@ ul {
 
 .reviews__deck {
   position: relative;
-  width: 100%;
+  /* The stacked cards behind the top one fan out via `translate` (see the
+     nth-child rules below), up to 42px right / 24px down plus a bit more
+     from the rotation's bounding-box growth. Reserving that space here
+     keeps the fan inside the deck's own box instead of bleeding past the
+     viewport edge on narrow screens. */
+  width: calc(100% - 64px);
   max-width: 400px;
   aspect-ratio: 3 / 4;
 }
@@ -2455,6 +2462,12 @@ ul {
   .story__stats {
     gap: var(--space-sm);
     text-align: left;
+  }
+  /* At this 3-column width "In-house" wraps mid-word ("In-" / "house"),
+     making that column noticeably taller than "100%" and "Daily" next to
+     it. A touch smaller keeps every stat on one line. */
+  .story__stat-value {
+    font-size: 1.4rem;
   }
 
   .menu__header {
