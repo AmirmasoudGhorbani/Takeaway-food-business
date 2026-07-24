@@ -11,8 +11,6 @@
    instead of animating on a fixed CSS easing curve.
    ======================================== */
 
-import { animate } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
-
 (function () {
   'use strict';
 
@@ -24,6 +22,29 @@ import { animate } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
   var prefersReducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
   ).matches;
+
+  // Loaded on the side rather than via a static top-level `import` — that
+  // used to mean a blocked/slow/failed CDN fetch threw before the
+  // pointerdown/move/up listeners below were ever attached, leaving the
+  // whole card deck (drag, next/prev buttons) dead. `animate` is null until
+  // this resolves; sendToBack/snapBack already have an instant, animation-
+  // free fallback path they fall into when it's not there.
+  var animate = null;
+  (prefersReducedMotion
+    ? Promise.resolve(null)
+    : Promise.race([
+        import('https://cdn.jsdelivr.net/npm/motion@11/+esm').catch(function () {
+          return null;
+        }),
+        new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve(null);
+          }, 4000);
+        }),
+      ])
+  ).then(function (mod) {
+    if (mod) animate = mod.animate;
+  });
 
   var DRAG_THRESHOLD = 90;
   var VELOCITY_SAMPLE_WINDOW = 100; // ms of pointer history used to estimate release velocity
@@ -64,7 +85,7 @@ import { animate } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
   }
 
   function sendToBack(card, fromX, fromY, fromRotate, flyX, flyY, flyRotate, velocity) {
-    if (prefersReducedMotion || flyX === undefined) {
+    if (prefersReducedMotion || !animate || flyX === undefined) {
       deck.appendChild(card);
       card.style.transform = '';
       card.style.opacity = '';
@@ -108,7 +129,7 @@ import { animate } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
   }
 
   function snapBack(card, fromX, fromY, fromRotate, velocity) {
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || !animate) {
       card.classList.remove('is-dragging');
       card.style.transform = '';
       return;

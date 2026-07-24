@@ -3,12 +3,31 @@
    Animations, scroll effects, interactions
    ======================================== */
 
-import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
-
 (function () {
   'use strict';
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Motion library: loaded on the side, never blocking ──
+  // This used to be a static top-level `import` of the CDN module. That
+  // meant a blocked/slow/failed fetch (ad-blockers, flaky mobile networks,
+  // a CDN outage) threw before a single line below ran — killing the nav
+  // toggle, menu tabs, scroll-spy, and smooth-scroll along with the
+  // animations. A dynamic import — raced against a timeout — lets
+  // everything else wire up immediately regardless of whether this
+  // resolves; only the reveal animations depend on its result.
+  var motionReady = prefersReducedMotion
+    ? Promise.resolve(null)
+    : Promise.race([
+        import('https://cdn.jsdelivr.net/npm/motion@11/+esm').catch(function () {
+          return null;
+        }),
+        new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve(null);
+          }, 4000);
+        }),
+      ]);
 
   // ── Scroll progress bar ──
   var scrollProgress = document.getElementById('scroll-progress');
@@ -219,6 +238,7 @@ import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
   // cancel function so the menu-tab switcher (below) can cut a pending
   // scroll-trigger short when a panel is shown before it was ever scrolled to.
   var revealStoppers = new Map();
+  var animateFn = null; // filled in once motionReady resolves, if it does
 
   // Any [data-stagger] ancestor makes its .reveal descendants cascade in
   // with an incrementing delay instead of moving as one block — e.g. a
@@ -239,8 +259,8 @@ import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
   function revealElement(el, shouldAnimate) {
     if (el.classList.contains('visible')) return;
     el.classList.add('visible');
-    if (!shouldAnimate) return; // CSS alone snaps it visible instantly
-    animate(
+    if (!shouldAnimate || !animateFn) return; // CSS alone snaps it visible instantly
+    animateFn(
       el,
       { opacity: [0, 1], y: [28, 0] },
       {
@@ -258,16 +278,28 @@ import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm";
       el.classList.add('visible');
     });
   } else {
-    document.querySelectorAll('.reveal').forEach(function (el) {
-      var stop = inView(
-        el,
-        function () {
-          revealStoppers.delete(el);
-          revealElement(el, true);
-        },
-        { amount: 0.12, margin: '0px 0px -30px 0px' }
-      );
-      revealStoppers.set(el, stop);
+    motionReady.then(function (mod) {
+      if (!mod) {
+        // Motion never arrived (CDN blocked/slow/down) — reveal everything
+        // immediately rather than leaving content waiting on a library that
+        // isn't coming.
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          el.classList.add('visible');
+        });
+        return;
+      }
+      animateFn = mod.animate;
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        var stop = mod.inView(
+          el,
+          function () {
+            revealStoppers.delete(el);
+            revealElement(el, true);
+          },
+          { amount: 0.12, margin: '0px 0px -30px 0px' }
+        );
+        revealStoppers.set(el, stop);
+      });
     });
   }
 
