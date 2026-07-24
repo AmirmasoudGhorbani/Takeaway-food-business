@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kebab Station Kumeu — carved over fire, served fast. Halal lamb and chicken doner, shaved fresh from the spit. 2/42 Main Road, Kumeu, Auckland."
+    />
+    <title>Kebab Station Kumeu — Carved Over Fire, Served Fast</title>
+
+    <!-- Open Graph -->
+    <!-- TODO once the production domain is known: add <link rel="canonical"> and an og:url meta tag pointing to it. -->
+    <meta property="og:type" content="restaurant" />
+    <meta
+      property="og:title"
+      content="Kebab Station Kumeu — Carved Over Fire, Served Fast"
+    />
+    <meta
+      property="og:description"
+      content="Halal lamb and chicken doner, shaved fresh from the spit. Warm flatbread, crisp salad, house-made sauces. 2/42 Main Road, Kumeu, Auckland."
+    />
+    <meta property="og:image" content="assets/images/hero-kebab-wrap.jpg" />
+    <meta property="og:locale" content="en_NZ" />
+    <meta name="theme-color" content="#14100E" />
+
+    <!-- Favicon: spit-tile mark -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23f0a72e'/%3E%3Cstop offset='.55' stop-color='%23e8531f'/%3E%3Cstop offset='1' stop-color='%23b83a16'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='12' fill='url(%23g)'/%3E%3Cline x1='24' y1='8' x2='24' y2='42' stroke='%2314100e' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M24 12c6 0 9 4 9 10 0 8-3 16-9 20-6-4-9-12-9-20 0-6 3-10 9-10z' fill='%2314100e'/%3E%3C/svg%3E"
+    />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Structured data for search engines (Google rich results: hours, price range, map).
+       "url"/"image"/"sameAs" are intentionally omitted until a production domain and
+       real social profile links exist — fill in once known. priceRange is a placeholder
+       estimate ($$ = casual dining ~$15-27 mains); adjust if it doesn't fit. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Kebab Station Kumeu",
+        "servesCuisine": ["Turkish", "Middle Eastern", "Halal"],
+        "priceRange": "$$",
+        "telephone": "+64-9-412-6030",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "2/42 Main Road",
+          "addressLocality": "Kumeu",
+          "addressRegion": "Auckland",
+          "addressCountry": "NZ"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "10:30",
+          "closes": "21:30"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <svg
+      class="icon-sprite"
+      aria-hidden="true"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    >
+      <defs>
+        <symbol id="icon-wrap" viewBox="0 0 24 24">
+          <path d="M4 20c0-7 3.5-13 8-13s8 6 8 13" />
+          <path d="M4 20h16" />
+          <path d="M8 14c1 .8 2 1.2 4 1.2s3-.4 4-1.2" />
+        </symbol>
+        <symbol id="icon-rice-bowl" viewBox="0 0 24 24">
+          <ellipse cx="12" cy="11.2" rx="9" ry="2.2" />
+          <path d="M3 11.2c0 4.2 4 8 9 8s9-3.8 9-8" />
+          <path d="M9 4c0 .9-1 1-1 2s1 1.1 1 2M15 4c0 .9-1 1-1 2s1 1.1 1 2" />
+        </symbol>
+        <symbol id="icon-salad-bowl" viewBox="0 0 24 24">
+          <ellipse cx="12" cy="12" rx="9" ry="2.4" />
+          <path d="M3 12c0 4.2 4 7.6 9 7.6s9-3.4 9-7.6" />
+          <path d="M13 8.6c-.8-2.4.2-4.4 2.2-5-.2 2.4-1 4-2.2 5z" />
+        </symbol>
+        <symbol id="icon-fries" viewBox="0 0 24 24">
+          <path d="M6 9h12l-1 11H7L6 9z" />
+          <path d="M9 9V5M12 9V4M15 9V5" />
+        </symbol>
+        <symbol id="icon-burger" viewBox="0 0 24 24">
+          <path d="M4 11a8 5 0 0 1 16 0z" />
+          <path d="M4 13h16" />
+          <path d="M5 16h14l-1 3H6l-1-3z" />
+        </symbol>
+        <symbol id="icon-bread" viewBox="0 0 24 24">
+          <path
+            d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"
+          />
+          <path d="M9 8.5 8 12M13 7.5 12 12M17 8.5 16 12" />
+        </symbol>
+        <symbol id="icon-potato" viewBox="0 0 24 24">
+          <path d="M6 20 9 5l4 1-3 14z" />
+          <path d="M13 20 17 6l3 1.2-3.5 12.8z" />
+        </symbol>
+        <symbol id="icon-cheese" viewBox="0 0 24 24">
+          <path d="M3 18 12 5l9 13z" />
+          <circle cx="11" cy="15" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="15" cy="16.3" r="1.5" fill="currentColor" stroke="none" />
+        </symbol>
+        <symbol id="icon-hummus" viewBox="0 0 24 24">
+          <ellipse cx="12" cy="17" rx="8" ry="2.4" />
+          <path d="M4 17c0-3.5 3-6.5 8-6.5s8 3 8 6.5" />
+          <path d="M9 12.5c1.4-1 3.6-1 5 0" />
+          <circle cx="12" cy="9.6" r="1.4" fill="currentColor" stroke="none" />
+        </symbol>
+        <symbol id="icon-herb" viewBox="0 0 24 24">
+          <path d="M12 20V9" />
+          <path
+            d="M12 15c-3-.2-5-2-5-5 3 0 5 2 5 5zM12 11c3-.2 5-2 5-5-3 0-5 2-5 5z"
+          />
+        </symbol>
+        <symbol id="icon-cup" viewBox="0 0 24 24">
+          <path d="M7 9h10l-1 11a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 9z" />
+          <path d="M6 9h12" />
+          <path d="M14 9V4M14 4l2-1" />
+        </symbol>
+        <symbol id="icon-smoothie" viewBox="0 0 24 24">
+          <path
+            d="M8 9h8l-.9 10.2A2 2 0 0 1 13.1 21h-2.2a2 2 0 0 1-2-1.8L8 9z"
+          />
+          <path d="M7 9h10" />
+          <circle cx="16.3" cy="6" r="1.6" />
+          <circle cx="14.5" cy="5" r="1.1" />
+          <path d="M12 8V6" />
+        </symbol>
+        <symbol id="icon-flame" viewBox="0 0 24 24">
+          <path
+            d="M12 21c-4 0-6.5-2.6-6.5-6 0-2.6 1.6-4 2.4-6 .6 1.4 1.4 2 2.1 1.4-.6-2.6.4-5 3-6.4-.6 2.4 0 3.8 1.6 5C16.6 10.2 18 12 18 15c0 3.4-2 6-6 6z"
+          />
+        </symbol>
+        <symbol id="icon-star" viewBox="0 0 24 24">
+          <path
+            d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3-4.8-4.3 6.4-.6L12 3z"
+          />
+        </symbol>
+        <symbol id="icon-chicken" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="7.5" />
+          <path
+            d="M8 9c1.5 1 1.5 3 0 4M12 8c1.5 1 1.5 3 0 4M16 9c1.5 1 1.5 3 0 4"
+          />
+        </symbol>
+        <symbol id="icon-lamb" viewBox="0 0 24 24">
+          <path d="M4 20 20 4" />
+          <circle cx="8" cy="16" r="2.4" />
+          <circle cx="12" cy="12" r="2.4" />
+          <circle cx="16" cy="8" r="2.4" />
+        </symbol>
+        <symbol id="icon-mixed-meat" viewBox="0 0 24 24">
+          <path d="M5 19 19 5" />
+          <path d="M5 5 19 19" />
+        </symbol>
+        <symbol id="icon-falafel" viewBox="0 0 24 24">
+          <circle cx="9" cy="14" r="3.2" />
+          <circle cx="15.5" cy="14" r="3.2" />
+          <circle cx="12.2" cy="8.5" r="3.2" />
+        </symbol>
+        <symbol id="icon-onion" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8" />
+          <circle cx="12" cy="12" r="4.2" />
+        </symbol>
+        <symbol id="icon-tomato" viewBox="0 0 24 24">
+          <circle cx="12" cy="13.5" r="7.2" />
+          <path
+            d="M12 6.3c-1-1.4-3-1.8-4.4-1M12 6.3c1-1.4 3-1.8 4.4-1M12 6.3v-2"
+          />
+        </symbol>
+        <symbol id="icon-cabbage" viewBox="0 0 24 24">
+          <path
+            d="M12 21c-5 0-8-3.4-8-8 1.8 0 3.4.6 4.6 1.8C9.4 12 11 10.4 12 8.4c1 2 2.6 3.6 3.4 6.4A6.6 6.6 0 0 1 20 13c0 4.6-3 8-8 8z"
+          />
+          <path d="M12 21c0-4 1-7.6 3-10.6M12 21c0-4-1-7.6-3-10.6" />
+        </symbol>
+        <symbol id="icon-lettuce" viewBox="0 0 24 24">
+          <path
+            d="M4 14c0-5 3.6-9 8-9s8 4 8 9c-2 0-3-1-4-2 0 2-1.4 3-3 3s-3-1-3-3c-1 1-2 2-4 2z"
+          />
+          <path d="M12 14V19" />
+        </symbol>
+        <symbol id="icon-dolma" viewBox="0 0 24 24">
+          <rect x="4" y="9" width="16" height="6" rx="3" />
+          <path d="M8 9v6M12 9v6M16 9v6" />
+        </symbol>
+        <symbol id="icon-bundle" viewBox="0 0 24 24">
+          <path d="M6 8h12l1 12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L6 8z" />
+          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+        </symbol>
+        <symbol id="icon-upsize" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 16V8M8.5 11.5 12 8l3.5 3.5" />
+        </symbol>
+        <symbol id="icon-phone" viewBox="0 0 24 24">
+          <path
+            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+          />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- Scroll progress -->
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Ambient embers — decorative only, drift the full page height
+         regardless of scroll position. Kept near the left/right edges so
+         they never sit over text or photos in the centered content column. -->
+    <div class="ember-field" aria-hidden="true">
+      <i class="ember ember--1"></i>
+      <i class="ember ember--2"></i>
+      <i class="ember ember--3"></i>
+      <i class="ember ember--4"></i>
+      <i class="ember ember--5"></i>
+      <i class="ember ember--6"></i>
+    </div>
+
+    <!-- ========== NAVIGATION ========== -->
+    <header class="site-header" id="header">
+      <nav class="nav container">
+        <a href="#" class="nav__logo" aria-label="Kebab Station Kumeu — Home">
+          <model-viewer
+            class="nav__logo-mark"
+            src="assets/models/kebab-logo-3d.glb"
+            alt="Kebab Station 3D logo mark"
+            camera-orbit="0deg 75deg 105%"
+            disable-zoom
+            disable-pan
+            interaction-prompt="none"
+            shadow-intensity="0"
+            exposure="1.1"
+          ></model-viewer>
+        </a>
+
+        <button
+          class="nav__toggle"
+          id="nav-toggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <span class="nav__toggle-bar"></span>
+          <span class="nav__toggle-bar"></span>
+          <span class="nav__toggle-bar"></span>
+        </button>
+
+        <ul class="nav__links" id="nav-links">
+          <li><a href="#story" class="nav__link">Our Story</a></li>
+          <li><a href="#menu" class="nav__link">Menu</a></li>
+          <li><a href="#builder" class="nav__link">Build Yours</a></li>
+          <li><a href="#find-us" class="nav__link">Find Us</a></li>
+          <li>
+            <a href="tel:094126030" class="nav__link nav__link--cta"
+              >Call to Order</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ========== HERO ========== -->
+      <!-- The outer track is taller than the viewport so the pinned hero
+           below gets extra scroll distance to scrub the donor's rotation
+           through — without it, one scroll gesture covers the whole clip. -->
+      <div class="hero-scroll-track" id="hero-scroll-track">
+      <section class="hero" id="hero">
+        <div class="hero__visual fade-up fade-up--d1" aria-hidden="true">
+          <video
+            class="hero__video"
+            id="hero-video"
+            src="assets/video/hero-doner-loop.mp4"
+            poster="assets/images/hero-doner-loop-poster.jpg"
+            width="1280"
+            height="720"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          ></video>
+        </div>
+        <div class="hero__video-scrim" aria-hidden="true"></div>
+
+        <div class="hero__inner container">
+          <div class="hero__copy">
+            <div class="hero__status fade-up">
+              <span class="hero__status-dot" aria-hidden="true"></span>
+              Open today &middot; 10:30am&ndash;9:30pm
+            </div>
+            <h1 class="hero__title">
+              <span>Carved</span>
+              <span
+                >over
+                <span class="hero__accent"
+                  ><span class="hero__spark-field" aria-hidden="true"
+                    ><i class="hero__spark hero__spark--1"></i
+                    ><i class="hero__spark hero__spark--2"></i
+                    ><i class="hero__spark hero__spark--3"></i
+                    ><i class="hero__spark hero__spark--4"></i
+                    ><i class="hero__spark hero__spark--5"></i
+                    ><i class="hero__spark hero__spark--6"></i
+                    ><i class="hero__spark hero__spark--7"></i
+                    ><i class="hero__spark hero__spark--8"></i></span
+                  >fire</span
+                >,</span
+              >
+              <span>served fast.</span>
+            </h1>
+            <p class="hero__subtitle fade-up fade-up--d2">
+              Real doner, shaved fresh from the spit. Warm flatbread, crisp
+              salad, and sauces made in-house &mdash; Kumeu's kebab done
+              properly.
+            </p>
+            <div class="hero__actions fade-up fade-up--d3">
+              <a href="tel:094126030" class="btn btn--ember">Call to Order</a>
+              <a href="#menu" class="btn btn--ghost">View Menu</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__scroll-hint" aria-hidden="true">
+          SCROLL
+          <span></span>
+        </div>
+      </section>
+      </div>
+
+      <!-- ========== OUR STORY ========== -->
+      <section class="story" id="story">
+        <div class="container">
+          <div class="story__grid">
+            <div class="story__image reveal">
+              <img
+                src="assets/images/donors-on-shish.webp"
+                alt="Halal doner meat slowly cooking on a vertical rotisserie with warm fire glow"
+                width="600"
+                height="750"
+                loading="lazy"
+              />
+            </div>
+            <div class="story__text" data-stagger>
+              <p class="section-tag reveal">Our Story</p>
+              <h2 class="section-title story__title reveal">
+                A proper kebab, made the way it should be.
+              </h2>
+              <p class="story__body reveal">
+                Kebab Station Kumeu started with a simple idea: real doner,
+                seasoned in-house and slow-cooked on the vertical spit, shaved
+                to order. No shortcuts, no mystery meat.
+              </p>
+              <p class="story__body reveal">
+                We bake our flatbread fresh, prep the salad each morning, and
+                make our sauces by hand &mdash; then serve it fast, the way
+                Kumeu likes it.
+              </p>
+              <div class="story__stats reveal">
+                <div class="story__stat">
+                  <div class="story__stat-value">100%</div>
+                  <div class="story__stat-label">Halal</div>
+                </div>
+                <div class="story__stat">
+                  <div class="story__stat-value">Daily</div>
+                  <div class="story__stat-label">Fresh salad</div>
+                </div>
+                <div class="story__stat">
+                  <div class="story__stat-value">In-house</div>
+                  <div class="story__stat-label">Sauces</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== CROWD FAVOURITES ========== -->
+      <section class="marquee" aria-hidden="true">
+        <div class="marquee__label reveal">
+          <p class="section-tag" style="text-align: center">Crowd Favourites</p>
+        </div>
+        <div class="marquee__track">
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Kebab Rapped.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Chicken Doner<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-star"></use></svg
+            >Lamb Special<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/chips.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Mixed on Chips<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-flame"></use></svg
+            >Super Doner<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Showerma.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Lamb Shawarma<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-cheese"></use></svg
+            >Cheesy Garlic Bread<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/salad.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Falafel Salad<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Milkshakes.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Chocolate Milkshake<span>&#10022;</span></span
+          >
+          <!-- duplicated for seamless loop -->
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Kebab Rapped.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Chicken Doner<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-star"></use></svg
+            >Lamb Special<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/chips.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Mixed on Chips<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-flame"></use></svg
+            >Super Doner<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Showerma.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Lamb Shawarma<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><svg class="icon" aria-hidden="true">
+              <use href="#icon-cheese"></use></svg
+            >Cheesy Garlic Bread<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/salad.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Falafel Salad<span>&#10022;</span></span
+          >
+          <span class="marquee__pill"
+            ><img
+              class="icon"
+              src="assets/icons/Milkshakes.png"
+              alt=""
+              aria-hidden="true"
+              width="20"
+              height="20"
+            />Chocolate Milkshake<span>&#10022;</span></span
+          >
+        </div>
+      </section>
+
+      <!-- ========== MENU ========== -->
+      <section class="menu" id="menu">
+        <div class="container">
+          <div class="menu__header" data-stagger>
+            <div>
+              <p class="section-tag reveal">The Menu</p>
+              <h2 class="section-title reveal">Pick your favourite.</h2>
+            </div>
+          </div>
+
+          <div class="menu__tabs" role="tablist" aria-label="Menu categories">
+            <button
+              class="menu__tab active"
+              role="tab"
+              aria-selected="true"
+              id="menu-tab-doner"
+              aria-controls="menu-panel-doner"
+              data-category="doner"
+            >
+              Doner Kebab
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-special"
+              aria-controls="menu-panel-special"
+              data-category="special"
+            >
+              Special Kebab
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-rice"
+              aria-controls="menu-panel-rice"
+              data-category="rice"
+            >
+              Meat on Rice
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-salad"
+              aria-controls="menu-panel-salad"
+              data-category="salad"
+            >
+              Meat on Salad
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-chips"
+              aria-controls="menu-panel-chips"
+              data-category="chips"
+            >
+              Meat on Chips
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-shawarma"
+              aria-controls="menu-panel-shawarma"
+              data-category="shawarma"
+            >
+              Shawarma
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-burgers"
+              aria-controls="menu-panel-burgers"
+              data-category="burgers"
+            >
+              Burgers
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-sides"
+              aria-controls="menu-panel-sides"
+              data-category="sides"
+            >
+              Sides
+            </button>
+            <button
+              class="menu__tab"
+              role="tab"
+              aria-selected="false"
+              id="menu-tab-drinks"
+              aria-controls="menu-panel-drinks"
+              data-category="drinks"
+            >
+              Drinks
+            </button>
+          </div>
+
+          <div class="menu__panels">
+            <div
+              class="menu__panel active"
+              id="menu-panel-doner"
+              role="tabpanel"
+              aria-labelledby="menu-tab-doner"
+              tabindex="0"
+              data-panel="doner"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/donor-kebab.webp')"
+              >
+                <img
+                  src="assets/images/donor-kebab.webp"
+                  alt="A doner kebab wrap sliced open, showing seasoned meat, melted cheese, and fresh cucumber"
+                  loading="lazy"
+                  width="1000"
+                  height="687"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Doner Kebab</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Doner</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Sliced chicken doner with lettuce, red cabbage and carrot
+                      in a flatbread.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb Doner</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Lamb cooked on a vertical spit and shaved into thin
+                      slices.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Souvlaki Chicken</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Chicken pieces grilled souvlaki style in a warm flatbread.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Souvlaki Lamb</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Lamb pieces on skewers, souvlaki style.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed Doner</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      A combination of thinly sliced doner meats served
+                      together.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Falafel Kebab</h3>
+                      <span class="menu-item__badge">VEG</span>
+                    </div>
+                    <p class="menu-item__desc">
+                      Crispy chickpea falafel with lettuce, tomato and sauce in
+                      a flatbread.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$17.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Super Doner</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Extra-generous serve of thinly sliced doner meat in a
+                      larger kebab.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$22.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-special"
+              role="tabpanel"
+              aria-labelledby="menu-tab-special"
+              tabindex="0"
+              data-panel="special"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/special-kebab.webp')"
+              >
+                <img
+                  src="assets/images/special-kebab.webp"
+                  alt="A special kebab flatbread opened flat, loaded with cheese, tomato, fresh salad and a side of chips"
+                  loading="lazy"
+                  width="1400"
+                  height="1121"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Special Kebab</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Special</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Served with hummus, onion, tomato, cheese and chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.50</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb Special</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Served with hummus, onion, tomato, cheese and chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.50</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed Special</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Served with hummus, onion, tomato, cheese and chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.50</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Kebab Rapped.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Super Special</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Our largest special, loaded with extra meat and toppings.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$23.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-rice"
+              role="tabpanel"
+              aria-labelledby="menu-tab-rice"
+              tabindex="0"
+              data-panel="rice"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/donor-on-rice.webp')"
+              >
+                <img
+                  src="assets/images/donor-on-rice.webp"
+                  alt="A generous rice platter with roasted meat, fresh lemon, and side sauces"
+                  loading="lazy"
+                  width="1000"
+                  height="1000"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Meat on Rice</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/rice.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Doner Rice</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Sliced chicken doner served over seasoned rice.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/rice.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb Doner Rice</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Lamb doner shaved from the spit, served over rice.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/rice.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed Doner on Rice</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Mixed doner on rice with hummus, onion, tomato and salad.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/rice.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Falafel on Rice</h3>
+                      <span class="menu-item__badge">VEG</span>
+                    </div>
+                    <p class="menu-item__desc">
+                      Chickpea falafel served over seasoned rice.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/rice.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Super Doner Rice</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Extra-generous serve of shaved doner meat over rice.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$27.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-salad"
+              role="tabpanel"
+              aria-labelledby="menu-tab-salad"
+              tabindex="0"
+              data-panel="salad"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/menu-salad.webp')"
+              >
+                <img
+                  src="assets/images/menu-salad.webp"
+                  alt="A fresh mixed salad bowl with crisp lettuce, tomato and cucumber, ready to be topped with doner meat"
+                  loading="lazy"
+                  width="1122"
+                  height="1402"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Meat on Salad</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Salad</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Shaved chicken over mixed salad with lettuce, tomato and
+                      veg.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Falafel Salad</h3>
+                      <span class="menu-item__badge">VEG</span>
+                    </div>
+                    <p class="menu-item__desc">
+                      Crispy chickpea falafel served over mixed salad.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$18.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb Doner Salad</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Lamb doner with warm spices over mixed salad.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed Doner Salad</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      A combination of doner meats over mixed salad.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$19.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Super Doner Salad</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Mixed salad topped generously with doner meat.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$22.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-chips"
+              role="tabpanel"
+              aria-labelledby="menu-tab-chips"
+              tabindex="0"
+              data-panel="chips"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/donor-on-chips.webp')"
+              >
+                <img
+                  src="assets/images/donor-on-chips.webp"
+                  alt="Carved doner meat and crispy chips on a plate, topped with garlic sauce and BBQ sauce"
+                  loading="lazy"
+                  width="1000"
+                  height="1000"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Meat on Chips</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/chips.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken on Chips</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Sliced chicken doner served over hot chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/chips.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb on Chips</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Shaved lamb doner over hot chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/chips.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed on Chips</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      A mix of doner meats served over crispy chips.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$21.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-shawarma"
+              role="tabpanel"
+              aria-labelledby="menu-tab-shawarma"
+              tabindex="0"
+              data-panel="shawarma"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/menu-shawarma.webp')"
+              >
+                <img
+                  src="assets/images/menu-shawarma.webp"
+                  alt="Shawarma packed into warm pita bread with parsley and spring onion"
+                  loading="lazy"
+                  width="900"
+                  height="1350"
+                  style="object-position: center 82%"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Shawarma</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Showerma.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Shawarma</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Chicken cooked on a vertical spit and shaved thin.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$13.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Showerma.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Lamb Shawarma</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Thinly sliced lamb, seasoned with warm shawarma spices.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$13.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/Showerma.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Mixed Shawarma</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      A mix of thinly sliced meats from the shawarma spit.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$13.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-burgers"
+              role="tabpanel"
+              aria-labelledby="menu-tab-burgers"
+              tabindex="0"
+              data-panel="burgers"
+            >
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/menu-burgers.webp')"
+              >
+                <img
+                  src="assets/images/menu-burgers.webp"
+                  alt="A grilled chicken burger with lettuce, tomato and creamy sauce"
+                  loading="lazy"
+                  width="1100"
+                  height="1100"
+                  style="object-position: center 38%"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Burgers</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/hamburger.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chicken Royal Burger</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Chicken, lettuce, tomato, cheese and creamy sauce in a
+                      bun.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$13.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/hamburger.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Beef Burger</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Beef patty served in a soft burger bun.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$13.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/hamburger.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Beef Camembert Burger</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Beef patty with Camembert cheese in a toasted bun.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$14.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-sides"
+              role="tabpanel"
+              aria-labelledby="menu-tab-sides"
+              tabindex="0"
+              data-panel="sides"
+            >
+              <!-- Stand-in stock photo (Zak Chapman / Pexels, Pexels License —
+                   free for commercial use) until in-house product photography
+                   of the actual sides is shot. Swap the src/--banner-bg when ready. -->
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/menu-sides.webp')"
+              >
+                <img
+                  src="assets/images/menu-sides.webp"
+                  alt="A bowl of creamy hummus drizzled with olive oil, served with warm pita bread"
+                  loading="lazy"
+                  width="1400"
+                  height="934"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">Sides</div>
+                </div>
+              </div>
+              <div class="menu__list">
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/chips.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Chips</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Straight-cut hot chips, ideal as a side.
+                    </p>
+                  </div>
+                  <div class="menu-item__price menu-item__price--sizes">
+                    <span class="menu-item__price-row"
+                      >S <strong>$6.00</strong></span
+                    ><span class="menu-item__price-row"
+                      >L <strong>$8.00</strong></span
+                    >
+                  </div>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/garlic-bread-2.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Garlic Bread</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Bread topped with garlic butter.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$6.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/garlic-bread-2.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Garlic Bread &amp; Hummus</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Garlic bread wedges with hummus for dipping.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$8.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/chips.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Wedges</h3>
+                    </div>
+                    <p class="menu-item__desc">Thick-cut potato wedges.</p>
+                  </div>
+                  <div class="menu-item__price menu-item__price--sizes">
+                    <span class="menu-item__price-row"
+                      >S <strong>$8.00</strong></span
+                    ><span class="menu-item__price-row"
+                      >L <strong>$10.00</strong></span
+                    >
+                  </div>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/garlic-bread-2.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Cheesy Garlic Bread</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Garlic butter bread topped with melted cheese.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$7.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/salad.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Shirazi Salad</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Diced cucumber, tomato and onion with lemon and mint.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$6.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/hummus.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Hummus</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Creamy chickpea hummus, drizzled with olive oil.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$6.00</span>
+                </article>
+                <article class="menu-item reveal">
+                  <div>
+                    <div class="menu-item__head">
+                      <img
+                        class="icon menu-item__icon"
+                        src="assets/icons/parsley.png"
+                        alt=""
+                        aria-hidden="true"
+                        width="20"
+                        height="20"
+                      />
+                      <h3 class="menu-item__name">Tabbouleh</h3>
+                    </div>
+                    <p class="menu-item__desc">
+                      Fresh parsley salad with tomato, mint and lemon.
+                    </p>
+                  </div>
+                  <span class="menu-item__price">$6.00</span>
+                </article>
+              </div>
+            </div>
+
+            <div
+              class="menu__panel"
+              id="menu-panel-drinks"
+              role="tabpanel"
+              aria-labelledby="menu-tab-drinks"
+              tabindex="0"
+              data-panel="drinks"
+            >
+              <!-- Stand-in stock photo (Horizon Content / Pexels, Pexels License —
+                   free for commercial use) until in-house product photography
+                   of the actual milkshakes is shot. Swap the src/--banner-bg when ready. -->
+              <div
+                class="menu__banner reveal"
+                style="--banner-bg: url('/assets/images/menu-drinks.webp')"
+              >
+                <img
+                  src="assets/images/Drinks.png"
+                  alt="A thick chocolate milkshake in a tall glass, garnished with a strawberry and served with cookies"
+                  loading="lazy"
+                  width="2100"
+                  height="1400"
+                  style="object-position: center 22%"
+                />
+                <div class="menu__banner-caption">
+                  <div class="menu__banner-eyebrow">Now Showing</div>
+                  <div class="menu__banner-title">
+                    Milkshakes, Smoothies &amp; Soft Drinks
+                  </div>
+                </div>
+              </div>
+
+              <div class="menu__group">
+                <h3 class="menu__group-title">Soft Drinks</h3>
+                <div class="menu__list">
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Coca-Cola</h3>
+                      </div>
+                    </div>
+                    <div class="menu-item__price menu-item__price--sizes">
+                      <span class="menu-item__price-row"
+                        >S <strong>$2.50</strong></span
+                      ><span class="menu-item__price-row"
+                        >L <strong>$4.50</strong></span
+                      >
+                    </div>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Coke Zero</h3>
+                      </div>
+                    </div>
+                    <div class="menu-item__price menu-item__price--sizes">
+                      <span class="menu-item__price-row"
+                        >S <strong>$2.50</strong></span
+                      ><span class="menu-item__price-row"
+                        >L <strong>$4.50</strong></span
+                      >
+                    </div>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Diet Coke</h3>
+                      </div>
+                    </div>
+                    <div class="menu-item__price menu-item__price--sizes">
+                      <span class="menu-item__price-row"
+                        >S <strong>$2.50</strong></span
+                      ><span class="menu-item__price-row"
+                        >L <strong>$4.50</strong></span
+                      >
+                    </div>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Fanta</h3>
+                      </div>
+                    </div>
+                    <div class="menu-item__price menu-item__price--sizes">
+                      <span class="menu-item__price-row"
+                        >S <strong>$2.50</strong></span
+                      ><span class="menu-item__price-row"
+                        >L <strong>$4.50</strong></span
+                      >
+                    </div>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Sprite</h3>
+                      </div>
+                    </div>
+                    <div class="menu-item__price menu-item__price--sizes">
+                      <span class="menu-item__price-row"
+                        >S <strong>$2.50</strong></span
+                      ><span class="menu-item__price-row"
+                        >L <strong>$4.50</strong></span
+                      >
+                    </div>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Water</h3>
+                      </div>
+                    </div>
+                    <span class="menu-item__price">$4.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Energy Drink</h3>
+                      </div>
+                    </div>
+                    <span class="menu-item__price">$4.80</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Soft Drink.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Juice</h3>
+                      </div>
+                    </div>
+                    <span class="menu-item__price">$4.00</span>
+                  </article>
+                </div>
+              </div>
+
+              <div class="menu__group">
+                <h3 class="menu__group-title">Milkshakes</h3>
+                <div class="menu__list">
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Banana Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Banana and milk, blended smooth and classic.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Caramel Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Milk and caramel blended into a smooth shake.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Chocolate Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Milk and chocolate blended into a smooth shake.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Lime Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Lime-flavoured milkshake, cold and smooth.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Raspberry Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Raspberry milkshake, served cold and blended smooth.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Strawberry Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Thick, smooth milkshake with strawberry flavour.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Milkshakes.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Vanilla Milkshake</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Classic vanilla milkshake, smooth and creamy.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$6.00</span>
+                  </article>
+                </div>
+              </div>
+
+              <div class="menu__group">
+                <h3 class="menu__group-title">Smoothies</h3>
+                <div class="menu__list">
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Smoothie.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Banana Smoothie</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Bananas blended into a thick, smooth drink.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$7.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Smoothie.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">Berry Smoothie</h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Mixed berries blended to a smooth finish.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$7.00</span>
+                  </article>
+                  <article class="menu-item reveal">
+                    <div>
+                      <div class="menu-item__head">
+                        <img
+                          class="icon menu-item__icon"
+                          src="assets/icons/Smoothie.png"
+                          alt=""
+                          aria-hidden="true"
+                          width="20"
+                          height="20"
+                        />
+                        <h3 class="menu-item__name">
+                          Berry &amp; Banana Smoothie
+                        </h3>
+                      </div>
+                      <p class="menu-item__desc">
+                        Banana and berries blended to a smooth finish.
+                      </p>
+                    </div>
+                    <span class="menu-item__price">$8.00</span>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="menu__note">
+            All our meats are 100% halal. Menu and pricing are subject to change
+            &mdash; please confirm details in-store or by phone.
+          </p>
+        </div>
+      </section>
+
+      <!-- ========== COMBO DEALS ========== -->
+      <section class="combos" id="combos">
+        <div class="container">
+          <div class="combos__header" data-stagger>
+            <p class="section-tag reveal">Limited Deals</p>
+            <h2 class="section-title combos__title reveal">Make it a combo.</h2>
+          </div>
+          <div class="combos__grid" data-stagger>
+            <div class="combo-card combo-card--popular reveal">
+              <div class="combo-card__badge">Popular</div>
+              <div class="combo-card__icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="#icon-bundle"></use>
+                </svg>
+              </div>
+              <div>
+                <h3 class="combo-card__name">Make it a Combo</h3>
+                <p class="combo-card__desc">
+                  Add chips and a drink to any kebab or wrap.
+                </p>
+              </div>
+              <div class="combo-card__price-row">
+                <span class="combo-card__price">+$7</span>
+                <span class="combo-card__price-note">add-on</span>
+              </div>
+            </div>
+            <div class="combo-card reveal">
+              <div class="combo-card__icon combo-card__icon--group">
+                <svg class="icon" aria-hidden="true">
+                  <use href="#icon-cup"></use></svg
+                ><svg class="icon icon--badge" aria-hidden="true">
+                  <use href="#icon-upsize"></use>
+                </svg>
+              </div>
+              <div>
+                <h3 class="combo-card__name">Upsize Your Drink</h3>
+                <p class="combo-card__desc">
+                  Upgrade to a large bottle &mdash; any drink, any meal.
+                </p>
+              </div>
+              <div class="combo-card__price-row">
+                <span class="combo-card__price">+$3</span>
+                <span class="combo-card__price-note">add-on</span>
+              </div>
+            </div>
+            <div class="combo-card reveal">
+              <div class="combo-card__icon combo-card__icon--group">
+                <svg class="icon" aria-hidden="true">
+                  <use href="#icon-fries"></use></svg
+                ><svg class="icon icon--badge" aria-hidden="true">
+                  <use href="#icon-upsize"></use>
+                </svg>
+              </div>
+              <div>
+                <h3 class="combo-card__name">Upsize Your Chips</h3>
+                <p class="combo-card__desc">
+                  Upgrade your chips to a larger serve with any meal.
+                </p>
+              </div>
+              <div class="combo-card__price-row">
+                <span class="combo-card__price">+$3</span>
+                <span class="combo-card__price-note">add-on</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== BUILD YOUR KEBAB ========== -->
+      <section class="builder" id="builder">
+        <div class="container">
+          <div class="builder__header" data-stagger>
+            <p class="section-tag reveal">Make It Yours</p>
+            <h2 class="section-title builder__title reveal">Build your kebab</h2>
+          </div>
+
+          <div class="builder__grid">
+            <div class="builder__groups reveal">
+              <div class="builder__group" data-group="base" data-mode="single">
+                <div class="builder__group-head">
+                  <h3 class="builder__group-title">
+                    1 &middot; Choose your base
+                  </h3>
+                  <span class="builder__group-hint">pick one</span>
+                </div>
+                <div
+                  class="builder__options"
+                  role="radiogroup"
+                  aria-label="Choose your base"
+                >
+                  <button
+                    type="button"
+                    class="builder__option is-active"
+                    role="radio"
+                    aria-checked="true"
+                    data-id="wrap"
+                    data-name="Flatbread Wrap"
+                    data-price="18"
+                    data-price-falafel="17"
+                    data-price-super="22"
+                    data-band="FLATBREAD"
+                    data-c1="#e8b878"
+                    data-c2="#c98b4a"
+                    data-txt="#5a3a18"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-wrap"></use></svg
+                    >Flatbread Wrap<span class="builder__option-plus">$18</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="rice"
+                    data-name="Rice Box"
+                    data-price="21"
+                    data-price-falafel="19"
+                    data-price-super="27"
+                    data-band="RICE"
+                    data-c1="#efe2c2"
+                    data-c2="#d8c597"
+                    data-txt="#6a5524"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-rice-bowl"></use></svg
+                    >Rice Box<span class="builder__option-plus">$21</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="salad"
+                    data-name="Salad Bowl"
+                    data-price="19"
+                    data-price-falafel="18"
+                    data-price-super="22"
+                    data-band="MIXED SALAD"
+                    data-c1="#6fa346"
+                    data-c2="#4a7a2c"
+                    data-txt="#eafbd9"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-salad-bowl"></use></svg
+                    >Salad Bowl<span class="builder__option-plus">$19</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="chips"
+                    data-name="On Chips"
+                    data-price="21"
+                    data-band="HOT CHIPS"
+                    data-c1="#f0c24a"
+                    data-c2="#d49a2a"
+                    data-txt="#5a3a10"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-fries"></use></svg
+                    >On Chips<span class="builder__option-plus">$21</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="builder__group" data-group="meat" data-mode="single">
+                <div class="builder__group-head">
+                  <h3 class="builder__group-title">
+                    2 &middot; Choose your meat
+                  </h3>
+                  <span class="builder__group-hint">pick one</span>
+                </div>
+                <div
+                  class="builder__options"
+                  role="radiogroup"
+                  aria-label="Choose your meat"
+                >
+                  <button
+                    type="button"
+                    class="builder__option is-active"
+                    role="radio"
+                    aria-checked="true"
+                    data-id="chicken"
+                    data-name="Chicken Doner"
+                    data-band="CHICKEN"
+                    data-c1="#c98a4e"
+                    data-c2="#9a6024"
+                    data-txt="#fff"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-chicken"></use></svg
+                    >Chicken Doner
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="lamb"
+                    data-name="Lamb Doner"
+                    data-band="LAMB"
+                    data-c1="#9a4a28"
+                    data-c2="#6e3017"
+                    data-txt="#ffd9bf"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-lamb"></use></svg
+                    >Lamb Doner
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="mixed"
+                    data-name="Mixed"
+                    data-band="MIXED MEAT"
+                    data-c1="#a85a30"
+                    data-c2="#73381b"
+                    data-txt="#ffe6d4"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-mixed-meat"></use></svg
+                    >Mixed
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="falafel"
+                    data-name="Falafel (V)"
+                    data-band="FALAFEL"
+                    data-c1="#8a7a3a"
+                    data-c2="#5e521f"
+                    data-txt="#fbf3d9"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-falafel"></use></svg
+                    >Falafel (V)
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    role="radio"
+                    aria-checked="false"
+                    data-id="super"
+                    data-name="Super (double)"
+                    data-band="DOUBLE MEAT"
+                    data-c1="#8a3f22"
+                    data-c2="#5e2814"
+                    data-txt="#ffd9bf"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-flame"></use></svg
+                    >Super (double)
+                  </button>
+                </div>
+              </div>
+
+              <div class="builder__group" data-group="salads" data-mode="multi">
+                <div class="builder__group-head">
+                  <h3 class="builder__group-title">3 &middot; Salads</h3>
+                  <span class="builder__group-hint">as many as you like</span>
+                </div>
+                <div class="builder__options">
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="onion"
+                    data-name="Onion"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-onion"></use></svg
+                    >Onion
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="parsley"
+                    data-name="Parsley"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-herb"></use></svg
+                    >Parsley
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option is-active"
+                    aria-pressed="true"
+                    data-id="tomato"
+                    data-name="Tomato"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-tomato"></use></svg
+                    >Tomato
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="mixedcabbage"
+                    data-name="Mixed Cabbage"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-cabbage"></use></svg
+                    >Mixed Cabbage
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option is-active"
+                    aria-pressed="true"
+                    data-id="lettuce"
+                    data-name="Lettuce"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-lettuce"></use></svg
+                    >Lettuce
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="builder__group"
+                data-group="sauces"
+                data-mode="multi"
+                data-max="3"
+              >
+                <div class="builder__group-head">
+                  <h3 class="builder__group-title">4 &middot; Sauces</h3>
+                  <span class="builder__group-hint">choose up to 3</span>
+                </div>
+                <div class="builder__options">
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="tomatosauce"
+                    data-name="Tomato"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #d64a2f"
+                      aria-hidden="true"
+                    ></span
+                    >Tomato
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option is-active"
+                    aria-pressed="true"
+                    data-id="garlicyoghurt"
+                    data-name="Garlic Yoghurt"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #f1ecdf"
+                      aria-hidden="true"
+                    ></span
+                    >Garlic Yoghurt
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="bbq"
+                    data-name="BBQ"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #6e3b1e"
+                      aria-hidden="true"
+                    ></span
+                    >BBQ
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="sweetchilli"
+                    data-name="Sweet Chilli"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #e2632a"
+                      aria-hidden="true"
+                    ></span
+                    >Sweet Chilli
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="mayonnaise"
+                    data-name="Mayonnaise"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #f3e9c9"
+                      aria-hidden="true"
+                    ></span
+                    >Mayonnaise
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="mint"
+                    data-name="Mint"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #6faa4e"
+                      aria-hidden="true"
+                    ></span
+                    >Mint
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="satay"
+                    data-name="Satay"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #b17a35"
+                      aria-hidden="true"
+                    ></span
+                    >Satay
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="garlicaioli"
+                    data-name="Garlic Aioli"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #e4d8ba"
+                      aria-hidden="true"
+                    ></span
+                    >Garlic Aioli
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="hotchilli"
+                    data-name="Hot Chilli"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #c22a1e"
+                      aria-hidden="true"
+                    ></span
+                    >Hot Chilli
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="souvlaki"
+                    data-name="Souvlaki Sauce"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #d9a45f"
+                      aria-hidden="true"
+                    ></span
+                    >Souvlaki Sauce
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="hummussauce"
+                    data-name="Hummus"
+                  >
+                    <span
+                      class="builder__option-swatch"
+                      style="--swatch: #d4c383"
+                      aria-hidden="true"
+                    ></span
+                    >Hummus
+                  </button>
+                </div>
+              </div>
+
+              <div class="builder__group" data-group="extras" data-mode="multi">
+                <div class="builder__group-head">
+                  <h3 class="builder__group-title">5 &middot; Extras</h3>
+                  <span class="builder__group-hint">optional</span>
+                </div>
+                <div class="builder__options">
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="extrameat"
+                    data-name="Extra Meat"
+                    data-price="4"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-mixed-meat"></use></svg
+                    >Extra Meat<span class="builder__option-plus">+$4</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="cheese"
+                    data-name="Cheese"
+                    data-price="2"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-cheese"></use></svg
+                    >Cheese<span class="builder__option-plus">+$2</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="chipsin"
+                    data-name="Chips Inside"
+                    data-price="2.5"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-fries"></use></svg
+                    >Chips Inside<span class="builder__option-plus"
+                      >+$2.50</span
+                    >
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="hummusx"
+                    data-name="Extra Hummus"
+                    data-price="2"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-hummus"></use></svg
+                    >Extra Hummus<span class="builder__option-plus">+$2</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="dolmeh"
+                    data-name="Extra Dolmeh"
+                    data-price="1"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-dolma"></use></svg
+                    >Extra Dolmeh<span class="builder__option-plus">+$1</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="builder__option"
+                    aria-pressed="false"
+                    data-id="falafelx"
+                    data-name="Add Falafel"
+                    data-price="3"
+                  >
+                    <svg class="icon builder__option-icon" aria-hidden="true">
+                      <use href="#icon-falafel"></use></svg
+                    >Add Falafel<span class="builder__option-plus">+$3</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="builder__preview reveal">
+              <div class="builder__card">
+                <div class="builder__card-label">Your Kebab</div>
+                <div class="builder__stack" id="builder-stack">
+                  <span class="builder__stack-empty" aria-hidden="true"
+                    ><svg class="icon" aria-hidden="true">
+                      <use href="#icon-wrap"></use></svg
+                  ></span>
+                </div>
+                <dl class="builder__summary" id="builder-summary"></dl>
+                <div class="builder__total-row">
+                  <span class="builder__total-label">Total</span>
+                  <span class="builder__total" id="builder-total">$18.00</span>
+                </div>
+                <a href="tel:094126030" class="btn btn--ember btn--block"
+                  >Call to Order</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== REVIEWS ========== -->
+      <section class="reviews" id="reviews">
+        <div class="container">
+          <div class="reviews__header" data-stagger>
+            <p class="section-tag reveal">Reviews</p>
+            <h2 class="section-title reviews__title reveal">
+              What people are saying.
+            </h2>
+          </div>
+          <div class="reviews__deck-wrap reveal">
+            <div class="reviews__deck-hint" aria-hidden="true">
+              <span class="reviews__deck-hint-label">Drag to read more</span>
+              <svg
+                class="reviews__deck-hint-arrow"
+                viewBox="0 0 448 512"
+                fill="currentColor"
+                width="1em"
+                height="1em"
+              >
+                <path
+                  d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"
+                />
+              </svg>
+            </div>
+
+            <div class="reviews__deck" id="reviews-deck">
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "All the dishes were incredibly fresh, and the seasoning was
+                  excellent. The female staff member who looked after us was
+                  very professional, and her service made the whole experience
+                  feel wonderful. The pricing was also surprisingly reasonable
+                  &mdash; great value for money."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">Y</div>
+                  <div>
+                    <div class="review-card__author">Yoko Taita</div>
+                    <div class="review-card__note">
+                      Google Review &middot; Local Guide
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "Come support these guys! I had a chicken donor kebab ($17)
+                  and small fries. The kebabs are a decent size, a big portion."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">B</div>
+                  <div>
+                    <div class="review-card__author">B R</div>
+                    <div class="review-card__note">
+                      Google Review &middot; Local Guide
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "Absolutely delicious lamb Doner. It was tasty, not greasy at
+                  all and the very generous amount of meat was very surprising.
+                  Thank you guys."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">E</div>
+                  <div>
+                    <div class="review-card__author">E R</div>
+                    <div class="review-card__note">
+                      Google Review &middot; Local Guide
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "Goodness, I thought I was back in Melbourne. Such great food
+                  and service. Fresh and super tasty. Will definitely be back.
+                  We had chicken and lamb kebabs and chippies, which were still
+                  crispy when I got them home. A+"
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">M</div>
+                  <div>
+                    <div class="review-card__author">Michelle Barnes</div>
+                    <div class="review-card__note">Google Review</div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "Great food and charming service. The quality of the Lamb and
+                  Chicken is exceptional. Even my fussiest daughter loves it! A
+                  friendly family run Kebab shop."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">E</div>
+                  <div>
+                    <div class="review-card__author">Eanna Doyle</div>
+                    <div class="review-card__note">
+                      Google Review &middot; Local Guide
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "Stopped in here on a Friday evening for a quick easy dinner.
+                  Was not disappointed at all. The man behind the counter was
+                  very friendly and welcoming. Food was delicious and filling.
+                  I'll be back again for sure."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">C</div>
+                  <div>
+                    <div class="review-card__author">Cody Napper</div>
+                    <div class="review-card__note">
+                      Google Review &middot; Local Guide
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "This is how Kebabs should always be like. The meat is
+                  delicious and tasty. The vegetables are crisp and fresh. The
+                  sauces are NOT oily or overbearing, just right. My fussy
+                  family are always happy when I offer to get these kebabs."
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">W</div>
+                  <div>
+                    <div class="review-card__author">Willem Drees</div>
+                    <div class="review-card__note">Google Review</div>
+                  </div>
+                </div>
+              </article>
+              <article class="review-card">
+                <div class="review-card__stars" aria-label="5 out of 5 stars">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </div>
+                <blockquote class="review-card__text">
+                  "It was really really fresh vege and delicious meat. I want
+                  one more again next time I choose the another one!"
+                </blockquote>
+                <div class="review-card__footer">
+                  <div class="review-card__avatar">R</div>
+                  <div>
+                    <div class="review-card__author">Ran_st</div>
+                    <div class="review-card__note">Google Review</div>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="reviews__deck-controls">
+              <button
+                type="button"
+                class="reviews__deck-btn"
+                id="reviews-deck-prev"
+                aria-label="Show previous review"
+              >
+                &#8592;
+              </button>
+              <button
+                type="button"
+                class="reviews__deck-btn"
+                id="reviews-deck-next"
+                aria-label="Show next review"
+              >
+                &#8594;
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== FIND US ========== -->
+      <section class="find-us" id="find-us">
+        <div class="container">
+          <div class="find-us__grid">
+            <div class="find-us__map reveal">
+              <iframe
+                src="https://www.google.com/maps?q=2%2F42+Main+Road%2C+Kumeu%2C+Auckland%2C+New+Zealand&output=embed"
+                width="100%"
+                height="100%"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Kebab Station Kumeu on Google Maps"
+              ></iframe>
+            </div>
+            <div class="find-us__card" data-stagger>
+              <p class="section-tag reveal">Find Us</p>
+              <h2 class="section-title find-us__title reveal">Come hungry.</h2>
+              <div class="find-us__details reveal">
+                <div class="find-us__detail">
+                  <svg
+                    class="find-us__icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <div>
+                    <div class="find-us__detail-label">Find us</div>
+                    <div class="find-us__detail-value">
+                      2/42 Main Road, Kumeu<br />Auckland, New Zealand
+                    </div>
+                  </div>
+                </div>
+                <div class="find-us__detail">
+                  <svg
+                    class="find-us__icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <div>
+                    <div class="find-us__detail-label">Opening hours</div>
+                    <div class="find-us__detail-value">
+                      Every day &middot; 10:30am&ndash;9:30pm
+                    </div>
+                  </div>
+                </div>
+                <div class="find-us__detail">
+                  <svg class="icon find-us__icon" aria-hidden="true">
+                    <use href="#icon-phone"></use>
+                  </svg>
+                  <div>
+                    <div class="find-us__detail-label">Order by phone</div>
+                    <div class="find-us__detail-value">
+                      <a href="tel:094126030">09 412 6030</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="find-us__actions reveal">
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=2%2F42+Main+Road+Kumeu+Auckland"
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn--ember"
+                  >Get Directions</a
+                >
+                <a href="tel:094126030" class="btn btn--outline"
+                  >Call to Order</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__grid">
+          <div class="footer__brand">
+            <a
+              href="#"
+              class="footer__logo"
+              aria-label="Kebab Station Kumeu — Home"
+            >
+              <model-viewer
+                class="footer__logo-mark"
+                src="assets/models/kebab-logo-3d.glb"
+                alt="Kebab Station 3D logo mark"
+                camera-orbit="0deg 75deg 105%"
+                disable-zoom
+                disable-pan
+                interaction-prompt="none"
+                shadow-intensity="0"
+                exposure="1.1"
+                loading="lazy"
+              ></model-viewer>
+            </a>
+            <p class="footer__tagline">
+              Carved over fire, served fast. Kumeu's home of proper doner, fresh
+              salad and house-made sauces.
+            </p>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__heading">Explore</h4>
+            <a href="#story">Our Story</a>
+            <a href="#menu">Menu</a>
+            <a href="#builder">Build Yours</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#find-us">Find Us</a>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__heading">Visit</h4>
+            <p>2/42 Main Road, Kumeu</p>
+            <p>Auckland, New Zealand</p>
+            <p>10:30am&ndash;9:30pm daily</p>
+            <a href="tel:094126030">09 412 6030</a>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>&copy; 2026 Kebab Station Kumeu. All rights reserved.</span>
+          <span>Made with fire in Kumeu</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile-only persistent order bar — appears once the hero (and its
+         own Call to Order button) has scrolled out of view. -->
+    <div class="sticky-order" id="sticky-order">
+      <a href="tel:094126030" class="btn btn--ember btn--block">
+        <svg class="icon" aria-hidden="true">
+          <use href="#icon-phone"></use>
+        </svg>
+        Call to Order &mdash; 09 412 6030
+      </a>
+    </div>
+
+    <script defer src="js/vendor/model-viewer.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script src="js/hero.js"></script>
+    <script src="js/builder.js"></script>
+    <script type="module" src="js/reviews-deck.js"></script>
+  </body>
+</html>

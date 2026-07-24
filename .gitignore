@@ -1,0 +1,34 @@
+node_modules/
+.env
+.DS_Store
+*.log
+.claude/settings.local.json
+
+# Not part of the site — local tooling/clutter, kept on disk but never pushed.
+/skills/
+/verify_fix.py
+/CLIENT-PROJECT-WORKFLOW copy.md
+
+# Raw/unoptimised source exports — superseded by the optimised assets
+# actually used on the site (assets/models/kebab-logo-3d.glb,
+# assets/video/hero-doner-loop.mp4). Kept on disk for future re-exports,
+# but never committed: the GitHub Pages workflow uploads the whole repo
+# root, and these alone are ~124MB of dead weight in that deploy.
+/assets/Meshy_AI__0708040613_texture.glb
+/assets/images/Kebab Station Logo 3D.glb
+/assets/video/kling_20260709_VIDEO_Create_an__2508_0.mp4
+/assets/models/doner-shish-3d.glb
+
+# Orphaned photos, superseded by images actually referenced in index.html.
+/assets/images/kebab-wrap-floating.jpg
+/assets/images/doner-rotisserie.jpg
+/assets/images/Donor kebab.png
+/assets/images/Donor on Chips.png
+/assets/images/Donor On Rice.png
+/assets/images/Donors On Shish.png
+/assets/images/Burgers.png
+/assets/images/Salad.png
+/assets/images/Shawerma.png
+/assets/images/Special kebab .png
+/assets/images/Shop Entrance.png
+/assets/images/Shop sign.png

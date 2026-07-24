@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: once the production domain is live, add the sitemap here, e.g.
+# Sitemap: https://example.com/sitemap.xml
