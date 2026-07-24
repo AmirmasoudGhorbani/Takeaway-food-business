@@ -2,6 +2,8 @@
 
 Marketing website for Kebab Station Kumeu — halal lamb and chicken doner, Kumeu, Auckland.
 
+**Live demo:** https://amirmasoudghorbani.github.io/Takeaway-food-business/
+
 ## Stack
 
 Static HTML/CSS/JS, deployed to GitHub Pages via GitHub Actions.
