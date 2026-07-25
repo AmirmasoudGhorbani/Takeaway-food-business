@@ -1620,6 +1620,31 @@ ul {
   height: 18px;
   color: var(--ember);
 }
+
+/* "Mixed" and "Super (double)" aren't dishes of their own — they're
+   combinations of the meats already pictured elsewhere — so instead of a
+   single icon they reuse those: two icons side by side for "Mixed", one
+   icon plus a size badge for "Super". */
+.builder__option-icon-pair {
+  display: inline-flex;
+  align-items: center;
+}
+.builder__option-icon-pair .builder__option-icon:last-child {
+  margin-left: -6px;
+}
+
+.builder__option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(240, 167, 46, 0.16);
+  border: 1px solid rgba(240, 167, 46, 0.45);
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
 /* Sauces are too visually similar to tell apart as pictograms (every
    squeeze bottle looks the same) — a colour swatch showing the sauce's
    actual colour is more honest and more scannable across eleven options. */
