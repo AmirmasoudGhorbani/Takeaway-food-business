@@ -39,16 +39,6 @@
     scrollProgress.style.width = progress + '%';
   }
 
-  // ── Nav logo: slow idle turntable ──
-  // A slow, jewelry-case rotation so the 3D mark reads as a deliberate
-  // display piece rather than a static sticker. Off entirely under
-  // reduced-motion.
-  var logoMark = document.querySelector('.nav__logo-mark');
-  if (logoMark && !prefersReducedMotion) {
-    logoMark.setAttribute('auto-rotate', '');
-    logoMark.setAttribute('rotation-per-second', '10deg');
-  }
-
   // ── Header scroll effect ──
   var header = document.getElementById('header');
 
