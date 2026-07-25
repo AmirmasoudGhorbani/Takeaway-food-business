@@ -256,10 +256,25 @@
     return idx > 0 ? idx * 0.1 : 0;
   }
 
+  // Tracks which .reveal elements have already been triggered. Used instead
+  // of checking classList for 'visible' because that class is no longer
+  // added up front for the animated path (see below).
+  var revealedEls = new WeakSet();
+
   function revealElement(el, shouldAnimate) {
-    if (el.classList.contains('visible')) return;
-    el.classList.add('visible');
-    if (!shouldAnimate || !animateFn) return; // CSS alone snaps it visible instantly
+    if (revealedEls.has(el)) return;
+    revealedEls.add(el);
+    if (!shouldAnimate || !animateFn) {
+      el.classList.add('visible'); // CSS alone snaps it visible instantly
+      return;
+    }
+    // Adding 'visible' here (as this used to) triggers the plain CSS
+    // `.reveal.visible` rule — opacity:1, no transition — which paints the
+    // element fully visible for one frame before Motion's spring animation
+    // takes over and resets it back to the start. That read as a visible
+    // flash-then-reset-then-animate glitch on every single section reveal.
+    // Waiting until the animation finishes to add the class means the
+    // element only ever shows the animation's own in-progress values.
     animateFn(
       el,
       { opacity: [0, 1], y: [28, 0] },
@@ -270,7 +285,9 @@
         mass: 0.8,
         delay: staggerDelayFor(el),
       }
-    );
+    ).then(function () {
+      el.classList.add('visible');
+    });
   }
 
   if (prefersReducedMotion) {
