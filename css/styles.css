@@ -434,13 +434,6 @@ ul {
   transition: background var(--duration) var(--ease);
 }
 
-.site-header.scrolled {
-  border-bottom-color: var(--border);
-}
-.site-header.scrolled::before {
-  background: rgba(13, 10, 9, 0.92);
-}
-
 .nav {
   display: flex;
   align-items: center;
