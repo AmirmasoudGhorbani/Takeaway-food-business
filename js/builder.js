@@ -98,15 +98,131 @@
     return parseFloat(base.dataset.price) || 0;
   }
 
-  function makeBand(label, c1, c2, txt, widthPercent) {
-    var el = document.createElement('div');
-    el.className = 'builder__band';
-    el.style.setProperty('--band-c1', c1);
-    el.style.setProperty('--band-c2', c2);
-    el.style.setProperty('--band-txt', txt);
-    el.style.setProperty('--band-w', widthPercent + '%');
-    el.textContent = label;
-    return el;
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Live stack preview ──
+  // Each category keeps one persistent DOM node (rather than the stack being
+  // torn down and rebuilt on every click) so it can animate in when picked,
+  // out when cleared, and pulse in place when the pick within it changes —
+  // a full innerHTML replace can only ever hard-cut between states.
+  var SLOT_ORDER = ['base', 'meat', 'salad', 'sauce'];
+  var bandEls = {};
+  var bandSignatures = {};
+
+  function insertBandInOrder(el, key) {
+    var idx = SLOT_ORDER.indexOf(key);
+    var before = null;
+    for (var i = idx + 1; i < SLOT_ORDER.length; i++) {
+      if (bandEls[SLOT_ORDER[i]]) {
+        before = bandEls[SLOT_ORDER[i]];
+        break;
+      }
+    }
+    if (before) stack.insertBefore(el, before);
+    else stack.appendChild(el);
+  }
+
+  function iconImg(option, size) {
+    if (!option) return null;
+    var src = option.querySelector('.builder__option-icon');
+    if (!src) return null;
+    var img = document.createElement('img');
+    img.src = src.getAttribute('src');
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.className = 'builder__band-icon';
+    img.width = size;
+    img.height = size;
+    return img;
+  }
+
+  function swatchDot(option) {
+    var swatch = option.querySelector('.builder__option-swatch');
+    var dot = document.createElement('span');
+    dot.className = 'builder__band-dot';
+    dot.style.background = swatch ? swatch.style.getPropertyValue('--swatch') : '#fff';
+    return dot;
+  }
+
+  function paintBand(el, opts) {
+    el.style.setProperty('--band-c1', opts.c1);
+    el.style.setProperty('--band-c2', opts.c2);
+    el.style.setProperty('--band-txt', opts.txt);
+    el.style.setProperty('--band-w', opts.width + '%');
+    el.innerHTML = '';
+    if (opts.icon) el.appendChild(opts.icon);
+    var label = document.createElement('span');
+    label.className = 'builder__band-label';
+    label.textContent = opts.label;
+    el.appendChild(label);
+    if (opts.miniIcons && opts.miniIcons.length) {
+      var row = document.createElement('span');
+      row.className = 'builder__band-minis';
+      opts.miniIcons.forEach(function (m) {
+        row.appendChild(m);
+      });
+      el.appendChild(row);
+    }
+  }
+
+  function showBand(key, signature, opts) {
+    var el = bandEls[key];
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'builder__band';
+      el.dataset.slot = key;
+      paintBand(el, opts);
+      bandEls[key] = el;
+      bandSignatures[key] = signature;
+      el.style.opacity = '0';
+      el.style.transform = 'scale(0.6) translateY(14px)';
+      insertBandInOrder(el, key);
+      void el.offsetWidth; // force layout so the reset below actually transitions
+      requestAnimationFrame(function () {
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+      return;
+    }
+    if (bandSignatures[key] === signature) return;
+    bandSignatures[key] = signature;
+    paintBand(el, opts);
+    if (!prefersReducedMotion) {
+      el.classList.remove('is-pulsing');
+      void el.offsetWidth;
+      el.classList.add('is-pulsing');
+    }
+  }
+
+  function hideBand(key) {
+    var el = bandEls[key];
+    if (!el) return;
+    delete bandEls[key];
+    delete bandSignatures[key];
+    if (prefersReducedMotion) {
+      el.remove();
+      return;
+    }
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.6) translateY(14px)';
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      el.removeEventListener('transitionend', finish);
+      el.remove();
+    }
+    el.addEventListener('transitionend', finish);
+    setTimeout(finish, 420); // safety net if transitionend never fires
+  }
+
+  function bumpTotal(text) {
+    var changed = totalEl.textContent !== text;
+    totalEl.textContent = text;
+    if (!changed || prefersReducedMotion) return;
+    totalEl.classList.remove('is-bumping');
+    void totalEl.offsetWidth;
+    totalEl.classList.add('is-bumping');
   }
 
   function summaryRow(label, value) {
@@ -136,17 +252,57 @@
     var extras = getActive('extras');
 
     // ── stack preview ──
-    stack.innerHTML = '';
-    var emptyHint = document.createElement('span');
-    emptyHint.className = 'builder__stack-empty';
-    emptyHint.setAttribute('aria-hidden', 'true');
-    emptyHint.innerHTML = '<svg class="icon"><use href="#icon-wrap"></use></svg>';
-    stack.appendChild(emptyHint);
+    if (base) {
+      showBand('base', base.dataset.id, {
+        c1: base.dataset.c1,
+        c2: base.dataset.c2,
+        txt: base.dataset.txt,
+        label: base.dataset.band,
+        width: 100,
+        icon: iconImg(base, 16)
+      });
+    } else {
+      hideBand('base');
+    }
 
-    if (base) stack.appendChild(makeBand(base.dataset.band, base.dataset.c1, base.dataset.c2, base.dataset.txt, 100));
-    if (meat) stack.appendChild(makeBand(meat.dataset.band, meat.dataset.c1, meat.dataset.c2, meat.dataset.txt, 88));
-    if (salads.length) stack.appendChild(makeBand('SALAD', '#5a8f3a', '#3f6b27', '#eafbd9', 80));
-    if (sauces.length) stack.appendChild(makeBand('SAUCE', '#f0c24a', '#e89a2e', '#5a3a10', 72));
+    if (meat) {
+      showBand('meat', meat.dataset.id, {
+        c1: meat.dataset.c1,
+        c2: meat.dataset.c2,
+        txt: meat.dataset.txt,
+        label: meat.dataset.band,
+        width: 88,
+        icon: iconImg(meat, 16)
+      });
+    } else {
+      hideBand('meat');
+    }
+
+    if (salads.length) {
+      showBand('salad', salads.map(function (o) { return o.dataset.id; }).join(','), {
+        c1: '#5a8f3a',
+        c2: '#3f6b27',
+        txt: '#eafbd9',
+        label: 'SALAD',
+        width: 80,
+        miniIcons: salads.map(function (o) { return iconImg(o, 14); }).filter(Boolean)
+      });
+    } else {
+      hideBand('salad');
+    }
+
+    if (sauces.length) {
+      showBand('sauce', sauces.map(function (o) { return o.dataset.id; }).join(','), {
+        c1: '#f0c24a',
+        c2: '#e89a2e',
+        txt: '#5a3a10',
+        label: 'SAUCE',
+        width: 72,
+        miniIcons: sauces.map(swatchDot)
+      });
+    } else {
+      hideBand('sauce');
+    }
 
     // ── summary ──
     summary.innerHTML = '';
@@ -159,7 +315,7 @@
     // ── total ──
     var total = priceForCombo(base, meat ? meat.dataset.id : '');
     extras.forEach(function (o) { total += parseFloat(o.dataset.price) || 0; });
-    totalEl.textContent = '$' + total.toFixed(2);
+    bumpTotal('$' + total.toFixed(2));
   }
 
   update();

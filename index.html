@@ -116,6 +116,12 @@
       <i class="ember ember--6"></i>
     </div>
 
+    <!-- Scroll-linked ambient wash — a slow, subtle glow that travels down
+         the page with scroll position (see updateAmbientGlow in main.js),
+         giving the sections a sense of connected motion instead of each
+         just sitting on the same flat background. -->
+    <div class="scroll-glow" aria-hidden="true"></div>
+
     <!-- ========== NAVIGATION ========== -->
     <header class="site-header" id="header">
       <nav class="nav container">
@@ -268,16 +274,16 @@
                 make our sauces by hand &mdash; then serve it fast, the way
                 Kumeu likes it.
               </p>
-              <div class="story__stats reveal">
-                <div class="story__stat">
-                  <div class="story__stat-value">100%</div>
+              <div class="story__stats" data-stagger>
+                <div class="story__stat reveal">
+                  <div class="story__stat-value" data-count-to="100" data-count-suffix="%">0%</div>
                   <div class="story__stat-label">Halal</div>
                 </div>
-                <div class="story__stat">
+                <div class="story__stat reveal">
                   <div class="story__stat-value">Daily</div>
                   <div class="story__stat-label">Fresh salad</div>
                 </div>
-                <div class="story__stat">
+                <div class="story__stat reveal">
                   <div class="story__stat-value">In-house</div>
                   <div class="story__stat-label">Sauces</div>
                 </div>

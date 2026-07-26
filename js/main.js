@@ -77,10 +77,26 @@
     header.classList.toggle('at-footer', tooClose);
   }
 
+  // ── Scroll-linked ambient glow ──
+  // Drifts the .scroll-glow radial gradient (see index.html/styles.css)
+  // slowly down the viewport as the page scrolls, so the sections read as
+  // one continuous, gently lit space instead of each sitting flat on the
+  // same static background.
+  var docEl = document.documentElement;
+  var scrollGlow = document.getElementById('scroll-glow') || document.querySelector('.scroll-glow');
+
+  function updateAmbientGlow() {
+    if (!scrollGlow) return;
+    var docHeight = docEl.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? Math.max(0, Math.min(1, window.pageYOffset / docHeight)) : 0;
+    docEl.style.setProperty('--glow-y', (15 + progress * 70).toFixed(1) + '%');
+  }
+
   function onScroll() {
     updateScrollProgress();
     updateStickyOrder();
     updateHeaderFooterAvoidance();
+    updateAmbientGlow();
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -131,6 +147,69 @@
 
     Object.keys(spyLinkForId).forEach(function (id) {
       spyObserver.observe(document.getElementById(id));
+    });
+  }
+
+  // ── Count-up stats ──
+  // Animates any [data-count-to] element from 0 to its target once it
+  // scrolls into view. A plain rAF tween rather than routing through
+  // Motion — the one place on the page a number actually counts up
+  // shouldn't need a CDN fetch to succeed first.
+  var countEls = document.querySelectorAll('[data-count-to]');
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    countEls.forEach(function (el) {
+      el.textContent = el.getAttribute('data-count-to') + (el.getAttribute('data-count-suffix') || '');
+    });
+  } else {
+    var countObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          countObserver.unobserve(el);
+          var target = parseFloat(el.getAttribute('data-count-to'));
+          var suffix = el.getAttribute('data-count-suffix') || '';
+          var duration = 900;
+          var start = null;
+          function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+          }
+          function tick(ts) {
+            if (start === null) start = ts;
+            var progress = Math.min((ts - start) / duration, 1);
+            el.textContent = Math.round(target * easeOutCubic(progress)) + suffix;
+            if (progress < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    countEls.forEach(function (el) {
+      countObserver.observe(el);
+    });
+  }
+
+  // ── Call-to-order click feedback ──
+  // A quick confirm pulse on every tel: CTA before the browser hands off to
+  // the dialer — the tap otherwise gets zero visual acknowledgement beyond
+  // the browser's own (inconsistent) native tap highlight.
+  if (!prefersReducedMotion) {
+    document.querySelectorAll('a[href^="tel:"]').forEach(function (link) {
+      var confirmTimer = null;
+      link.addEventListener('click', function () {
+        link.classList.remove('is-confirming');
+        void link.offsetWidth;
+        link.classList.add('is-confirming');
+        // Removed afterwards rather than left permanently on: .is-confirming
+        // repurposes .btn's existing ::after (the plasticity press "dent",
+        // see below) for the ring instead, and that has to be free again
+        // for the next press.
+        window.clearTimeout(confirmTimer);
+        confirmTimer = window.setTimeout(function () {
+          link.classList.remove('is-confirming');
+        }, 600);
+      });
     });
   }
 
@@ -203,19 +282,33 @@
     });
   }
 
-  // ── Combo card spotlight: cursor-follow glow ──
-  // Mouse-only (a touch "hover" would just pin the glow wherever the tap
-  // landed and never move it, which reads as a mistake rather than an
-  // effect). Fade in/out is handled by the :hover rule in CSS; this just
-  // keeps --mx/--my tracking the pointer while it's over the card.
-  document.querySelectorAll('.combo-card').forEach(function (card) {
-    card.addEventListener('pointermove', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      var rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-      card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+  // ── Card spotlight + magnetic tilt: cursor-follow glow and a subtle 3D
+  // lean toward the pointer ──
+  // Mouse-only (a touch "hover" would just pin the glow/tilt wherever the
+  // tap landed and never move it, which reads as a mistake rather than an
+  // effect). The glow's fade in/out is handled by the :hover rule in CSS;
+  // this keeps --mx/--my tracking the pointer and --tilt-x/--tilt-y driving the
+  // perspective(...) rotate in the .combo-card / .menu-item transform.
+  if (!prefersReducedMotion) {
+    var TILT_MAX_DEG = 6;
+    document.querySelectorAll('.combo-card, .menu-item').forEach(function (card) {
+      card.addEventListener('pointermove', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        var rect = card.getBoundingClientRect();
+        var xFrac = (e.clientX - rect.left) / rect.width;
+        var yFrac = (e.clientY - rect.top) / rect.height;
+        card.style.setProperty('--mx', xFrac * 100 + '%');
+        card.style.setProperty('--my', yFrac * 100 + '%');
+        card.style.setProperty('--tilt-x', ((xFrac - 0.5) * 2 * TILT_MAX_DEG).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-y', ((0.5 - yFrac) * 2 * TILT_MAX_DEG).toFixed(2) + 'deg');
+      });
+      card.addEventListener('pointerleave', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+      });
     });
-  });
+  }
 
   // ── Scroll reveal: Motion inView() + spring animate() ──
   // .reveal elements start hidden via plain CSS (no transition — Motion now
@@ -272,6 +365,20 @@
       }
     ).then(function () {
       el.classList.add('visible');
+      // Motion shares one render loop per element across all of its active
+      // animations (see the same note in reviews-deck.js), so a trailing
+      // settle frame can still land — and re-apply this animation's cached
+      // inline opacity/transform — one tick after this .then() fires.
+      // Clearing on the next frame instead of immediately lets that
+      // trailing write happen first, so it's not the one stomping the
+      // clear back. Without it the inline style (opacity:1; transform:none)
+      // just sits there outranking anything else .reveal.visible's
+      // transform also needs to carry — the card tilt's --tilt-x/--tilt-y
+      // rotate, added below.
+      requestAnimationFrame(function () {
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
     });
   }
 
