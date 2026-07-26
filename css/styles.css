@@ -2273,15 +2273,17 @@ ul {
 /* No transition here — the animated middle is owned by Motion's spring
    animate() in main.js. These two rules are just the before/after resting
    states (and the sole animation for prefers-reduced-motion / tab-switch
-   instant-reveal paths, which set .visible without calling Motion at all). */
+   instant-reveal paths, which set .visible without calling Motion at all).
+   Must stay in sync with the y/scale values passed to animate() below —
+   this is the frame that paints before Motion's spring takes over. */
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(40px) scale(0.96);
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 /* Stagger for these three now lives in main.js (staggerDelayFor), passed as

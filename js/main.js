@@ -262,11 +262,11 @@
     // element only ever shows the animation's own in-progress values.
     animateFn(
       el,
-      { opacity: [0, 1], y: [28, 0] },
+      { opacity: [0, 1], y: [40, 0], scale: [0.96, 1] },
       {
         type: 'spring',
-        stiffness: 120,
-        damping: 18,
+        stiffness: 140,
+        damping: 15,
         mass: 0.8,
         delay: staggerDelayFor(el),
       }
