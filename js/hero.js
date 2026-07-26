@@ -60,6 +60,13 @@
     ticking = false;
     if (!duration || seekingNow) return;
 
+    // A nav-link click can trigger a long native smooth-scroll back through
+    // this pinned track. Seeking the video on every tick of that animation
+    // would compete with it for the main thread and show up as scroll
+    // jank, so scrubbing sits the animation out here and catches up in a
+    // single seek once main.js dispatches 'navscrollend'.
+    if (window.__navScrolling) return;
+
     // The hero is pinned (position: sticky) inside a taller track, so its
     // own rect stays put at top:0 while stuck — progress has to come from
     // how far we've scrolled through the taller track instead. Dividing by
@@ -95,6 +102,8 @@
     ticking = true;
     requestAnimationFrame(applyScrubFrame);
   }
+
+  window.addEventListener('navscrollend', onScroll);
 
   function init() {
     duration = video.duration || 0;

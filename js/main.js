@@ -356,6 +356,26 @@
   }
 
   // ── Smooth scroll for anchor links ──
+  // A nav click from up near the top has to scroll back down through the
+  // pinned hero's scroll-scrubbed video track (js/hero.js). Left alone,
+  // every tick of the browser's own smooth-scroll animation fires another
+  // video.currentTime seek, and that decode work competes with the scroll
+  // animation on the main thread -- it reads as stutter/jank on the scroll
+  // itself. window.__navScrolling lets the scrubber sit the animation out
+  // and catch up in one seek once it settles (via 'navscrollend').
+  var navScrollEndTimer = null;
+  var navScrollEndHandler = null;
+
+  function clearNavScrolling() {
+    window.clearTimeout(navScrollEndTimer);
+    if (navScrollEndHandler) {
+      window.removeEventListener('scrollend', navScrollEndHandler);
+      navScrollEndHandler = null;
+    }
+    window.__navScrolling = false;
+    window.dispatchEvent(new Event('navscrollend'));
+  }
+
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
       var targetId = this.getAttribute('href');
@@ -367,6 +387,14 @@
         var headerOffset = 84;
         var elementPosition = target.getBoundingClientRect().top;
         var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        clearNavScrolling();
+        window.__navScrolling = true;
+        navScrollEndHandler = clearNavScrolling;
+        window.addEventListener('scrollend', navScrollEndHandler, { once: true });
+        // Fallback in case 'scrollend' never fires (unsupported browser, or
+        // the page was already at the target so no scroll ever begins).
+        navScrollEndTimer = window.setTimeout(clearNavScrolling, 1500);
 
         window.scrollTo({
           top: offsetPosition,
