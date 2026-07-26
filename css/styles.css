@@ -1859,8 +1859,12 @@ ul {
      keeps the fan inside the deck's own box instead of bleeding past the
      viewport edge on narrow screens. */
   width: calc(100% - 64px);
-  max-width: 400px;
-  aspect-ratio: 3 / 4;
+  max-width: 330px;
+  /* A fixed height rather than aspect-ratio: how many lines the 6-line
+     clamp below needs is a function of font metrics, not card width, so
+     tying height to width left narrower (mobile) cards too short to fit
+     a full 6 lines without clipping mid-line. */
+  height: 300px;
 }
 
 .reviews__deck-controls {
@@ -1898,7 +1902,7 @@ ul {
     var(--bg-deep);
   border: 2px solid var(--border-strong);
   box-shadow: 0 24px 60px rgba(13, 10, 9, 0.5);
-  padding: 30px;
+  padding: 24px;
   cursor: grab;
   touch-action: none;
   transition: transform 0.45s var(--ease-out), filter 0.45s var(--ease-out),
@@ -1945,22 +1949,22 @@ ul {
 
 .review-card__stars {
   color: var(--gold);
-  font-size: 0.95rem;
-  margin-bottom: 14px;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
   letter-spacing: 2px;
   flex: none;
 }
 
 .review-card__text {
-  font-size: 0.95rem;
-  line-height: 1.65;
+  font-size: 0.88rem;
+  line-height: 1.55;
   color: var(--text-muted);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   flex: 1;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 6;
   user-select: none;
 }
 
@@ -1972,8 +1976,8 @@ ul {
 }
 
 .review-card__avatar {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: linear-gradient(145deg, var(--ember), var(--ember-deep));
   display: grid;
