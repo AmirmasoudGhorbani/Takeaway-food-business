@@ -1818,11 +1818,41 @@ ul {
   place-items: center;
   opacity: 0.08;
   pointer-events: none;
+  transition: opacity 0.4s var(--ease-out);
 }
 .builder__stack-empty .icon {
   width: 40%;
   height: 40%;
   color: var(--text-cream);
+}
+
+/* Real WebGL (see js/builder-3d.js) sits in this canvas, crossfaded in over
+   the CSS bowl once Three.js has actually loaded and confirmed a WebGL
+   context works — the CSS bowl is left fully intact underneath as the
+   fallback for a blocked/slow CDN or no WebGL, rather than being replaced,
+   so there's nothing to break if the upgrade never arrives. */
+.builder__stack-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+.builder__stack.has-webgl .builder__stack-canvas {
+  opacity: 1;
+}
+.builder__stack.has-webgl .builder__stack-3d,
+.builder__stack.has-webgl .builder__stack-empty {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder__stack-canvas {
+    transition: none;
+  }
 }
 
 /* A real 3D scene: .builder__bowl sits inside this tilted, perspective
@@ -1843,7 +1873,7 @@ ul {
      flat disc. */
   transform: rotateX(calc(50deg + var(--stack-rx, 0deg)))
     rotateZ(calc(-8deg + var(--stack-rz, 0deg)));
-  transition: transform 0.5s var(--ease-out);
+  transition: transform 0.5s var(--ease-out), opacity 0.5s var(--ease-out);
 }
 
 /* One universal container for every base (Flatbread Wrap, Rice Box, Salad

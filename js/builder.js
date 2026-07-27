@@ -456,6 +456,13 @@
     var total = priceForCombo(base, meat ? meat.dataset.id : '');
     extras.forEach(function (o) { total += parseFloat(o.dataset.price) || 0; });
     bumpTotal('$' + total.toFixed(2));
+
+    // Lets js/builder-3d.js (an optional WebGL upgrade over this CSS bowl —
+    // see its own header comment) pick up the same picks without needing
+    // its own copy of getActive()/syncMeatAvailability()/etc, and without
+    // this file needing to know that upgrade exists at all.
+    window.__builderState = { base: base, meat: meat, salads: salads, sauces: sauces, extras: extras };
+    stack.dispatchEvent(new CustomEvent('builder:sync'));
   }
 
   update();
