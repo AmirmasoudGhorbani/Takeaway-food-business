@@ -15,9 +15,10 @@
   'use strict';
 
   var stack = document.getElementById('builder-stack');
+  var stack3d = document.getElementById('builder-stack-3d');
   var summary = document.getElementById('builder-summary');
   var totalEl = document.getElementById('builder-total');
-  if (!stack || !summary || !totalEl) return;
+  if (!stack || !stack3d || !summary || !totalEl) return;
 
   var groups = document.querySelectorAll('.builder__group');
 
@@ -106,8 +107,19 @@
   // out when cleared, and pulse in place when the pick within it changes —
   // a full innerHTML replace can only ever hard-cut between states.
   var SLOT_ORDER = ['base', 'meat', 'salad', 'sauce'];
+  // Depth (px) each slot sits at along the stack's own Z axis inside
+  // .builder__stack-3d — this is what actually separates the layers in
+  // space, not just their visual stacking order.
+  var LAYER_Z = { base: 0, meat: 18, salad: 36, sauce: 54 };
+  // A picked layer floats in from above its resting depth and fades in;
+  // cleared, it floats back up and out the same way.
+  var LAYER_Z_OFFSCREEN = 55;
   var bandEls = {};
   var bandSignatures = {};
+
+  function offscreenTransform(key) {
+    return 'translate(-50%, -50%) translateZ(' + (LAYER_Z[key] + LAYER_Z_OFFSCREEN) + 'px) scale(0.85)';
+  }
 
   function insertBandInOrder(el, key) {
     var idx = SLOT_ORDER.indexOf(key);
@@ -118,8 +130,8 @@
         break;
       }
     }
-    if (before) stack.insertBefore(el, before);
-    else stack.appendChild(el);
+    if (before) stack3d.insertBefore(el, before);
+    else stack3d.appendChild(el);
   }
 
   function iconImg(option, size) {
@@ -171,11 +183,12 @@
       el = document.createElement('div');
       el.className = 'builder__band';
       el.dataset.slot = key;
+      el.style.setProperty('--layer-z', LAYER_Z[key] + 'px');
       paintBand(el, opts);
       bandEls[key] = el;
       bandSignatures[key] = signature;
       el.style.opacity = '0';
-      el.style.transform = 'scale(0.6) translateY(14px)';
+      el.style.transform = offscreenTransform(key);
       insertBandInOrder(el, key);
       void el.offsetWidth; // force layout so the reset below actually transitions
       requestAnimationFrame(function () {
@@ -204,7 +217,7 @@
       return;
     }
     el.style.opacity = '0';
-    el.style.transform = 'scale(0.6) translateY(14px)';
+    el.style.transform = offscreenTransform(key);
     var done = false;
     function finish() {
       if (done) return;
@@ -214,6 +227,30 @@
     }
     el.addEventListener('transitionend', finish);
     setTimeout(finish, 420); // safety net if transitionend never fires
+  }
+
+  // ── Look around the stack ──
+  // --stack-rx/--stack-rz are set on .builder__stack itself (not the 3D
+  // group directly) and read by .builder__stack-3d's transform through
+  // ordinary CSS inheritance, so nothing here has to reach into the 3D
+  // group or fight over who owns its transform. Mouse-only, same as the
+  // card tilt in main.js — a touch "hover" would just pin the tilt wherever
+  // the tap landed and never move it.
+  if (!prefersReducedMotion) {
+    var STACK_TILT_MAX_DEG = 10;
+    stack.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var rect = stack.getBoundingClientRect();
+      var xFrac = (e.clientX - rect.left) / rect.width;
+      var yFrac = (e.clientY - rect.top) / rect.height;
+      stack.style.setProperty('--stack-rx', ((0.5 - yFrac) * 2 * STACK_TILT_MAX_DEG).toFixed(2) + 'deg');
+      stack.style.setProperty('--stack-rz', ((xFrac - 0.5) * 2 * STACK_TILT_MAX_DEG).toFixed(2) + 'deg');
+    });
+    stack.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      stack.style.setProperty('--stack-rx', '0deg');
+      stack.style.setProperty('--stack-rz', '0deg');
+    });
   }
 
   function bumpTotal(text) {

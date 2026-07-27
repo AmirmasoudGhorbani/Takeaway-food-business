@@ -1796,21 +1796,19 @@ ul {
 }
 
 .builder__stack {
-  min-height: 220px;
+  min-height: 240px;
   border-radius: var(--radius-md);
   background: radial-gradient(
-      circle at 50% 30%,
+      circle at 50% 60%,
       rgba(240, 167, 46, 0.18),
       transparent 60%
     ),
     linear-gradient(160deg, #241811, #160f0b);
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 18px;
   position: relative;
+  padding: 18px;
+  /* The vanishing point for the layers below — .builder__stack-3d is the
+     thing that actually rotates into that space. */
+  perspective: 900px;
 }
 
 .builder__stack-empty {
@@ -1827,24 +1825,48 @@ ul {
   color: var(--text-cream);
 }
 
-.builder__band {
+/* A real 3D scene, not a stack of flat cards: each .builder__band below is
+   positioned by translateZ along this group's own axis, so tilting it
+   (rest angle here, cursor-driven nudge from builder.js's --stack-rx/
+   --stack-rz, both inherited down rather than set on this element
+   directly) reveals actual depth between the layers, not just a picture of
+   depth. */
+.builder__stack-3d {
   position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(54deg + var(--stack-rx, 0deg)))
+    rotateZ(calc(-13deg + var(--stack-rz, 0deg)));
+  transition: transform 0.5s var(--ease-out);
+}
+
+.builder__band {
+  position: absolute;
+  left: 50%;
+  top: 50%;
   z-index: 1;
   width: var(--band-w, 100%);
-  max-width: 260px;
-  min-height: 30px;
+  max-width: 230px;
+  min-height: 32px;
   border-radius: 14px;
   background: linear-gradient(145deg, var(--band-c1), var(--band-c2));
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  /* A harder, closer shadow than a flat card would need — at this camera
+     angle it's standing in for the layer's own visible edge/thickness
+     underneath it, not just contact shadow on the surface below. */
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4), 0 14px 20px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 5px 14px;
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--band-txt);
+  transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px));
+  backface-visibility: hidden;
   /* Bands are added/removed/updated as persistent per-slot elements (see
      builder.js) rather than a full innerHTML rebuild, so opacity/transform
      here are what animate them in, out, and on content change instead of a
@@ -1883,14 +1905,12 @@ ul {
 }
 
 @keyframes builder-band-pulse {
-  0% {
-    transform: scale(1);
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px)) scale(1);
   }
   35% {
-    transform: scale(1.07);
-  }
-  100% {
-    transform: scale(1);
+    transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px)) scale(1.08);
   }
 }
 
@@ -1966,6 +1986,7 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .builder__stack-3d,
   .builder__band {
     transition: none;
   }
