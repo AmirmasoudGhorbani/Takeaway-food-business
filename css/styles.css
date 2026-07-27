@@ -1796,7 +1796,7 @@ ul {
 }
 
 .builder__stack {
-  min-height: 240px;
+  min-height: 300px;
   border-radius: var(--radius-md);
   background: radial-gradient(
       circle at 50% 60%,
@@ -1808,7 +1808,7 @@ ul {
   padding: 18px;
   /* The vanishing point for the layers below — .builder__stack-3d is the
      thing that actually rotates into that space. */
-  perspective: 900px;
+  perspective: 1100px;
 }
 
 .builder__stack-empty {
@@ -1835,10 +1835,13 @@ ul {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 190px;
+  min-height: 250px;
   transform-style: preserve-3d;
-  transform: rotateX(calc(54deg + var(--stack-rx, 0deg)))
-    rotateZ(calc(-13deg + var(--stack-rz, 0deg)));
+  /* Flatter than the first pass (was 54deg/-13deg) — steep enough to read
+     as a tilted stack, shallow enough that each layer's own face (icon
+     texture + label) is still legible without having to hover-tilt it. */
+  transform: rotateX(calc(46deg + var(--stack-rx, 0deg)))
+    rotateZ(calc(-9deg + var(--stack-rz, 0deg)));
   transition: transform 0.5s var(--ease-out);
 }
 
@@ -1848,14 +1851,14 @@ ul {
   top: 50%;
   z-index: 1;
   width: var(--band-w, 100%);
-  max-width: 230px;
-  min-height: 32px;
-  border-radius: 14px;
+  max-width: 270px;
+  min-height: 42px;
+  border-radius: 16px;
   background: linear-gradient(145deg, var(--band-c1), var(--band-c2));
   /* A harder, closer shadow than a flat card would need — at this camera
      angle it's standing in for the layer's own visible edge/thickness
      underneath it, not just contact shadow on the surface below. */
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4), 0 14px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 16px 24px rgba(0, 0, 0, 0.5);
   overflow: hidden; /* clips .builder__band-texture's tiling to the pill */
   display: flex;
   align-items: center;
@@ -1876,7 +1879,7 @@ ul {
 .builder__band-texture {
   position: absolute;
   inset: 0;
-  opacity: 0.4;
+  opacity: 0.62;
   mix-blend-mode: overlay;
   pointer-events: none;
 }
@@ -1887,22 +1890,22 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 5px 14px;
-  font-size: 0.62rem;
+  gap: 7px;
+  padding: 7px 16px;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   white-space: nowrap;
   color: var(--band-txt);
   /* A dark chip behind the label rather than relying on contrast against
      the busier textured surface underneath. */
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(0, 0, 0, 0.45);
   border-radius: 999px;
 }
 
 .builder__band-icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -1914,8 +1917,8 @@ ul {
 }
 
 .builder__band-minis .builder__band-icon {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 .builder__band-dot {
