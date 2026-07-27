@@ -1884,6 +1884,27 @@ ul {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
 }
 
+/* A cropped patch of an actual ingredient photo (see PHOTO_FOR_ID in
+   builder.js) instead of a flat icon — for the handful of ingredients that
+   have a real close-up shot, this reads as an actual scoop/piece of the
+   food rather than a repeated sticker. An organic (not perfectly round)
+   blob shape rather than a plain circle, since a hard circular crop reads
+   as "cropped photo" much more than an irregular one does. */
+.builder__particle--photo {
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.builder__particle--photo.builder__particle--blob-1 {
+  border-radius: 42% 58% 53% 47% / 48% 42% 58% 52%;
+}
+.builder__particle--photo.builder__particle--blob-2 {
+  border-radius: 58% 42% 46% 54% / 40% 55% 45% 60%;
+}
+.builder__particle--photo.builder__particle--blob-3 {
+  border-radius: 50% 50% 62% 38% / 55% 45% 55% 45%;
+}
+
 .builder__particle.is-dropping {
   animation: ingredient-drop 0.5s var(--ease-out) both;
 }

@@ -164,6 +164,13 @@
     });
   }
 
+  // A few extras (Cheese, Add Falafel) get their own small cluster near the
+  // meat, since that's realistically where they'd sit — extras weren't
+  // shown in the bowl at all before.
+  var EXTRA_SPOTS = [
+    { x: 46, y: 66, r: -10 }, { x: 58, y: 68, r: 14 }, { x: 40, y: 60, r: 6 }, { x: 62, y: 60, r: -8 }
+  ];
+
   // Each active sauce gets its own horizontal wavy trail, stacked in bands
   // so up to 3 sauces don't just draw over each other.
   function sauceSpots(band) {
@@ -216,6 +223,57 @@
     img.height = sizePx;
     p.appendChild(img);
     return p;
+  }
+
+  // A few ingredients have a real close-up photo (assets/ingredients/,
+  // supplied directly rather than drawn/iconified) instead of the flat
+  // icon pack. Those render as a couple of larger cropped patches rather
+  // than many small icon copies — fewer, bigger pieces read as an actual
+  // scoop of food; everything without a photo yet keeps using its icon.
+  // Values are arrays so "Mixed" can cycle between the chicken and lamb
+  // photos across its patches instead of needing its own special case.
+  var PHOTO_FOR_ID = {
+    falafel: ['assets/ingredients/falafel.webp'],
+    falafelx: ['assets/ingredients/falafel.webp'], // "Add Falafel" extra — same food as the meat option
+    cheese: ['assets/ingredients/cheese.webp'],
+    chicken: ['assets/ingredients/chicken.webp'],
+    lamb: ['assets/ingredients/lamb.webp'],
+    mixed: ['assets/ingredients/chicken.webp', 'assets/ingredients/lamb.webp'],
+    tomato: ['assets/ingredients/tomato.webp'],
+    parsley: ['assets/ingredients/parsley.webp'],
+    mixedcabbage: ['assets/ingredients/mixedcabbage.webp']
+  };
+
+  function makePhotoPatch(src, spot, delayIndex, sizePx, zIndex, blobIndex) {
+    var p = document.createElement('div');
+    p.className = 'builder__particle builder__particle--photo builder__particle--blob-' +
+      ((blobIndex % 3) + 1) + (prefersReducedMotion ? '' : ' is-dropping');
+    p.style.left = spot.x + '%';
+    p.style.top = spot.y + '%';
+    p.style.width = sizePx + 'px';
+    p.style.height = sizePx + 'px';
+    p.style.zIndex = zIndex;
+    p.style.backgroundImage = 'url("' + src + '")';
+    p.style.setProperty('--p-rot', (spot.r || 0) + 'deg');
+    if (!prefersReducedMotion) p.style.animationDelay = (delayIndex * 0.05).toFixed(2) + 's';
+    return p;
+  }
+
+  // Dispatches to a photo patch or an icon particle depending on whether
+  // this option has a photo — the one place that decision gets made, so
+  // base/meat/salads/extras below don't each need their own branch.
+  function buildIngredientParticles(option, spots, sizePx, zIndex, photoSizePx) {
+    var photos = PHOTO_FOR_ID[option.dataset.id];
+    if (photos) {
+      return spots.map(function (spot, i) {
+        return makePhotoPatch(photos[i % photos.length], spot, i, photoSizePx || sizePx, zIndex, i);
+      });
+    }
+    var src = iconSrc(option);
+    if (!src) return [];
+    return spots.map(function (spot, i) {
+      return makeParticle(src, spot, i, sizePx, zIndex);
+    });
   }
 
   function makeDrizzleDot(color, spot, delayIndex) {
@@ -344,27 +402,24 @@
     // what it is: the old group cleared, the new one dropped in, not a
     // special case.
     syncGroups('base', base ? [base] : [], function (option) {
-      var src = iconSrc(option);
-      if (!src) return [];
-      return BASE_SPOTS.map(function (spot, i) {
-        return makeParticle(src, spot, i, 24, 1);
-      });
+      return buildIngredientParticles(option, BASE_SPOTS, 24, 1, 54);
     });
 
     syncGroups('meat', meat ? [meat] : [], function (option) {
-      var src = iconSrc(option);
-      if (!src) return [];
-      return MEAT_SPOTS.map(function (spot, i) {
-        return makeParticle(src, spot, i, 27, 2);
-      });
+      // A photo (fewer, bigger patches) doesn't need as many landing spots
+      // as scattering small icon copies does.
+      var spots = PHOTO_FOR_ID[option.dataset.id] ? MEAT_SPOTS.slice(0, 3) : MEAT_SPOTS;
+      return buildIngredientParticles(option, spots, 27, 2, 52);
     });
 
     syncGroups('salads', salads, function (option) {
-      var src = iconSrc(option);
-      if (!src) return [];
-      return saladSpots(option).map(function (spot, i) {
-        return makeParticle(src, spot, i, 20, 3);
-      });
+      var all = saladSpots(option);
+      var spots = PHOTO_FOR_ID[option.dataset.id] ? all.slice(0, 2) : all;
+      return buildIngredientParticles(option, spots, 20, 3, 42);
+    });
+
+    syncGroups('extras', extras, function (option) {
+      return buildIngredientParticles(option, EXTRA_SPOTS, 22, 5, 36);
     });
 
     syncGroups('sauces', sauces, function (option) {
