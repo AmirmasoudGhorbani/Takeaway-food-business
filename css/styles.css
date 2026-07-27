@@ -1856,15 +1856,10 @@ ul {
      angle it's standing in for the layer's own visible edge/thickness
      underneath it, not just contact shadow on the surface below. */
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4), 0 14px 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden; /* clips .builder__band-texture's tiling to the pill */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 5px 14px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--band-txt);
   transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px));
   backface-visibility: hidden;
   /* Bands are added/removed/updated as persistent per-slot elements (see
@@ -1874,14 +1869,41 @@ ul {
   transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
 }
 
+/* A tiled/scattered repeat of the picked ingredient's own icon (or, for
+   sauces — no icon, just a swatch colour — a speckled dot drizzle) so the
+   layer's surface actually reads as that food instead of standing in for
+   it with a flat color. Set per-band in builder.js's paintBand(). */
+.builder__band-texture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.builder__band-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--band-txt);
+  /* A dark chip behind the label rather than relying on contrast against
+     the busier textured surface underneath. */
+  background: rgba(0, 0, 0, 0.24);
+  border-radius: 999px;
+}
+
 .builder__band-icon {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-}
-
-.builder__band-label {
-  white-space: nowrap;
 }
 
 .builder__band-minis {

@@ -134,12 +134,17 @@
     else stack3d.appendChild(el);
   }
 
-  function iconImg(option, size) {
+  function iconSrc(option) {
     if (!option) return null;
-    var src = option.querySelector('.builder__option-icon');
+    var img = option.querySelector('.builder__option-icon');
+    return img ? img.getAttribute('src') : null;
+  }
+
+  function iconImg(option, size) {
+    var src = iconSrc(option);
     if (!src) return null;
     var img = document.createElement('img');
-    img.src = src.getAttribute('src');
+    img.src = src;
     img.alt = '';
     img.setAttribute('aria-hidden', 'true');
     img.className = 'builder__band-icon';
@@ -148,12 +153,72 @@
     return img;
   }
 
-  function swatchDot(option) {
+  function swatchColor(option) {
     var swatch = option.querySelector('.builder__option-swatch');
+    return swatch ? swatch.style.getPropertyValue('--swatch').trim() : '#fff';
+  }
+
+  function swatchDot(option) {
     var dot = document.createElement('span');
     dot.className = 'builder__band-dot';
-    dot.style.background = swatch ? swatch.style.getPropertyValue('--swatch') : '#fff';
+    dot.style.background = swatchColor(option);
     return dot;
+  }
+
+  // ── Layer texture ──
+  // A flat gradient pill reads as "a colored bar labelled SALAD", not as
+  // salad. Tiling the ingredient's own icon across the band (single icon
+  // for base/meat, an interleaved multi-icon weave for salad, a speckled
+  // dot drizzle in each active sauce's own color for sauce — sauces have no
+  // icon, only a swatch colour) gives each layer a surface that actually
+  // looks like what it is, not just a color standing in for it.
+  var TILE = 22;
+
+  function singleIconTexture(src) {
+    if (!src) return null;
+    return {
+      backgroundImage: 'url("' + src + '")',
+      backgroundSize: TILE + 'px ' + TILE + 'px',
+      backgroundRepeat: 'repeat',
+      backgroundPosition: '0 0'
+    };
+  }
+
+  function multiIconTexture(srcs) {
+    srcs = srcs.filter(Boolean);
+    if (!srcs.length) return null;
+    var images = [], sizes = [], repeats = [], positions = [];
+    srcs.forEach(function (src, i) {
+      var stagger = (i * TILE) / srcs.length;
+      images.push('url("' + src + '")');
+      sizes.push(TILE + 'px ' + TILE + 'px');
+      repeats.push('repeat');
+      positions.push(stagger.toFixed(1) + 'px ' + (stagger * 0.6).toFixed(1) + 'px');
+    });
+    return {
+      backgroundImage: images.join(', '),
+      backgroundSize: sizes.join(', '),
+      backgroundRepeat: repeats.join(', '),
+      backgroundPosition: positions.join(', ')
+    };
+  }
+
+  function drizzleTexture(colors) {
+    if (!colors.length) return null;
+    var layers = colors.map(function (color, i) {
+      var ox = i * 8;
+      var oy = i * 6;
+      return 'repeating-radial-gradient(circle at ' + ox + 'px ' + oy + 'px, ' +
+        color + ' 0 2px, transparent 2px 13px)';
+    });
+    return { backgroundImage: layers.join(', ') };
+  }
+
+  function clearTexture(el) {
+    el.style.backgroundImage = '';
+    el.style.backgroundSize = '';
+    el.style.backgroundRepeat = '';
+    el.style.backgroundPosition = '';
   }
 
   function paintBand(el, opts) {
@@ -162,19 +227,35 @@
     el.style.setProperty('--band-txt', opts.txt);
     el.style.setProperty('--band-w', opts.width + '%');
     el.innerHTML = '';
-    if (opts.icon) el.appendChild(opts.icon);
+
+    var texture = document.createElement('span');
+    texture.className = 'builder__band-texture';
+    texture.setAttribute('aria-hidden', 'true');
+    if (opts.texture) {
+      Object.keys(opts.texture).forEach(function (prop) {
+        texture.style[prop] = opts.texture[prop];
+      });
+    } else {
+      clearTexture(texture);
+    }
+    el.appendChild(texture);
+
+    var content = document.createElement('span');
+    content.className = 'builder__band-content';
+    if (opts.icon) content.appendChild(opts.icon);
     var label = document.createElement('span');
     label.className = 'builder__band-label';
     label.textContent = opts.label;
-    el.appendChild(label);
+    content.appendChild(label);
     if (opts.miniIcons && opts.miniIcons.length) {
       var row = document.createElement('span');
       row.className = 'builder__band-minis';
       opts.miniIcons.forEach(function (m) {
         row.appendChild(m);
       });
-      el.appendChild(row);
+      content.appendChild(row);
     }
+    el.appendChild(content);
   }
 
   function showBand(key, signature, opts) {
@@ -296,7 +377,8 @@
         txt: base.dataset.txt,
         label: base.dataset.band,
         width: 100,
-        icon: iconImg(base, 16)
+        icon: iconImg(base, 16),
+        texture: singleIconTexture(iconSrc(base))
       });
     } else {
       hideBand('base');
@@ -309,7 +391,8 @@
         txt: meat.dataset.txt,
         label: meat.dataset.band,
         width: 88,
-        icon: iconImg(meat, 16)
+        icon: iconImg(meat, 16),
+        texture: singleIconTexture(iconSrc(meat))
       });
     } else {
       hideBand('meat');
@@ -322,7 +405,8 @@
         txt: '#eafbd9',
         label: 'SALAD',
         width: 80,
-        miniIcons: salads.map(function (o) { return iconImg(o, 14); }).filter(Boolean)
+        miniIcons: salads.map(function (o) { return iconImg(o, 14); }).filter(Boolean),
+        texture: multiIconTexture(salads.map(iconSrc))
       });
     } else {
       hideBand('salad');
@@ -335,7 +419,8 @@
         txt: '#5a3a10',
         label: 'SAUCE',
         width: 72,
-        miniIcons: sauces.map(swatchDot)
+        miniIcons: sauces.map(swatchDot),
+        texture: drizzleTexture(sauces.map(swatchColor))
       });
     } else {
       hideBand('sauce');
