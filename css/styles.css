@@ -1796,7 +1796,7 @@ ul {
 }
 
 .builder__stack {
-  min-height: 300px;
+  min-height: 340px;
   border-radius: var(--radius-md);
   background: radial-gradient(
       circle at 50% 60%,
@@ -1835,7 +1835,7 @@ ul {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 250px;
+  min-height: 290px;
   transform-style: preserve-3d;
   /* Flatter than the first pass (was 54deg/-13deg) — steep enough to read
      as a tilted stack, shallow enough that each layer's own face (icon
@@ -1851,9 +1851,9 @@ ul {
   top: 50%;
   z-index: 1;
   width: var(--band-w, 100%);
-  max-width: 270px;
-  min-height: 42px;
-  border-radius: 16px;
+  max-width: 310px;
+  min-height: 60px;
+  border-radius: 999px;
   background: linear-gradient(145deg, var(--band-c1), var(--band-c2));
   /* A harder, closer shadow than a flat card would need — at this camera
      angle it's standing in for the layer's own visible edge/thickness
@@ -1890,11 +1890,11 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 7px 16px;
-  font-size: 0.74rem;
+  gap: 8px;
+  padding: 9px 20px;
+  font-size: 0.85rem;
   font-weight: 800;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   color: var(--band-txt);
   /* A dark chip behind the label rather than relying on contrast against
@@ -1904,26 +1904,26 @@ ul {
 }
 
 .builder__band-icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
 }
 
 .builder__band-minis {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .builder__band-minis .builder__band-icon {
-  width: 16px;
-  height: 16px;
+  width: 19px;
+  height: 19px;
 }
 
 .builder__band-dot {
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.25);
   flex-shrink: 0;

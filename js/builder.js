@@ -111,10 +111,10 @@
   // .builder__stack-3d — this is what actually separates the layers in
   // space, not just their visual stacking order. Wide enough apart that
   // the gap between layers reads clearly even before any hover-tilt.
-  var LAYER_Z = { base: 0, meat: 26, salad: 52, sauce: 78 };
+  var LAYER_Z = { base: 0, meat: 34, salad: 68, sauce: 102 };
   // A picked layer floats in from above its resting depth and fades in;
   // cleared, it floats back up and out the same way.
-  var LAYER_Z_OFFSCREEN = 70;
+  var LAYER_Z_OFFSCREEN = 85;
   var bandEls = {};
   var bandSignatures = {};
 
@@ -173,7 +173,7 @@
   // dot drizzle in each active sauce's own color for sauce — sauces have no
   // icon, only a swatch colour) gives each layer a surface that actually
   // looks like what it is, not just a color standing in for it.
-  var TILE = 30;
+  var TILE = 36;
 
   function singleIconTexture(src) {
     if (!src) return null;
@@ -207,10 +207,10 @@
   function drizzleTexture(colors) {
     if (!colors.length) return null;
     var layers = colors.map(function (color, i) {
-      var ox = i * 10;
-      var oy = i * 7;
+      var ox = i * 12;
+      var oy = i * 8;
       return 'repeating-radial-gradient(circle at ' + ox + 'px ' + oy + 'px, ' +
-        color + ' 0 3px, transparent 3px 16px)';
+        color + ' 0 4px, transparent 4px 19px)';
     });
     return { backgroundImage: layers.join(', ') };
   }
