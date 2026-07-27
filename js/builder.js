@@ -171,6 +171,13 @@
     { x: 46, y: 66, r: -10 }, { x: 58, y: 68, r: 14 }, { x: 40, y: 60, r: 6 }, { x: 62, y: 60, r: -8 }
   ];
 
+  // How far up off the bowl's own floor (px along the 3D scene's Z axis,
+  // not screen pixels) each category actually sits — real assembly order,
+  // base on the bottom working up to sauce drizzled on top. This is what
+  // makes the tilt show genuine depth between the categories instead of
+  // everything sitting flush on one plane.
+  var DEPTH_Z = { base: 0, meat: 9, salads: 15, extras: 19, sauces: 24 };
+
   // Each active sauce gets its own horizontal wavy trail, stacked in bands
   // so up to 3 sauces don't just draw over each other.
   function sauceSpots(band) {
@@ -208,13 +215,14 @@
 
   var particleGroups = {}; // "prefix:optionId" -> element[]
 
-  function makeParticle(src, spot, delayIndex, sizePx, zIndex) {
+  function makeParticle(src, spot, delayIndex, sizePx, zIndex, depthZ) {
     var p = document.createElement('div');
     p.className = 'builder__particle' + (prefersReducedMotion ? '' : ' is-dropping');
     p.style.left = spot.x + '%';
     p.style.top = spot.y + '%';
     p.style.zIndex = zIndex;
     p.style.setProperty('--p-rot', (spot.r || 0) + 'deg');
+    p.style.setProperty('--p-z', (depthZ || 0) + 'px');
     if (!prefersReducedMotion) p.style.animationDelay = (delayIndex * 0.05).toFixed(2) + 's';
     var img = document.createElement('img');
     img.src = src;
@@ -244,7 +252,7 @@
     mixedcabbage: ['assets/ingredients/mixedcabbage.webp']
   };
 
-  function makePhotoPatch(src, spot, delayIndex, sizePx, zIndex, blobIndex) {
+  function makePhotoPatch(src, spot, delayIndex, sizePx, zIndex, blobIndex, depthZ) {
     var p = document.createElement('div');
     p.className = 'builder__particle builder__particle--photo builder__particle--blob-' +
       ((blobIndex % 3) + 1) + (prefersReducedMotion ? '' : ' is-dropping');
@@ -255,34 +263,38 @@
     p.style.zIndex = zIndex;
     p.style.backgroundImage = 'url("' + src + '")';
     p.style.setProperty('--p-rot', (spot.r || 0) + 'deg');
+    p.style.setProperty('--p-z', (depthZ || 0) + 'px');
     if (!prefersReducedMotion) p.style.animationDelay = (delayIndex * 0.05).toFixed(2) + 's';
     return p;
   }
 
   // Dispatches to a photo patch or an icon particle depending on whether
   // this option has a photo — the one place that decision gets made, so
-  // base/meat/salads/extras below don't each need their own branch.
-  function buildIngredientParticles(option, spots, sizePx, zIndex, photoSizePx) {
+  // base/meat/salads/extras below don't each need their own branch. depthZ
+  // is how far up off the bowl's floor this whole category sits (base
+  // lowest, sauce highest, real assembly order) — see the DEPTH_Z table.
+  function buildIngredientParticles(option, spots, sizePx, zIndex, photoSizePx, depthZ) {
     var photos = PHOTO_FOR_ID[option.dataset.id];
     if (photos) {
       return spots.map(function (spot, i) {
-        return makePhotoPatch(photos[i % photos.length], spot, i, photoSizePx || sizePx, zIndex, i);
+        return makePhotoPatch(photos[i % photos.length], spot, i, photoSizePx || sizePx, zIndex, i, depthZ);
       });
     }
     var src = iconSrc(option);
     if (!src) return [];
     return spots.map(function (spot, i) {
-      return makeParticle(src, spot, i, sizePx, zIndex);
+      return makeParticle(src, spot, i, sizePx, zIndex, depthZ);
     });
   }
 
-  function makeDrizzleDot(color, spot, delayIndex) {
+  function makeDrizzleDot(color, spot, delayIndex, depthZ) {
     var dot = document.createElement('div');
     dot.className = 'builder__drizzle-dot';
     dot.style.left = spot.x + '%';
     dot.style.top = spot.y + '%';
     dot.style.zIndex = 4;
     dot.style.background = color;
+    dot.style.setProperty('--p-z', (depthZ || 0) + 'px');
     if (!prefersReducedMotion) dot.style.animationDelay = (delayIndex * 0.04).toFixed(2) + 's';
     return dot;
   }
@@ -402,31 +414,31 @@
     // what it is: the old group cleared, the new one dropped in, not a
     // special case.
     syncGroups('base', base ? [base] : [], function (option) {
-      return buildIngredientParticles(option, BASE_SPOTS, 24, 1, 54);
+      return buildIngredientParticles(option, BASE_SPOTS, 24, 1, 54, DEPTH_Z.base);
     });
 
     syncGroups('meat', meat ? [meat] : [], function (option) {
       // A photo (fewer, bigger patches) doesn't need as many landing spots
       // as scattering small icon copies does.
       var spots = PHOTO_FOR_ID[option.dataset.id] ? MEAT_SPOTS.slice(0, 3) : MEAT_SPOTS;
-      return buildIngredientParticles(option, spots, 27, 2, 52);
+      return buildIngredientParticles(option, spots, 27, 2, 52, DEPTH_Z.meat);
     });
 
     syncGroups('salads', salads, function (option) {
       var all = saladSpots(option);
       var spots = PHOTO_FOR_ID[option.dataset.id] ? all.slice(0, 2) : all;
-      return buildIngredientParticles(option, spots, 20, 3, 42);
+      return buildIngredientParticles(option, spots, 20, 3, 42, DEPTH_Z.salads);
     });
 
     syncGroups('extras', extras, function (option) {
-      return buildIngredientParticles(option, EXTRA_SPOTS, 22, 5, 36);
+      return buildIngredientParticles(option, EXTRA_SPOTS, 22, 5, 36, DEPTH_Z.extras);
     });
 
     syncGroups('sauces', sauces, function (option) {
       var color = swatchColor(option);
       var band = bandForSauce(option.dataset.id);
       return sauceSpots(band).map(function (spot, i) {
-        return makeDrizzleDot(color, spot, i);
+        return makeDrizzleDot(color, spot, i, DEPTH_Z.sauces);
       });
     }, function (id) {
       delete sauceBandOf[id];

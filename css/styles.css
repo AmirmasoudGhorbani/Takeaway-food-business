@@ -1836,10 +1836,13 @@ ul {
   height: 100%;
   min-height: 290px;
   transform-style: preserve-3d;
-  /* Steep — closer to looking down into a bowl than at a tilted stack — but
-     not fully top-down, so it still reads as a 3D object sitting in space. */
-  transform: rotateX(calc(60deg + var(--stack-rx, 0deg)))
-    rotateZ(calc(-5deg + var(--stack-rz, 0deg)));
+  /* More oblique than the first pass (was 60deg/-5deg, tuned close to
+     top-down for legibility) — paired with each ingredient category now
+     sitting at its own actual depth (see --p-z, set in builder.js), so the
+     stacking is visibly a 3D object at rest, not just readable text on a
+     flat disc. */
+  transform: rotateX(calc(50deg + var(--stack-rx, 0deg)))
+    rotateZ(calc(-8deg + var(--stack-rz, 0deg)));
   transition: transform 0.5s var(--ease-out);
 }
 
@@ -1857,15 +1860,21 @@ ul {
   aspect-ratio: 4 / 3;
   border-radius: 46% / 50%;
   transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
   background: radial-gradient(circle at 50% 38%, #332215, #1c120c 78%);
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4), 0 20px 28px rgba(0, 0, 0, 0.55),
     inset 0 10px 18px rgba(0, 0, 0, 0.4), inset 0 -6px 10px rgba(255, 255, 255, 0.04);
-  overflow: hidden;
+  /* No overflow:hidden here on purpose — "overflow" other than visible
+     forces child transforms to flatten regardless of transform-style,
+     which would silently cancel every particle's translateZ below and
+     flatten the whole scene back onto one plane. The *_SPOTS tables in
+     builder.js already keep everything within the bowl's own silhouette. */
 }
 
 .builder__particle-layer {
   position: absolute;
   inset: 0;
+  transform-style: preserve-3d;
 }
 
 /* Every dropped-in ingredient — base, meat, salad, or sauce — is one of
@@ -1875,7 +1884,11 @@ ul {
    doesn't replay the whole scene. */
 .builder__particle {
   position: absolute;
-  transform: translate(-50%, -50%);
+  /* --p-z (set per-category in builder.js: base sits lowest, sauce
+     highest, in real assembly order) is what actually separates the
+     ingredients in depth — without it every piece would sit on the same
+     flat plane regardless of the bowl's own tilt. */
+  transform: translate(-50%, -50%) translateZ(var(--p-z, 0px));
   pointer-events: none;
 }
 
@@ -1912,24 +1925,24 @@ ul {
 @keyframes ingredient-drop {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) translateY(-46px) scale(0.4) rotate(var(--p-rot, 0deg));
+    transform: translate(-50%, -50%) translateZ(var(--p-z, 0px)) translateY(-46px) scale(0.4) rotate(var(--p-rot, 0deg));
   }
   55% {
     opacity: 1;
   }
   78% {
-    transform: translate(-50%, -50%) translateY(3px) scale(1.1) rotate(var(--p-rot, 0deg));
+    transform: translate(-50%, -50%) translateZ(var(--p-z, 0px)) translateY(3px) scale(1.1) rotate(var(--p-rot, 0deg));
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) translateY(0) scale(1) rotate(var(--p-rot, 0deg));
+    transform: translate(-50%, -50%) translateZ(var(--p-z, 0px)) translateY(0) scale(1) rotate(var(--p-rot, 0deg));
   }
 }
 
 .builder__particle.is-leaving {
   transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.5);
+  transform: translate(-50%, -50%) translateZ(var(--p-z, 0px)) scale(0.5);
 }
 
 .builder__drizzle-dot {
@@ -1938,7 +1951,7 @@ ul {
   height: 8px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.25);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(var(--p-z, 0px));
   pointer-events: none;
   animation: ingredient-drop 0.35s var(--ease-out) both;
 }
