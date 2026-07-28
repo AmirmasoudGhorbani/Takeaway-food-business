@@ -109,12 +109,15 @@
   var SLOT_ORDER = ['base', 'meat', 'salad', 'sauce'];
   // Depth (px) each slot sits at along the stack's own Z axis inside
   // .builder__stack-3d — this is what actually separates the layers in
-  // space, not just their visual stacking order. Wide enough apart that
-  // the gap between layers reads clearly even before any hover-tilt.
-  var LAYER_Z = { base: 0, meat: 34, salad: 68, sauce: 102 };
+  // space, not just their visual stacking order. The old 34px increments
+  // only projected to a sliver of vertical separation at this viewing
+  // angle, so each layer mostly hid the one under it — wide enough now
+  // that a layer's own label clears the one above it instead of being
+  // covered by it.
+  var LAYER_Z = { base: 0, meat: 56, salad: 112, sauce: 168 };
   // A picked layer floats in from above its resting depth and fades in;
   // cleared, it floats back up and out the same way.
-  var LAYER_Z_OFFSCREEN = 85;
+  var LAYER_Z_OFFSCREEN = 90;
   var bandEls = {};
   var bandSignatures = {};
 
