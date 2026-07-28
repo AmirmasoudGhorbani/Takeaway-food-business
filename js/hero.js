@@ -49,34 +49,27 @@
   video.pause();
 
   var duration = 0;
-  var ticking = false;
   var seekingNow = false;
   video.addEventListener('seeking', function () { seekingNow = true; });
   video.addEventListener('seeked', function () { seekingNow = false; });
 
   var track = document.getElementById('hero-scroll-track') || hero;
 
-  function applyScrubFrame() {
-    ticking = false;
-    if (!duration || seekingNow) return;
-
-    // A nav-link click can trigger a long native smooth-scroll back through
-    // this pinned track. Seeking the video on every tick of that animation
-    // would compete with it for the main thread and show up as scroll
-    // jank, so scrubbing sits the animation out here and catches up in a
-    // single seek once main.js dispatches 'navscrollend'.
-    if (window.__navScrolling) return;
-
-    // The hero is pinned (position: sticky) inside a taller track, so its
-    // own rect stays put at top:0 while stuck — progress has to come from
-    // how far we've scrolled through the taller track instead. Dividing by
-    // the full track height (not just the sticky portion) spreads the
-    // rotation across the pin phase *and* the natural scroll-off that
-    // follows, so the donor is still visibly turning as the next section
-    // slides into view instead of sitting frozen for that whole stretch.
+  // The hero is pinned (position: sticky) inside a taller track, so its own
+  // rect stays put at top:0 while stuck — progress has to come from how far
+  // we've scrolled through the taller track instead. Dividing by the full
+  // track height (not just the sticky portion) spreads the rotation across
+  // the pin phase *and* the natural scroll-off that follows, so the donor
+  // is still visibly turning as the next section slides into view instead
+  // of sitting frozen for that whole stretch.
+  function computeTargetProgress() {
     var rect = track.getBoundingClientRect();
     var progress = rect.height > 0 ? -rect.top / rect.height : 0;
-    progress = Math.max(0, Math.min(1, progress));
+    return Math.max(0, Math.min(1, progress));
+  }
+
+  function applyProgress(progress) {
+    if (!duration || seekingNow) return;
 
     // The source clip is a boomerang (forward half, then the same frames
     // played in reverse) built for ambient looping, not a real 360° spin —
@@ -97,17 +90,54 @@
     }
   }
 
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(applyScrubFrame);
+  // Eases the displayed frame toward wherever scroll currently is, instead
+  // of snapping straight to it on every scroll tick. Scroll input itself is
+  // naturally uneven (mouse-wheel notches, trackpad momentum), and video
+  // seeking has real decode latency, so a direct 1:1 mapping reads as
+  // stutter — this smooths over both without changing how far a given
+  // amount of scrolling turns the donor.
+  var SMOOTHING = 0.15;
+  var SETTLE_EPSILON = 0.0006;
+  var smoothedProgress = 0;
+  var rafId = null;
+
+  function tick() {
+    rafId = null;
+
+    // A nav-link click can trigger a long native smooth-scroll back through
+    // this pinned track. Seeking the video on every tick of that animation
+    // would compete with it for the main thread and show up as scroll
+    // jank, so scrubbing sits the animation out here and catches up in a
+    // single seek once main.js dispatches 'navscrollend'.
+    if (window.__navScrolling) return;
+
+    var target = computeTargetProgress();
+    var delta = target - smoothedProgress;
+    if (Math.abs(delta) < SETTLE_EPSILON) {
+      smoothedProgress = target;
+      applyProgress(smoothedProgress);
+      return; // caught up — stop ticking until the next scroll restarts it
+    }
+    smoothedProgress += delta * SMOOTHING;
+    applyProgress(smoothedProgress);
+    rafId = requestAnimationFrame(tick);
   }
 
-  window.addEventListener('navscrollend', onScroll);
+  function onScroll() {
+    if (rafId === null) rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('navscrollend', function () {
+    // Catches up in one immediate jump once a nav-triggered scroll settles,
+    // rather than easing all the way from wherever this was paused.
+    smoothedProgress = computeTargetProgress();
+    applyProgress(smoothedProgress);
+  });
 
   function init() {
     duration = video.duration || 0;
-    onScroll();
+    smoothedProgress = computeTargetProgress();
+    applyProgress(smoothedProgress);
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
