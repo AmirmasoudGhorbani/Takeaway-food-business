@@ -101,10 +101,57 @@
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ── Live stack preview ──
+  // Each category keeps one persistent DOM node (rather than the stack being
+  // torn down and rebuilt on every click) so it can animate in when picked,
+  // out when cleared, and pulse in place when the pick within it changes —
+  // a full innerHTML replace can only ever hard-cut between states.
+  var SLOT_ORDER = ['base', 'meat', 'salad', 'sauce'];
+  // Depth (px) each slot sits at along the stack's own Z axis inside
+  // .builder__stack-3d — this is what actually separates the layers in
+  // space, not just their visual stacking order. Wide enough apart that
+  // the gap between layers reads clearly even before any hover-tilt.
+  var LAYER_Z = { base: 0, meat: 34, salad: 68, sauce: 102 };
+  // A picked layer floats in from above its resting depth and fades in;
+  // cleared, it floats back up and out the same way.
+  var LAYER_Z_OFFSCREEN = 85;
+  var bandEls = {};
+  var bandSignatures = {};
+
+  function offscreenTransform(key) {
+    return 'translate(-50%, -50%) translateZ(' + (LAYER_Z[key] + LAYER_Z_OFFSCREEN) + 'px) scale(0.85)';
+  }
+
+  function insertBandInOrder(el, key) {
+    var idx = SLOT_ORDER.indexOf(key);
+    var before = null;
+    for (var i = idx + 1; i < SLOT_ORDER.length; i++) {
+      if (bandEls[SLOT_ORDER[i]]) {
+        before = bandEls[SLOT_ORDER[i]];
+        break;
+      }
+    }
+    if (before) stack3d.insertBefore(el, before);
+    else stack3d.appendChild(el);
+  }
+
   function iconSrc(option) {
     if (!option) return null;
     var img = option.querySelector('.builder__option-icon');
     return img ? img.getAttribute('src') : null;
+  }
+
+  function iconImg(option, size) {
+    var src = iconSrc(option);
+    if (!src) return null;
+    var img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.className = 'builder__band-icon';
+    img.width = size;
+    img.height = size;
+    return img;
   }
 
   function swatchColor(option) {
@@ -112,199 +159,147 @@
     return swatch ? swatch.style.getPropertyValue('--swatch').trim() : '#fff';
   }
 
-  // ── Live "assembly bowl" preview ──
-  // One universal container works for every base (a wrap, a rice box, a
-  // salad bowl, a chip tray) — see the conversation this replaced the old
-  // stacked-band preview from: swapping the container's *shape* per base
-  // would mean every base+topping combination has to be checked in
-  // whichever shape that base landed in. Here only what's scattered inside
-  // ever changes; picking something drops its actual icon into the bowl at
-  // a spot appropriate to what it is, instead of standing in for it with a
-  // flat colored bar.
-  var bowl = document.createElement('div');
-  bowl.className = 'builder__bowl';
-  bowl.setAttribute('aria-hidden', 'true');
-  stack3d.appendChild(bowl);
-
-  var particleLayer = document.createElement('div');
-  particleLayer.className = 'builder__particle-layer';
-  bowl.appendChild(particleLayer);
-
-  // Fixed (not randomized-per-render) scatter tables, in % of the bowl's
-  // own box. Base gets the most/largest points since it's filling the
-  // whole floor; meat piles centrally; each salad gets its own fixed spot
-  // around the rim (see saladSpots) so multiple salads read as separate
-  // little piles instead of one blob; sauce is a thin drizzled trail
-  // (see sauceSpots), drawn last/on top, same as real assembly order.
-  var BASE_SPOTS = [
-    { x: 24, y: 34, r: -12 }, { x: 38, y: 24, r: 18 }, { x: 52, y: 21, r: -6 },
-    { x: 66, y: 26, r: 10 }, { x: 78, y: 36, r: -20 }, { x: 82, y: 52, r: 14 },
-    { x: 75, y: 67, r: -8 }, { x: 60, y: 75, r: 6 }, { x: 44, y: 76, r: -16 },
-    { x: 28, y: 68, r: 12 }, { x: 19, y: 52, r: -4 }, { x: 31, y: 49, r: 20 },
-    { x: 50, y: 50, r: -10 }, { x: 66, y: 49, r: 8 }, { x: 45, y: 36, r: -18 },
-    { x: 58, y: 61, r: 16 }
-  ];
-  var MEAT_SPOTS = [
-    { x: 44, y: 45, r: -10 }, { x: 57, y: 43, r: 16 }, { x: 50, y: 55, r: -6 },
-    { x: 38, y: 57, r: 12 }, { x: 62, y: 58, r: -14 }, { x: 50, y: 39, r: 8 }
-  ];
-  // 5 salad options, spread 72deg apart around the rim.
-  var SALAD_ANGLES = { onion: 250, parsley: 322, tomato: 34, mixedcabbage: 106, lettuce: 178 };
-  var SALAD_RX = 39, SALAD_RY = 33;
-  var SALAD_JITTER = [{ x: -5, y: -3, r: -16 }, { x: 5, y: 4, r: 10 }, { x: -2, y: 6, r: 24 }];
-
-  function saladSpots(option) {
-    var angle = SALAD_ANGLES[option.dataset.id];
-    if (angle === undefined) return [{ x: 50, y: 50, r: 0 }];
-    var rad = (angle * Math.PI) / 180;
-    var cx = 50 + Math.cos(rad) * SALAD_RX;
-    var cy = 50 + Math.sin(rad) * SALAD_RY;
-    return SALAD_JITTER.map(function (j) {
-      return { x: cx + j.x, y: cy + j.y, r: j.r };
-    });
-  }
-
-  // A few extras (Cheese, Add Falafel) get their own small cluster near the
-  // meat, since that's realistically where they'd sit — extras weren't
-  // shown in the bowl at all before.
-  var EXTRA_SPOTS = [
-    { x: 46, y: 66, r: -10 }, { x: 58, y: 68, r: 14 }, { x: 40, y: 60, r: 6 }, { x: 62, y: 60, r: -8 }
-  ];
-
-  // How far up off the bowl's own floor (px along the 3D scene's Z axis,
-  // not screen pixels) each category actually sits — real assembly order,
-  // base on the bottom working up to sauce drizzled on top. This is what
-  // makes the tilt show genuine depth between the categories instead of
-  // everything sitting flush on one plane.
-  var DEPTH_Z = { base: 0, meat: 9, salads: 15, extras: 19, sauces: 24 };
-
-  // Each active sauce gets its own horizontal wavy trail, stacked in bands
-  // so up to 3 sauces don't just draw over each other.
-  function sauceSpots(band) {
-    var y = 20 + band * 12;
-    var pts = [];
-    var count = 7;
-    for (var i = 0; i < count; i++) {
-      var t = i / (count - 1);
-      pts.push({ x: 15 + t * 70, y: y + (i % 2 === 0 ? -3 : 3) });
-    }
-    return pts;
-  }
-
-  // Sauces need a stable trail band per option, not just their position in
-  // the active array — an existing sauce's dots would otherwise jump to a
-  // different band whenever another sauce gets added earlier in DOM order
-  // (bands are assigned by array index, but the array is in fixed markup
-  // order, not pick order). Each sauce keeps whichever of the 3 bands it's
-  // first given until it's cleared, freeing that band back up.
-  var sauceBandOf = {};
-
-  function bandForSauce(id) {
-    if (sauceBandOf[id] !== undefined) return sauceBandOf[id];
-    var used = {};
-    Object.keys(sauceBandOf).forEach(function (k) { used[sauceBandOf[k]] = true; });
-    for (var b = 0; b < 3; b++) {
-      if (!used[b]) {
-        sauceBandOf[id] = b;
-        return b;
-      }
-    }
-    sauceBandOf[id] = 0; // shouldn't happen — sauces are capped at 3 active
-    return 0;
-  }
-
-  var particleGroups = {}; // "prefix:optionId" -> element[]
-
-  function makeParticle(src, spot, delayIndex, sizePx, zIndex, depthZ) {
-    var p = document.createElement('div');
-    p.className = 'builder__particle' + (prefersReducedMotion ? '' : ' is-dropping');
-    p.style.left = spot.x + '%';
-    p.style.top = spot.y + '%';
-    p.style.zIndex = zIndex;
-    p.style.setProperty('--p-rot', (spot.r || 0) + 'deg');
-    p.style.setProperty('--p-z', (depthZ || 0) + 'px');
-    if (!prefersReducedMotion) p.style.animationDelay = (delayIndex * 0.05).toFixed(2) + 's';
-    var img = document.createElement('img');
-    img.src = src;
-    img.alt = '';
-    img.width = sizePx;
-    img.height = sizePx;
-    p.appendChild(img);
-    return p;
-  }
-
-  // A few ingredients have a real close-up photo (assets/ingredients/,
-  // supplied directly rather than drawn/iconified) instead of the flat
-  // icon pack. Those render as a couple of larger cropped patches rather
-  // than many small icon copies — fewer, bigger pieces read as an actual
-  // scoop of food; everything without a photo yet keeps using its icon.
-  // Values are arrays so "Mixed" can cycle between the chicken and lamb
-  // photos across its patches instead of needing its own special case.
-  var PHOTO_FOR_ID = {
-    falafel: ['assets/ingredients/falafel.webp'],
-    falafelx: ['assets/ingredients/falafel.webp'], // "Add Falafel" extra — same food as the meat option
-    cheese: ['assets/ingredients/cheese.webp'],
-    chicken: ['assets/ingredients/chicken.webp'],
-    lamb: ['assets/ingredients/lamb.webp'],
-    mixed: ['assets/ingredients/chicken.webp', 'assets/ingredients/lamb.webp'],
-    tomato: ['assets/ingredients/tomato.webp'],
-    parsley: ['assets/ingredients/parsley.webp'],
-    mixedcabbage: ['assets/ingredients/mixedcabbage.webp']
-  };
-
-  function makePhotoPatch(src, spot, delayIndex, sizePx, zIndex, blobIndex, depthZ) {
-    var p = document.createElement('div');
-    p.className = 'builder__particle builder__particle--photo builder__particle--blob-' +
-      ((blobIndex % 3) + 1) + (prefersReducedMotion ? '' : ' is-dropping');
-    p.style.left = spot.x + '%';
-    p.style.top = spot.y + '%';
-    p.style.width = sizePx + 'px';
-    p.style.height = sizePx + 'px';
-    p.style.zIndex = zIndex;
-    p.style.backgroundImage = 'url("' + src + '")';
-    p.style.setProperty('--p-rot', (spot.r || 0) + 'deg');
-    p.style.setProperty('--p-z', (depthZ || 0) + 'px');
-    if (!prefersReducedMotion) p.style.animationDelay = (delayIndex * 0.05).toFixed(2) + 's';
-    return p;
-  }
-
-  // Dispatches to a photo patch or an icon particle depending on whether
-  // this option has a photo — the one place that decision gets made, so
-  // base/meat/salads/extras below don't each need their own branch. depthZ
-  // is how far up off the bowl's floor this whole category sits (base
-  // lowest, sauce highest, real assembly order) — see the DEPTH_Z table.
-  function buildIngredientParticles(option, spots, sizePx, zIndex, photoSizePx, depthZ) {
-    var photos = PHOTO_FOR_ID[option.dataset.id];
-    if (photos) {
-      return spots.map(function (spot, i) {
-        return makePhotoPatch(photos[i % photos.length], spot, i, photoSizePx || sizePx, zIndex, i, depthZ);
-      });
-    }
-    var src = iconSrc(option);
-    if (!src) return [];
-    return spots.map(function (spot, i) {
-      return makeParticle(src, spot, i, sizePx, zIndex, depthZ);
-    });
-  }
-
-  function makeDrizzleDot(color, spot, delayIndex, depthZ) {
-    var dot = document.createElement('div');
-    dot.className = 'builder__drizzle-dot';
-    dot.style.left = spot.x + '%';
-    dot.style.top = spot.y + '%';
-    dot.style.zIndex = 4;
-    dot.style.background = color;
-    dot.style.setProperty('--p-z', (depthZ || 0) + 'px');
-    if (!prefersReducedMotion) dot.style.animationDelay = (delayIndex * 0.04).toFixed(2) + 's';
+  function swatchDot(option) {
+    var dot = document.createElement('span');
+    dot.className = 'builder__band-dot';
+    dot.style.background = swatchColor(option);
     return dot;
   }
 
-  function removeParticleEl(el) {
+  // ── Layer texture ──
+  // A flat gradient pill reads as "a colored bar labelled SALAD", not as
+  // salad. Tiling the ingredient's own icon across the band (single icon
+  // for base/meat, an interleaved multi-icon weave for salad, a speckled
+  // dot drizzle in each active sauce's own color for sauce — sauces have no
+  // icon, only a swatch colour) gives each layer a surface that actually
+  // looks like what it is, not just a color standing in for it.
+  var TILE = 36;
+
+  function singleIconTexture(src) {
+    if (!src) return null;
+    return {
+      backgroundImage: 'url("' + src + '")',
+      backgroundSize: TILE + 'px ' + TILE + 'px',
+      backgroundRepeat: 'repeat',
+      backgroundPosition: '0 0'
+    };
+  }
+
+  function multiIconTexture(srcs) {
+    srcs = srcs.filter(Boolean);
+    if (!srcs.length) return null;
+    var images = [], sizes = [], repeats = [], positions = [];
+    srcs.forEach(function (src, i) {
+      var stagger = (i * TILE) / srcs.length;
+      images.push('url("' + src + '")');
+      sizes.push(TILE + 'px ' + TILE + 'px');
+      repeats.push('repeat');
+      positions.push(stagger.toFixed(1) + 'px ' + (stagger * 0.6).toFixed(1) + 'px');
+    });
+    return {
+      backgroundImage: images.join(', '),
+      backgroundSize: sizes.join(', '),
+      backgroundRepeat: repeats.join(', '),
+      backgroundPosition: positions.join(', ')
+    };
+  }
+
+  function drizzleTexture(colors) {
+    if (!colors.length) return null;
+    var layers = colors.map(function (color, i) {
+      var ox = i * 12;
+      var oy = i * 8;
+      return 'repeating-radial-gradient(circle at ' + ox + 'px ' + oy + 'px, ' +
+        color + ' 0 4px, transparent 4px 19px)';
+    });
+    return { backgroundImage: layers.join(', ') };
+  }
+
+  function clearTexture(el) {
+    el.style.backgroundImage = '';
+    el.style.backgroundSize = '';
+    el.style.backgroundRepeat = '';
+    el.style.backgroundPosition = '';
+  }
+
+  function paintBand(el, opts) {
+    el.style.setProperty('--band-c1', opts.c1);
+    el.style.setProperty('--band-c2', opts.c2);
+    el.style.setProperty('--band-txt', opts.txt);
+    el.style.setProperty('--band-w', opts.width + '%');
+    el.innerHTML = '';
+
+    var texture = document.createElement('span');
+    texture.className = 'builder__band-texture';
+    texture.setAttribute('aria-hidden', 'true');
+    if (opts.texture) {
+      Object.keys(opts.texture).forEach(function (prop) {
+        texture.style[prop] = opts.texture[prop];
+      });
+    } else {
+      clearTexture(texture);
+    }
+    el.appendChild(texture);
+
+    var content = document.createElement('span');
+    content.className = 'builder__band-content';
+    if (opts.icon) content.appendChild(opts.icon);
+    var label = document.createElement('span');
+    label.className = 'builder__band-label';
+    label.textContent = opts.label;
+    content.appendChild(label);
+    if (opts.miniIcons && opts.miniIcons.length) {
+      var row = document.createElement('span');
+      row.className = 'builder__band-minis';
+      opts.miniIcons.forEach(function (m) {
+        row.appendChild(m);
+      });
+      content.appendChild(row);
+    }
+    el.appendChild(content);
+  }
+
+  function showBand(key, signature, opts) {
+    var el = bandEls[key];
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'builder__band';
+      el.dataset.slot = key;
+      el.style.setProperty('--layer-z', LAYER_Z[key] + 'px');
+      paintBand(el, opts);
+      bandEls[key] = el;
+      bandSignatures[key] = signature;
+      el.style.opacity = '0';
+      el.style.transform = offscreenTransform(key);
+      insertBandInOrder(el, key);
+      void el.offsetWidth; // force layout so the reset below actually transitions
+      requestAnimationFrame(function () {
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+      return;
+    }
+    if (bandSignatures[key] === signature) return;
+    bandSignatures[key] = signature;
+    paintBand(el, opts);
+    if (!prefersReducedMotion) {
+      el.classList.remove('is-pulsing');
+      void el.offsetWidth;
+      el.classList.add('is-pulsing');
+    }
+  }
+
+  function hideBand(key) {
+    var el = bandEls[key];
+    if (!el) return;
+    delete bandEls[key];
+    delete bandSignatures[key];
     if (prefersReducedMotion) {
       el.remove();
       return;
     }
-    el.classList.add('is-leaving');
+    el.style.opacity = '0';
+    el.style.transform = offscreenTransform(key);
     var done = false;
     function finish() {
       if (done) return;
@@ -313,39 +308,7 @@
       el.remove();
     }
     el.addEventListener('transitionend', finish);
-    setTimeout(finish, 300); // safety net if transitionend never fires
-  }
-
-  function clearGroup(key) {
-    var els = particleGroups[key];
-    if (!els) return;
-    els.forEach(removeParticleEl);
-    delete particleGroups[key];
-  }
-
-  // Diffs the active options in one category against what's currently on
-  // the plate: removes groups for options no longer picked, leaves already-
-  // settled ones alone (re-picking something already there shouldn't replay
-  // its drop), and drops in anything newly active. buildFn(option, index)
-  // returns the array of particle elements for that one option.
-  function syncGroups(prefix, activeOptions, buildFn, onRemove) {
-    var activeIds = {};
-    activeOptions.forEach(function (o) { activeIds[o.dataset.id] = true; });
-    Object.keys(particleGroups).forEach(function (key) {
-      if (key.indexOf(prefix + ':') !== 0) return;
-      var id = key.slice(prefix.length + 1);
-      if (!activeIds[id]) {
-        clearGroup(key);
-        if (onRemove) onRemove(id);
-      }
-    });
-    activeOptions.forEach(function (option, i) {
-      var key = prefix + ':' + option.dataset.id;
-      if (particleGroups[key]) return;
-      var els = buildFn(option, i);
-      els.forEach(function (el) { particleLayer.appendChild(el); });
-      particleGroups[key] = els;
-    });
+    setTimeout(finish, 420); // safety net if transitionend never fires
   }
 
   // ── Look around the stack ──
@@ -407,42 +370,62 @@
     var sauces = getActive('sauces');
     var extras = getActive('extras');
 
-    // ── bowl preview ──
-    // Base and meat are single-select, but run through the same diffing
-    // machinery as the multi-select salads/sauces below (just called with a
-    // 0-or-1-item array) — swapping Chicken for Lamb then reads as exactly
-    // what it is: the old group cleared, the new one dropped in, not a
-    // special case.
-    syncGroups('base', base ? [base] : [], function (option) {
-      return buildIngredientParticles(option, BASE_SPOTS, 24, 1, 54, DEPTH_Z.base);
-    });
-
-    syncGroups('meat', meat ? [meat] : [], function (option) {
-      // A photo (fewer, bigger patches) doesn't need as many landing spots
-      // as scattering small icon copies does.
-      var spots = PHOTO_FOR_ID[option.dataset.id] ? MEAT_SPOTS.slice(0, 3) : MEAT_SPOTS;
-      return buildIngredientParticles(option, spots, 27, 2, 52, DEPTH_Z.meat);
-    });
-
-    syncGroups('salads', salads, function (option) {
-      var all = saladSpots(option);
-      var spots = PHOTO_FOR_ID[option.dataset.id] ? all.slice(0, 2) : all;
-      return buildIngredientParticles(option, spots, 20, 3, 42, DEPTH_Z.salads);
-    });
-
-    syncGroups('extras', extras, function (option) {
-      return buildIngredientParticles(option, EXTRA_SPOTS, 22, 5, 36, DEPTH_Z.extras);
-    });
-
-    syncGroups('sauces', sauces, function (option) {
-      var color = swatchColor(option);
-      var band = bandForSauce(option.dataset.id);
-      return sauceSpots(band).map(function (spot, i) {
-        return makeDrizzleDot(color, spot, i, DEPTH_Z.sauces);
+    // ── stack preview ──
+    if (base) {
+      showBand('base', base.dataset.id, {
+        c1: base.dataset.c1,
+        c2: base.dataset.c2,
+        txt: base.dataset.txt,
+        label: base.dataset.band,
+        width: 100,
+        icon: iconImg(base, 16),
+        texture: singleIconTexture(iconSrc(base))
       });
-    }, function (id) {
-      delete sauceBandOf[id];
-    });
+    } else {
+      hideBand('base');
+    }
+
+    if (meat) {
+      showBand('meat', meat.dataset.id, {
+        c1: meat.dataset.c1,
+        c2: meat.dataset.c2,
+        txt: meat.dataset.txt,
+        label: meat.dataset.band,
+        width: 88,
+        icon: iconImg(meat, 16),
+        texture: singleIconTexture(iconSrc(meat))
+      });
+    } else {
+      hideBand('meat');
+    }
+
+    if (salads.length) {
+      showBand('salad', salads.map(function (o) { return o.dataset.id; }).join(','), {
+        c1: '#5a8f3a',
+        c2: '#3f6b27',
+        txt: '#eafbd9',
+        label: 'SALAD',
+        width: 80,
+        miniIcons: salads.map(function (o) { return iconImg(o, 14); }).filter(Boolean),
+        texture: multiIconTexture(salads.map(iconSrc))
+      });
+    } else {
+      hideBand('salad');
+    }
+
+    if (sauces.length) {
+      showBand('sauce', sauces.map(function (o) { return o.dataset.id; }).join(','), {
+        c1: '#f0c24a',
+        c2: '#e89a2e',
+        txt: '#5a3a10',
+        label: 'SAUCE',
+        width: 72,
+        miniIcons: sauces.map(swatchDot),
+        texture: drizzleTexture(sauces.map(swatchColor))
+      });
+    } else {
+      hideBand('sauce');
+    }
 
     // ── summary ──
     summary.innerHTML = '';
