@@ -1639,7 +1639,7 @@ ul {
 
 .builder__grid {
   display: grid;
-  grid-template-columns: 1.25fr 0.85fr;
+  grid-template-columns: 1fr 1fr;
   gap: 28px;
   align-items: start;
 }
@@ -1787,185 +1787,212 @@ ul {
   box-shadow: var(--shadow-lg);
 }
 
-.builder__card-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--text-dim);
+.builder__card-head {
   margin-bottom: 16px;
 }
 
-.builder__stack {
-  min-height: 400px;
-  border-radius: var(--radius-md);
-  background: radial-gradient(
-      circle at 50% 60%,
-      rgba(240, 167, 46, 0.18),
-      transparent 60%
-    ),
-    linear-gradient(160deg, #241811, #160f0b);
-  position: relative;
-  padding: 18px;
-  /* The vanishing point for the layers below — .builder__stack-3d is the
-     thing that actually rotates into that space. */
-  perspective: 1100px;
+.builder__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember-light);
+  margin-bottom: 4px;
 }
 
-.builder__stack-empty {
+.builder__dish-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-cream);
+  line-height: 1.15;
+  transition: opacity 0.2s var(--ease-out);
+}
+
+.builder__dish-subtitle {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: opacity 0.2s var(--ease-out);
+}
+
+/* The preview is a real photo of the finished dish (swapped per base
+   selection) with a small circular "cutaway" window collaging the actual
+   ingredient photos currently picked — reads as the real order, not an
+   abstract diagram of it. */
+.builder__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: radial-gradient(
+      circle at 50% 32%,
+      rgba(240, 167, 46, 0.28),
+      transparent 62%
+    ),
+    linear-gradient(160deg, #241811, #160f0b);
+  box-shadow: 0 26px 44px -20px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(245, 237, 224, 0.06);
+}
+
+.builder__photo-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.28s var(--ease-out);
+}
+
+.builder__photo-base.is-swapping {
+  opacity: 0;
+}
+
+.builder__cutaway {
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+  width: 42%;
+  max-width: 156px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(245, 237, 224, 0.88);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+  background: #1a120c;
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.builder__cutaway-collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.builder__cutaway-tile {
+  position: relative;
+  overflow: hidden;
+  background: var(--tile-bg, #2a1c12);
+}
+
+.builder__cutaway-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.builder__cutaway-icon {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  opacity: 0.08;
-  pointer-events: none;
 }
-.builder__stack-empty .icon {
-  width: 40%;
-  height: 40%;
+
+.builder__cutaway-icon .icon {
+  width: 55%;
+  height: 55%;
   color: var(--text-cream);
+  opacity: 0.85;
 }
 
-/* A real 3D scene, not a stack of flat cards: each .builder__band below is
-   positioned by translateZ along this group's own axis, so tilting it
-   (rest angle here, cursor-driven nudge from builder.js's --stack-rx/
-   --stack-rz, both inherited down rather than set on this element
-   directly) reveals actual depth between the layers, not just a picture of
-   depth. */
-.builder__stack-3d {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 350px;
-  transform-style: preserve-3d;
-  /* Flatter still than the previous pass (was 46deg/-9deg) — the wider
-     LAYER_Z gaps in builder.js need a shallower angle to actually pay off
-     as vertical separation on screen, or the layers just stack closer
-     together in depth without spreading apart in the view. */
-  transform: rotateX(calc(38deg + var(--stack-rx, 0deg)))
-    rotateZ(calc(-9deg + var(--stack-rz, 0deg)));
-  transition: transform 0.5s var(--ease-out);
-}
-
-.builder__band {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  width: var(--band-w, 100%);
-  max-width: 310px;
-  min-height: 60px;
-  border-radius: 999px;
-  background: linear-gradient(145deg, var(--band-c1), var(--band-c2));
-  /* A harder, closer shadow than a flat card would need — at this camera
-     angle it's standing in for the layer's own visible edge/thickness
-     underneath it, not just contact shadow on the surface below. */
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 16px 24px rgba(0, 0, 0, 0.5);
-  overflow: hidden; /* clips .builder__band-texture's tiling to the pill */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px));
-  backface-visibility: hidden;
-  /* Bands are added/removed/updated as persistent per-slot elements (see
-     builder.js) rather than a full innerHTML rebuild, so opacity/transform
-     here are what animate them in, out, and on content change instead of a
-     hard flash-and-replace. */
-  transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
-}
-
-/* A tiled/scattered repeat of the picked ingredient's own icon (or, for
-   sauces — no icon, just a swatch colour — a speckled dot drizzle) so the
-   layer's surface actually reads as that food instead of standing in for
-   it with a flat color. Set per-band in builder.js's paintBand(). */
-.builder__band-texture {
-  position: absolute;
-  inset: 0;
-  opacity: 0.62;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-}
-
-.builder__band-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 20px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  color: var(--band-txt);
-  /* A dark chip behind the label rather than relying on contrast against
-     the busier textured surface underneath. */
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 999px;
-}
-
-.builder__band-icon {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.builder__band-minis {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.builder__band-minis .builder__band-icon {
-  width: 19px;
-  height: 19px;
-}
-
-.builder__band-dot {
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  flex-shrink: 0;
-}
-
-@keyframes builder-band-pulse {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px)) scale(1);
+@keyframes builder-cutaway-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  35% {
-    transform: translate(-50%, -50%) translateZ(var(--layer-z, 0px)) scale(1.08);
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.builder__band.is-pulsing {
-  animation: builder-band-pulse 0.4s var(--ease-out);
+.builder__cutaway-tile {
+  animation: builder-cutaway-in 0.3s var(--ease-out) backwards;
 }
 
+/* Each summary row is a small card: an icon thumbnail, an uppercase
+   category label over the picked value, and a "Change" link that jumps
+   straight back to that step above instead of leaving the shopper to
+   scroll and hunt for it. */
 .builder__summary {
   margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   min-height: 30px;
 }
 
 .builder__summary-row {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 12px;
-  font-size: 0.82rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 237, 224, 0.03);
+  border: 1px solid var(--border);
 }
 
-.builder__summary-row dt {
+.builder__summary-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(240, 167, 46, 0.14);
+}
+
+.builder__summary-icon img {
+  width: 18px;
+  height: 18px;
+}
+
+.builder__summary-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.builder__summary-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--text-dim);
 }
-.builder__summary-row dd {
-  color: var(--text-muted);
+
+.builder__summary-value {
+  font-size: 0.85rem;
   font-weight: 600;
-  text-align: right;
+  color: var(--text-cream);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.builder__summary-change {
+  flex: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--ember-light);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+}
+
+.builder__summary-change:hover,
+.builder__summary-change:focus-visible {
+  color: var(--text-cream);
+  background: rgba(232, 83, 31, 0.18);
 }
 
 .builder__total-row {
@@ -2012,13 +2039,90 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .builder__stack-3d,
-  .builder__band {
+  .builder__photo-base,
+  .builder__cutaway {
     transition: none;
   }
-  .builder__band.is-pulsing,
+  .builder__cutaway-tile {
+    animation: none;
+  }
   .builder__total.is-bumping {
     animation: none;
+  }
+}
+
+/* ========================================
+   STICKY MOBILE BUILDER TOTAL BAR
+   ======================================== */
+.builder-mobile-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .builder-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 998;
+    padding: 12px clamp(16px, 5vw, 28px)
+      calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(
+      to top,
+      rgba(13, 10, 9, 0.97),
+      rgba(13, 10, 9, 0.85)
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    transform: translateY(100%);
+    transition: transform var(--duration-slow) var(--ease-plastic);
+  }
+
+  .builder-mobile-bar.is-visible {
+    transform: translateY(0);
+  }
+
+  .builder-mobile-bar__total {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .builder-mobile-bar__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+
+  .builder-mobile-bar__amount {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--gold);
+  }
+
+  .builder-mobile-bar .btn {
+    flex: none;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Never stack the section-scoped bar on top of the site-wide one. */
+  body.builder-bar-active .sticky-order {
+    transform: translateY(100%) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-mobile-bar {
+    transition: none;
   }
 }
 

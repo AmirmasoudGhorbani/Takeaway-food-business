@@ -2714,15 +2714,33 @@
 
             <div class="builder__preview reveal">
               <div class="builder__card">
-                <div class="builder__card-label">Your Kebab</div>
-                <div class="builder__stack" id="builder-stack">
-                  <span class="builder__stack-empty" aria-hidden="true"
-                    ><svg class="icon" aria-hidden="true">
-                      <use href="#icon-wrap"></use></svg
-                  ></span>
-                  <div class="builder__stack-3d" id="builder-stack-3d"></div>
+                <div class="builder__card-head">
+                  <p class="builder__eyebrow">Your Order</p>
+                  <h3 class="builder__dish-title" id="builder-dish-title">
+                    Your Chicken Doner Kebab
+                  </h3>
+                  <p class="builder__dish-subtitle" id="builder-dish-subtitle">
+                    Flatbread &middot; Tomato &middot; Lettuce &middot; Garlic
+                    Yoghurt
+                  </p>
                 </div>
-                <dl class="builder__summary" id="builder-summary"></dl>
+
+                <div class="builder__photo" id="builder-photo">
+                  <img
+                    class="builder__photo-base"
+                    id="builder-photo-base"
+                    src="assets/images/donor-kebab.webp"
+                    alt="A finished kebab matching your current selections"
+                  />
+                  <div class="builder__cutaway" id="builder-cutaway">
+                    <div
+                      class="builder__cutaway-collage"
+                      id="builder-cutaway-collage"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="builder__summary" id="builder-summary"></div>
                 <div class="builder__total-row">
                   <span class="builder__total-label">Total</span>
                   <span class="builder__total" id="builder-total">$18.00</span>
@@ -2735,6 +2753,18 @@
           </div>
         </div>
       </section>
+
+      <!-- Mobile-only persistent total + CTA, pinned while Build Your Kebab
+           is in view, so the price/CTA are never scrolled off mid-build. -->
+      <div class="builder-mobile-bar" id="builder-mobile-bar" inert>
+        <div class="builder-mobile-bar__total">
+          <span class="builder-mobile-bar__label">Total</span>
+          <span class="builder-mobile-bar__amount" id="builder-mobile-total"
+            >$18.00</span
+          >
+        </div>
+        <a href="tel:+6494126030" class="btn btn--ember">Add kebab to order</a>
+      </div>
 
       <!-- ========== REVIEWS ========== -->
       <section class="reviews" id="reviews">
