@@ -1,7 +1,7 @@
 /* ========================================
    KEBAB STATION KUMEU — Build Your Kebab
    Reads option data-attributes, renders a
-   live photo preview + summary + running total
+   live summary + running total
 
    Pricing matches the real menu exactly, which prices Falafel/Super
    differently per base (e.g. Falafel is -$1 on a Wrap but -$2 on Rice) —
@@ -14,9 +14,6 @@
 (function () {
   'use strict';
 
-  var photoBase = document.getElementById('builder-photo-base');
-  var cutaway = document.getElementById('builder-cutaway');
-  var collage = document.getElementById('builder-cutaway-collage');
   var dishTitle = document.getElementById('builder-dish-title');
   var dishSubtitle = document.getElementById('builder-dish-subtitle');
   var summary = document.getElementById('builder-summary');
@@ -24,7 +21,7 @@
   var mobileBar = document.getElementById('builder-mobile-bar');
   var mobileTotalEl = document.getElementById('builder-mobile-total');
   var builderSection = document.getElementById('builder');
-  if (!photoBase || !cutaway || !collage || !summary || !totalEl) return;
+  if (!summary || !totalEl) return;
 
   var groups = document.querySelectorAll('.builder__group');
 
@@ -107,57 +104,6 @@
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── Finished-dish photo, swapped per base ──
-  // A real photo of the actual dish reads as the order far more directly
-  // than an abstract diagram — each base has its own genuine photo of that
-  // dish (wrap-in-hand, rice box, loaded chips, salad bowl), crossfaded in
-  // rather than hard-cut so a base change doesn't flash.
-  var BASE_PHOTOS = {
-    wrap: 'assets/images/donor-kebab.webp',
-    rice: 'assets/images/donor-on-rice.webp',
-    chips: 'assets/images/donor-on-chips.webp',
-    salad: 'assets/images/menu-salad.webp'
-  };
-
-  function setBasePhoto(src) {
-    if (photoBase.dataset.src === src) return;
-    photoBase.dataset.src = src;
-    if (prefersReducedMotion) {
-      photoBase.src = src;
-      return;
-    }
-    photoBase.classList.add('is-swapping');
-    var done = false;
-    function swap() {
-      if (done) return;
-      done = true;
-      photoBase.removeEventListener('transitionend', swap);
-      photoBase.src = src;
-      requestAnimationFrame(function () {
-        photoBase.classList.remove('is-swapping');
-      });
-    }
-    photoBase.addEventListener('transitionend', swap);
-    setTimeout(swap, 320); // safety net if transitionend never fires
-  }
-
-  // ── Cutaway ingredient window ──
-  // A small round window over the dish photo, collaging real photos of
-  // whichever ingredients are actually picked — falls back to that
-  // option's own icon on a matching swatch colour for the handful of
-  // ingredients that don't have their own close-up photo yet.
-  var INGREDIENT_PHOTOS = {
-    chicken: 'assets/ingredients/chicken.webp',
-    lamb: 'assets/ingredients/lamb.webp',
-    mixed: 'assets/ingredients/chicken.webp',
-    falafel: 'assets/ingredients/falafel.webp',
-    falafelx: 'assets/ingredients/falafel.webp',
-    tomato: 'assets/ingredients/tomato.webp',
-    mixedcabbage: 'assets/ingredients/mixedcabbage.webp',
-    parsley: 'assets/ingredients/parsley.webp',
-    cheese: 'assets/ingredients/cheese.webp'
-  };
-
   function iconSrc(option) {
     if (!option) return null;
     var img = option.querySelector('.builder__option-icon');
@@ -195,58 +141,6 @@
     return dot;
   }
 
-  function cutawayItem(option, fallbackBg) {
-    return {
-      photo: INGREDIENT_PHOTOS[option.dataset.id] || null,
-      icon: iconImg(option, 20),
-      bg: option.dataset.c1 || swatchColor(option) || fallbackBg
-    };
-  }
-
-  var lastCutawaySignature = null;
-
-  function renderCutaway(items, signature) {
-    if (signature === lastCutawaySignature) return;
-    lastCutawaySignature = signature;
-
-    collage.innerHTML = '';
-    if (!items.length) {
-      cutaway.style.opacity = '0';
-      cutaway.style.transform = 'scale(0.85)';
-      return;
-    }
-    cutaway.style.opacity = '';
-    cutaway.style.transform = '';
-    var n = items.length;
-    items.slice(0, 4).forEach(function (item, i) {
-      var tile = document.createElement('div');
-      tile.className = 'builder__cutaway-tile';
-      tile.style.animationDelay = (i * 40) + 'ms';
-      if (n === 1) {
-        tile.style.gridColumn = '1 / span 2';
-        tile.style.gridRow = '1 / span 2';
-      } else if (n === 2) {
-        tile.style.gridRow = '1 / span 2';
-      } else if (n === 3 && i === 2) {
-        tile.style.gridColumn = '1 / span 2';
-      }
-      if (item.photo) {
-        var img = document.createElement('img');
-        img.src = item.photo;
-        img.alt = '';
-        img.setAttribute('aria-hidden', 'true');
-        tile.appendChild(img);
-      } else {
-        tile.style.setProperty('--tile-bg', item.bg || '#2a1c12');
-        var wrap = document.createElement('span');
-        wrap.className = 'builder__cutaway-icon';
-        if (item.icon) wrap.appendChild(item.icon);
-        tile.appendChild(wrap);
-      }
-      collage.appendChild(tile);
-    });
-  }
-
   function bumpTotal(text) {
     var changed = totalEl.textContent !== text;
     totalEl.textContent = text;
@@ -260,7 +154,9 @@
   // ── Summary rows ──
   // Each row is its own small card: an icon thumbnail, the category label
   // over the picked value, and a "Change" link that jumps straight back up
-  // to that step instead of leaving the shopper to scroll and hunt.
+  // to that step instead of leaving the shopper to scroll and hunt. This is
+  // the only place selections are shown — once you've picked something, it
+  // shows up here with the running total, nothing else.
   function jumpToGroup(groupName) {
     var group = document.querySelector('.builder__group[data-group="' + groupName + '"]');
     if (!group) return;
@@ -352,20 +248,6 @@
     var salads = getActive('salads');
     var sauces = getActive('sauces');
     var extras = getActive('extras');
-
-    // ── dish photo ──
-    setBasePhoto(BASE_PHOTOS[base ? base.dataset.id : 'wrap'] || BASE_PHOTOS.wrap);
-
-    // ── cutaway collage: meat first, then salads, up to 4 tiles ──
-    var cutawaySalads = salads.slice(0, 3);
-    var cutawayItems = [];
-    if (meat) cutawayItems.push(cutawayItem(meat, '#8a3f22'));
-    cutawaySalads.forEach(function (o) {
-      cutawayItems.push(cutawayItem(o, '#3f6b27'));
-    });
-    var cutawaySignature = (meat ? meat.dataset.id : '') + '|' +
-      cutawaySalads.map(function (o) { return o.dataset.id; }).join(',');
-    renderCutaway(cutawayItems, cutawaySignature);
 
     // ── dynamic title + subtitle ──
     var meatName = meat ? cleanName(meat.dataset.name) : '';

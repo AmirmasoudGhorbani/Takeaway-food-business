@@ -1639,7 +1639,7 @@ ul {
 
 .builder__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.3fr 0.8fr;
   gap: 28px;
   align-items: start;
 }
@@ -1817,105 +1817,6 @@ ul {
   transition: opacity 0.2s var(--ease-out);
 }
 
-/* The preview is a real photo of the finished dish (swapped per base
-   selection) with a small circular "cutaway" window collaging the actual
-   ingredient photos currently picked — reads as the real order, not an
-   abstract diagram of it. */
-.builder__photo {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: radial-gradient(
-      circle at 50% 32%,
-      rgba(240, 167, 46, 0.28),
-      transparent 62%
-    ),
-    linear-gradient(160deg, #241811, #160f0b);
-  box-shadow: 0 26px 44px -20px rgba(0, 0, 0, 0.7),
-    inset 0 0 0 1px rgba(245, 237, 224, 0.06);
-}
-
-.builder__photo-base {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity 0.28s var(--ease-out);
-}
-
-.builder__photo-base.is-swapping {
-  opacity: 0;
-}
-
-.builder__cutaway {
-  position: absolute;
-  right: 5%;
-  bottom: 5%;
-  width: 42%;
-  max-width: 156px;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid rgba(245, 237, 224, 0.88);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.55),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.35);
-  background: #1a120c;
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-}
-
-.builder__cutaway-collage {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 2px;
-  width: 100%;
-  height: 100%;
-}
-
-.builder__cutaway-tile {
-  position: relative;
-  overflow: hidden;
-  background: var(--tile-bg, #2a1c12);
-}
-
-.builder__cutaway-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.builder__cutaway-icon {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-}
-
-.builder__cutaway-icon .icon {
-  width: 55%;
-  height: 55%;
-  color: var(--text-cream);
-  opacity: 0.85;
-}
-
-@keyframes builder-cutaway-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.builder__cutaway-tile {
-  animation: builder-cutaway-in 0.3s var(--ease-out) backwards;
-}
-
 /* Each summary row is a small card: an icon thumbnail, an uppercase
    category label over the picked value, and a "Change" link that jumps
    straight back to that step above instead of leaving the shopper to
@@ -2039,12 +1940,9 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .builder__photo-base,
-  .builder__cutaway {
+  .builder__dish-title,
+  .builder__dish-subtitle {
     transition: none;
-  }
-  .builder__cutaway-tile {
-    animation: none;
   }
   .builder__total.is-bumping {
     animation: none;
