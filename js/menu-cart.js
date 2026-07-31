@@ -58,7 +58,7 @@
             name: name + ' (' + sizeLabel + ')',
             detail: detail,
             price: price
-          });
+          }, article);
           pulse(row);
         }
         row.addEventListener('click', trigger);
@@ -82,7 +82,7 @@
     btn.setAttribute('aria-label', 'Add ' + name + ' to order');
     btn.appendChild(addIcon());
     btn.addEventListener('click', function () {
-      window.KebabCart.add({ name: name, detail: detail, price: price });
+      window.KebabCart.add({ name: name, detail: detail, price: price }, article);
       pulse(btn);
     });
     priceEl.appendChild(btn);
@@ -99,7 +99,7 @@
         name: btn.dataset.name,
         detail: btn.dataset.detail || '',
         price: parseFloat(btn.dataset.price) || 0
-      });
+      }, btn.closest('.combo-card'));
       pulse(btn);
     });
   });

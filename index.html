@@ -29,10 +29,13 @@
     <link rel="manifest" href="site.webmanifest" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
 
+    <!-- Only the weights the stylesheet actually uses: 400 (body), 600/700/800
+         (headings, buttons, labels). 500 was requested but never referenced,
+         so it was two font files fetched on every visit for nothing. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Manrope:wght@400;600;700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -142,6 +145,8 @@
          giving the sections a sense of connected motion instead of each
          just sitting on the same flat background. -->
     <div class="scroll-glow" aria-hidden="true"></div>
+
+    <a class="skip-link" href="#menu">Skip to menu</a>
 
     <!-- ========== NAVIGATION ========== -->
     <header class="site-header" id="header">

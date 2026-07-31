@@ -30,9 +30,18 @@
       ]);
 
   // ── Scroll progress bar ──
+  // Browsers with scroll-driven animations run this entirely in CSS off
+  // the main thread (see .scroll-progress in styles.css); this JS path is
+  // the fallback for the ones that don't, so it bails out rather than
+  // fighting the CSS animation for control of the same element.
   var scrollProgress = document.getElementById('scroll-progress');
+  var nativeScrollTimeline =
+    window.CSS &&
+    CSS.supports &&
+    CSS.supports('animation-timeline: scroll()');
 
   function updateScrollProgress() {
+    if (nativeScrollTimeline) return;
     var scrollTop = window.pageYOffset;
     var docHeight = document.documentElement.scrollHeight - window.innerHeight;
     var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
@@ -415,33 +424,89 @@
   // ── Menu tabs ──
   var tabs = document.querySelectorAll('.menu__tab');
   var panels = document.querySelectorAll('.menu__panel');
+  var tabList = Array.prototype.slice.call(tabs);
 
-  tabs.forEach(function (tab) {
+  function swapPanels(tab) {
+    var category = tab.getAttribute('data-category');
+
+    tabs.forEach(function (t) {
+      var isActive = t === tab;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      // Roving tabindex: only the selected tab is in the tab order, so Tab
+      // moves past the whole tablist in one press and the arrow keys below
+      // are what move between tabs — the pattern role="tablist" implies.
+      t.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+
+    panels.forEach(function (panel) {
+      if (panel.getAttribute('data-panel') === category) {
+        panel.classList.add('active');
+        panel.querySelectorAll('.reveal').forEach(function (el) {
+          var stop = revealStoppers.get(el);
+          if (stop) {
+            stop();
+            revealStoppers.delete(el);
+          }
+          revealElement(el, false);
+        });
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+  }
+
+  // startViewTransition defers its callback until the browser has snapshot
+  // the old state, so two swaps started close together can run their
+  // callbacks out of order and leave the wrong panel showing. Tracking the
+  // latest requested tab and reading it *inside* the callback (rather than
+  // closing over whichever tab started that particular transition) means
+  // every callback converges on the same, most-recent answer no matter
+  // what order they land in.
+  var pendingTab = null;
+
+  // `animate: false` skips the transition entirely — used for keyboard
+  // arrow navigation, where waiting on a crossfade before the panel
+  // updates would make arrowing through nine tabs feel unresponsive.
+  function activateTab(tab, opts) {
+    pendingTab = tab;
+    var animate = !(opts && opts.animate === false);
+
+    if (!animate || prefersReducedMotion || !document.startViewTransition) {
+      swapPanels(pendingTab);
+      return;
+    }
+    try {
+      document.startViewTransition(function () {
+        swapPanels(pendingTab);
+      });
+    } catch (e) {
+      swapPanels(pendingTab);
+    }
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.setAttribute('tabindex', tab.classList.contains('active') ? '0' : '-1');
+
     tab.addEventListener('click', function () {
-      var category = tab.getAttribute('data-category');
+      activateTab(tab);
+    });
 
-      tabs.forEach(function (t) {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-
-      panels.forEach(function (panel) {
-        if (panel.getAttribute('data-panel') === category) {
-          panel.classList.add('active');
-          panel.querySelectorAll('.reveal').forEach(function (el) {
-            var stop = revealStoppers.get(el);
-            if (stop) {
-              stop();
-              revealStoppers.delete(el);
-            }
-            revealElement(el, false);
-          });
-        } else {
-          panel.classList.remove('active');
-        }
-      });
+    tab.addEventListener('keydown', function (e) {
+      var next = null;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        next = tabList[(i + 1) % tabList.length];
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        next = tabList[(i - 1 + tabList.length) % tabList.length];
+      } else if (e.key === 'Home') {
+        next = tabList[0];
+      } else if (e.key === 'End') {
+        next = tabList[tabList.length - 1];
+      }
+      if (!next) return;
+      e.preventDefault();
+      activateTab(next, { animate: false });
+      next.focus();
     });
   });
 

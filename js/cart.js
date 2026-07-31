@@ -52,7 +52,67 @@
     return item.name + '||' + (item.detail || '') + '||' + item.price.toFixed(2);
   }
 
-  function addItem(item) {
+  // ── Add confirmation ──
+  // A badge that ticks from 2 to 3 in the corner is easy to miss, and
+  // there's no page navigation to signal the tap landed — so adding
+  // anything also announces itself here. aria-live lets screen readers
+  // hear it without moving focus away from what the shopper was doing.
+  var toast = null;
+  var toastTimer = null;
+
+  function showToast(text) {
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'cart-toast';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = text + ' added to your order';
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+    }, 2200);
+  }
+
+  // Ghosts the added item's own card up to the cart button so the two are
+  // visibly connected. Purely decorative: it's a detached, pointer-events
+  // free clone that removes itself, and the cart is already updated before
+  // it starts, so nothing waits on it.
+  function flyToCart(sourceEl) {
+    if (prefersReducedMotion || !sourceEl || !sourceEl.getBoundingClientRect) return;
+    var from = sourceEl.getBoundingClientRect();
+    var to = cartBtn.getBoundingClientRect();
+    if (!from.width || !to.width) return;
+
+    var ghost = document.createElement('span');
+    ghost.className = 'cart-fly';
+    ghost.style.left = from.left + from.width / 2 + 'px';
+    ghost.style.top = from.top + from.height / 2 + 'px';
+    document.body.appendChild(ghost);
+
+    var dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    var dy = to.top + to.height / 2 - (from.top + from.height / 2);
+
+    var anim = ghost.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.9 },
+        {
+          transform: 'translate(calc(-50% + ' + dx * 0.5 + 'px), calc(-50% + ' + (dy * 0.5 - 60) + 'px)) scale(0.7)',
+          opacity: 0.85,
+          offset: 0.6
+        },
+        { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(0.2)', opacity: 0 }
+      ],
+      { duration: 620, easing: 'cubic-bezier(0.4, 0, 0.5, 1)' }
+    );
+    anim.finished.catch(function () {}).then(function () {
+      ghost.remove();
+    });
+  }
+
+  function addItem(item, sourceEl) {
     var qty = item.qty || 1;
     var sig = signature(item);
     var existing = null;
@@ -76,6 +136,8 @@
     persist();
     render();
     bumpBadge();
+    showToast(item.name);
+    flyToCart(sourceEl);
   }
 
   function removeItem(id) {
@@ -272,8 +334,36 @@
   });
   if (backdrop) backdrop.addEventListener('click', closeDrawer);
   if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+    if (!drawer.classList.contains('is-open')) return;
+
+    if (e.key === 'Escape') {
+      closeDrawer();
+      return;
+    }
+
+    // Focus trap: the drawer is a modal dialog, so Tab must cycle within
+    // it rather than wandering off into the page behind the backdrop —
+    // which is visually obscured and inert to the mouse, so focus landing
+    // there would be invisible to a keyboard user.
+    if (e.key !== 'Tab') return;
+    var focusables = drawer.querySelectorAll(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    var visible = Array.prototype.filter.call(focusables, function (el) {
+      return el.offsetParent !== null && !el.hasAttribute('hidden');
+    });
+    if (!visible.length) return;
+    var first = visible[0];
+    var last = visible[visible.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
   if (clearBtn) {
     clearBtn.addEventListener('click', function () {

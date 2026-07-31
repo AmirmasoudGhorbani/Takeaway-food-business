@@ -127,6 +127,29 @@ ul {
   width: 0%;
 }
 
+/* Native scroll-driven animation where supported — this runs on the
+   compositor instead of recalculating a width in JS on every scroll
+   event (main.js skips its own handler when this matches). Browsers
+   without the API keep the JS path, so behaviour is identical either
+   way; only which thread does the work changes. */
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    width: 100%;
+    transform-origin: 0 50%;
+    animation: scroll-progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  @keyframes scroll-progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
 /* ── Ambient embers ──
    Fixed (not tied to scroll), so they drift continuously the full height
    of the viewport on every section. Kept near the left/right edges rather
@@ -2582,6 +2605,125 @@ ul {
   gap: 12px;
   font-size: 0.78rem;
   color: var(--text-dim);
+}
+
+/* ========================================
+   ADD-TO-ORDER FEEDBACK
+   Toast + a ghost that flies from the item to the cart button, so a tap
+   is confirmed by something more noticeable than the badge ticking up.
+   Both are created on demand in js/cart.js.
+   ======================================== */
+.cart-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 1200;
+  padding: 12px 22px;
+  border-radius: var(--radius-full);
+  background: rgba(20, 16, 14, 0.96);
+  border: 1px solid rgba(232, 83, 31, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+  color: var(--text-cream);
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  transition: opacity var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-plastic);
+}
+
+.cart-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Clear of the mobile sticky bars, which own the same corner. */
+@media (max-width: 768px) {
+  .cart-toast {
+    bottom: 92px;
+  }
+}
+
+.cart-fly {
+  position: fixed;
+  z-index: 1150;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--ember-light), var(--ember-deep));
+  box-shadow: 0 6px 18px rgba(232, 83, 31, 0.55);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-toast {
+    transition: none;
+  }
+}
+
+/* ========================================
+   SKIP LINK
+   There are ~150 focusable elements on this page; without this a keyboard
+   or screen-reader user tabs the entire nav before reaching any content.
+   Off-screen until focused rather than display:none, which would take it
+   out of the tab order and defeat the point.
+   ======================================== */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2000;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  background: var(--ember);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transform: translateY(-150%);
+  transition: transform var(--duration) var(--ease-out);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--ember-light);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
+/* ========================================
+   VIEW TRANSITIONS — menu tab panels
+   Progressive enhancement: browsers without the API just hard-cut as
+   before (see activateTab in main.js). Naming the panel container means
+   only it crossfades, rather than the default root snapshot animating
+   the whole page.
+   ======================================== */
+.menu__panels {
+  view-transition-name: menu-panels;
+}
+
+::view-transition-old(menu-panels),
+::view-transition-new(menu-panels) {
+  animation-duration: 0.28s;
+  animation-timing-function: var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 /* ========================================

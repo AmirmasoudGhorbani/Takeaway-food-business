@@ -261,7 +261,7 @@
     var name = dishTitle ? dishTitle.textContent.replace(/^Your\s+/, '').trim() : 'Kebab';
     var detail = dishSubtitle ? dishSubtitle.textContent.trim() : '';
     var price = parseFloat(totalEl.textContent.replace('$', '')) || 0;
-    window.KebabCart.add({ name: name, detail: detail, price: price });
+    window.KebabCart.add({ name: name, detail: detail, price: price }, document.querySelector('.builder__card'));
     resetSelections();
   }
 
