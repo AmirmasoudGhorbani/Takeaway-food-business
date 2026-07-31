@@ -20,6 +20,8 @@
   var totalEl = document.getElementById('builder-total');
   var mobileBar = document.getElementById('builder-mobile-bar');
   var mobileTotalEl = document.getElementById('builder-mobile-total');
+  var smsBtn = document.getElementById('builder-sms');
+  var mobileSmsBtn = document.getElementById('builder-mobile-sms');
   var builderSection = document.getElementById('builder');
   if (!summary || !totalEl) return;
 
@@ -222,6 +224,33 @@
     chips: 'Loaded Chips'
   };
 
+  // ── Order via SMS ──
+  // No backend to actually place the order server-side, so this opens the
+  // customer's own messaging app with the shop's number and the current
+  // build pre-filled as the message body — they just review and hit send.
+  // The "?&" before body (rather than a plain "?") is the one query form
+  // that both iOS and Android Messages reliably prefill from.
+  var SMS_NUMBER = '+6494126030';
+
+  function buildSmsHref(lines) {
+    var body = encodeURIComponent(lines.join('\n'));
+    return 'sms:' + SMS_NUMBER + '?&body=' + body;
+  }
+
+  function updateSmsLink(base, meat, salads, sauces, extras, totalText) {
+    if (!smsBtn && !mobileSmsBtn) return;
+    var lines = ['Hi, I\'d like to order:'];
+    lines.push('Base: ' + (base ? base.dataset.name : '-'));
+    lines.push('Meat: ' + (meat ? meat.dataset.name : '-'));
+    lines.push('Salad: ' + (salads.length ? names(salads) : '-'));
+    lines.push('Sauce: ' + (sauces.length ? names(sauces) : '-'));
+    if (extras.length) lines.push('Extras: ' + names(extras));
+    lines.push('Total: ' + totalText);
+    var href = buildSmsHref(lines);
+    if (smsBtn) smsBtn.href = href;
+    if (mobileSmsBtn) mobileSmsBtn.href = href;
+  }
+
   // ── Mobile sticky total bar ──
   // Mirrors the site-wide sticky order bar's own visibility logic (see
   // main.js), scoped to whether Build Your Kebab itself is in view, so the
@@ -279,8 +308,10 @@
     // ── total ──
     var total = priceForCombo(base, meat ? meat.dataset.id : '');
     extras.forEach(function (o) { total += parseFloat(o.dataset.price) || 0; });
-    bumpTotal('$' + total.toFixed(2));
+    var totalText = '$' + total.toFixed(2);
+    bumpTotal(totalText);
 
+    updateSmsLink(base, meat, salads, sauces, extras, totalText);
     updateMobileBar();
   }
 

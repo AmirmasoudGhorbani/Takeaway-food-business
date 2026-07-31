@@ -1952,6 +1952,14 @@ ul {
 /* ========================================
    STICKY MOBILE BUILDER TOTAL BAR
    ======================================== */
+.builder__sms-btn {
+  margin-top: 10px;
+}
+.builder__sms-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
 .builder-mobile-bar {
   display: none;
 }
@@ -2010,6 +2018,17 @@ ul {
     flex: none;
     padding-left: 20px;
     padding-right: 20px;
+  }
+
+  .builder-mobile-bar .builder-mobile-bar__sms {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+  }
+  .builder-mobile-bar__sms .icon {
+    width: 19px;
+    height: 19px;
   }
 
   /* Never stack the section-scoped bar on top of the site-wide one. */
