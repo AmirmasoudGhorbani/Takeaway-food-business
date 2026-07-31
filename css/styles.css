@@ -2282,7 +2282,12 @@ ul {
   box-shadow: 0 24px 60px rgba(13, 10, 9, 0.5);
   padding: 24px;
   cursor: grab;
-  touch-action: none;
+  /* pan-y (not none) — lets the browser handle a vertical drag as normal
+     page scrolling, and only withholds horizontal panning, which is what
+     the swipe-to-dismiss drag below actually needs to own. `none` here
+     was swallowing vertical scroll gestures that started on the front
+     card into a card-drag instead. */
+  touch-action: pan-y;
   transition: transform 0.45s var(--ease-out), filter 0.45s var(--ease-out),
     opacity 0.45s var(--ease-out);
 }
