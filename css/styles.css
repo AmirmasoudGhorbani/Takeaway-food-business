@@ -499,7 +499,7 @@ ul {
 .nav__logo::before {
   content: "";
   position: absolute;
-  left: 22px;
+  left: 11px;
   top: 50%;
   width: 84px;
   height: 84px;
@@ -516,7 +516,7 @@ ul {
 
 .nav__logo-mark {
   flex: none;
-  width: 44px;
+  width: auto;
   height: 44px;
   pointer-events: none;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
@@ -2378,7 +2378,7 @@ ul {
   margin-bottom: 18px;
 }
 .footer__logo-mark {
-  width: 48px;
+  width: auto;
   height: 48px;
   flex: none;
   pointer-events: none;
