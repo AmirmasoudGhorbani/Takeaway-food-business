@@ -87,4 +87,20 @@
     });
     priceEl.appendChild(btn);
   });
+
+  // ── Combo / add-on cards ──
+  // These carry their own explicit "Add to Order" button (data-name/
+  // -detail/-price) rather than the injected controls above, since
+  // there are only a handful of them and each is a delta price on top
+  // of another item, not a standalone menu item.
+  document.querySelectorAll('.combo-card__add').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      window.KebabCart.add({
+        name: btn.dataset.name,
+        detail: btn.dataset.detail || '',
+        price: parseFloat(btn.dataset.price) || 0
+      });
+      pulse(btn);
+    });
+  });
 })();

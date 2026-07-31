@@ -1605,31 +1605,31 @@ ul {
    COMBO DEALS
    ======================================== */
 .combos {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-xl) 0;
   background: var(--bg-base);
 }
 
 .combos__header {
-  margin-bottom: 2.6rem;
+  margin-bottom: 1.6rem;
 }
 .combos__title {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 .combos__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .combo-card {
   position: relative;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  padding: 28px 24px 24px;
+  padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   border: 1px solid var(--border);
   background: linear-gradient(
     145deg,
@@ -1704,31 +1704,31 @@ ul {
   color: var(--ember);
 }
 .combo-card__icon .icon {
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
 }
 .combo-card__icon--group .icon:first-child {
-  width: 38px;
-  height: 38px;
+  width: 26px;
+  height: 26px;
 }
 .combo-card__icon--group .icon--badge {
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   color: var(--gold);
 }
 
 .combo-card__name {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   color: var(--text-cream);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .combo-card__desc {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--text-faint);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .combo-card__price-row {
@@ -1741,13 +1741,21 @@ ul {
 .combo-card__price {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   color: var(--gold);
 }
 
 .combo-card__price-note {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   color: var(--text-dim);
+}
+
+.combo-card__add {
+  margin-top: 4px;
+}
+.combo-card__add .icon {
+  width: 15px;
+  height: 15px;
 }
 
 /* ========================================
@@ -3225,11 +3233,14 @@ body.cart-drawer-open {
   .story,
   .marquee,
   .menu,
-  .combos,
   .builder,
   .reviews,
   .find-us {
     padding: var(--space-2xl) 0;
+  }
+
+  .combos {
+    padding: var(--space-lg) 0;
   }
 }
 
