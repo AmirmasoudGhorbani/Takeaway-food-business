@@ -20,8 +20,8 @@
   var totalEl = document.getElementById('builder-total');
   var mobileBar = document.getElementById('builder-mobile-bar');
   var mobileTotalEl = document.getElementById('builder-mobile-total');
-  var smsBtn = document.getElementById('builder-sms');
-  var mobileSmsBtn = document.getElementById('builder-mobile-sms');
+  var addBtn = document.getElementById('builder-add-btn');
+  var mobileAddBtn = document.getElementById('builder-mobile-add-btn');
   var builderSection = document.getElementById('builder');
   if (!summary || !totalEl) return;
 
@@ -224,32 +224,49 @@
     chips: 'Loaded Chips'
   };
 
-  // ── Order via SMS ──
-  // No backend to actually place the order server-side, so this opens the
-  // customer's own messaging app with the shop's number and the current
-  // build pre-filled as the message body — they just review and hit send.
-  // The "?&" before body (rather than a plain "?") is the one query form
-  // that both iOS and Android Messages reliably prefill from.
-  var SMS_NUMBER = '+6494126030';
+  // ── Add current build to the shared cart ──
+  // Reuses whatever's already rendered (dish title/subtitle/total) rather
+  // than re-deriving it, since update() keeps all three in sync already.
+  // After adding, every group resets to its original default selection so
+  // the shopper can build a second, different kebab without the previous
+  // picks lingering.
+  var DEFAULT_ACTIVE = {
+    base: ['wrap'],
+    meat: ['chicken'],
+    salads: ['tomato', 'lettuce'],
+    sauces: ['garlicyoghurt'],
+    extras: []
+  };
 
-  function buildSmsHref(lines) {
-    var body = encodeURIComponent(lines.join('\n'));
-    return 'sms:' + SMS_NUMBER + '?&body=' + body;
+  function resetSelections() {
+    groups.forEach(function (group) {
+      var groupName = group.getAttribute('data-group');
+      var mode = group.getAttribute('data-mode');
+      var defaults = DEFAULT_ACTIVE[groupName] || [];
+      group.querySelectorAll('.builder__option').forEach(function (opt) {
+        opt.disabled = false;
+        opt.classList.remove('is-disabled');
+        opt.setAttribute('aria-disabled', 'false');
+        var shouldBeActive = defaults.indexOf(opt.dataset.id) !== -1;
+        opt.classList.toggle('is-active', shouldBeActive);
+        if (mode === 'single') opt.setAttribute('aria-checked', shouldBeActive ? 'true' : 'false');
+        else opt.setAttribute('aria-pressed', shouldBeActive ? 'true' : 'false');
+      });
+    });
+    update();
   }
 
-  function updateSmsLink(base, meat, salads, sauces, extras, totalText) {
-    if (!smsBtn && !mobileSmsBtn) return;
-    var lines = ['Hi, I\'d like to order:'];
-    lines.push('Base: ' + (base ? base.dataset.name : '-'));
-    lines.push('Meat: ' + (meat ? meat.dataset.name : '-'));
-    lines.push('Salad: ' + (salads.length ? names(salads) : '-'));
-    lines.push('Sauce: ' + (sauces.length ? names(sauces) : '-'));
-    if (extras.length) lines.push('Extras: ' + names(extras));
-    lines.push('Total: ' + totalText);
-    var href = buildSmsHref(lines);
-    if (smsBtn) smsBtn.href = href;
-    if (mobileSmsBtn) mobileSmsBtn.href = href;
+  function addCurrentToCart() {
+    if (!window.KebabCart) return;
+    var name = dishTitle ? dishTitle.textContent.replace(/^Your\s+/, '').trim() : 'Kebab';
+    var detail = dishSubtitle ? dishSubtitle.textContent.trim() : '';
+    var price = parseFloat(totalEl.textContent.replace('$', '')) || 0;
+    window.KebabCart.add({ name: name, detail: detail, price: price });
+    resetSelections();
   }
+
+  if (addBtn) addBtn.addEventListener('click', addCurrentToCart);
+  if (mobileAddBtn) mobileAddBtn.addEventListener('click', addCurrentToCart);
 
   // ── Mobile sticky total bar ──
   // Mirrors the site-wide sticky order bar's own visibility logic (see
@@ -311,7 +328,6 @@
     var totalText = '$' + total.toFixed(2);
     bumpTotal(totalText);
 
-    updateSmsLink(base, meat, salads, sauces, extras, totalText);
     updateMobileBar();
   }
 

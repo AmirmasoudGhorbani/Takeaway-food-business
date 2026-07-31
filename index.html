@@ -100,6 +100,25 @@
             d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
           />
         </symbol>
+        <symbol id="icon-bag" viewBox="0 0 24 24">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+          <path d="M3 6h18" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24">
+          <path d="M3 6h18" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" />
+        </symbol>
+        <symbol id="icon-minus" viewBox="0 0 24 24">
+          <path d="M5 12h14" />
+        </symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </symbol>
       </defs>
     </svg>
 
@@ -139,29 +158,45 @@
           <span class="nav__wordmark">Kebab <span>Station</span></span>
         </a>
 
-        <button
-          class="nav__toggle"
-          id="nav-toggle"
-          aria-label="Open menu"
-          aria-expanded="false"
-        >
-          <span class="nav__toggle-bar"></span>
-          <span class="nav__toggle-bar"></span>
-          <span class="nav__toggle-bar"></span>
-        </button>
+        <div class="nav__right">
+          <ul class="nav__links" id="nav-links">
+            <li><a href="#story" class="nav__link">Our Story</a></li>
+            <li><a href="#menu" class="nav__link">Menu</a></li>
+            <li><a href="#builder" class="nav__link">Build Yours</a></li>
+            <li><a href="#reviews" class="nav__link">Reviews</a></li>
+            <li><a href="#find-us" class="nav__link">Find Us</a></li>
+            <li>
+              <a href="tel:+6494126030" class="nav__link nav__link--cta"
+                >Call to Order</a
+              >
+            </li>
+          </ul>
 
-        <ul class="nav__links" id="nav-links">
-          <li><a href="#story" class="nav__link">Our Story</a></li>
-          <li><a href="#menu" class="nav__link">Menu</a></li>
-          <li><a href="#builder" class="nav__link">Build Yours</a></li>
-          <li><a href="#reviews" class="nav__link">Reviews</a></li>
-          <li><a href="#find-us" class="nav__link">Find Us</a></li>
-          <li>
-            <a href="tel:+6494126030" class="nav__link nav__link--cta"
-              >Call to Order</a
-            >
-          </li>
-        </ul>
+          <button
+            class="nav__cart-btn"
+            id="nav-cart-btn"
+            aria-label="View your order"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="cart-drawer"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="#icon-bag"></use>
+            </svg>
+            <span class="nav__cart-count" id="nav-cart-count" hidden>0</span>
+          </button>
+
+          <button
+            class="nav__toggle"
+            id="nav-toggle"
+            aria-label="Open menu"
+            aria-expanded="false"
+          >
+            <span class="nav__toggle-bar"></span>
+            <span class="nav__toggle-bar"></span>
+            <span class="nav__toggle-bar"></span>
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -2717,18 +2752,21 @@
                   <span class="builder__total-label">Total</span>
                   <span class="builder__total" id="builder-total">$18.00</span>
                 </div>
-                <a href="tel:+6494126030" class="btn btn--ember btn--block"
-                  >Call to Order</a
-                >
-                <a
-                  href="sms:+6494126030"
-                  class="btn btn--outline btn--block builder__sms-btn"
-                  id="builder-sms"
+                <button
+                  type="button"
+                  class="btn btn--ember btn--block"
+                  id="builder-add-btn"
                 >
                   <svg class="icon" aria-hidden="true">
-                    <use href="#icon-message"></use>
+                    <use href="#icon-bag"></use>
                   </svg>
-                  Order via SMS
+                  Add to Order
+                </button>
+                <a
+                  href="tel:+6494126030"
+                  class="btn btn--outline btn--block builder__sms-btn"
+                >
+                  Call to Order Instead
                 </a>
               </div>
             </div>
@@ -2745,17 +2783,9 @@
             >$18.00</span
           >
         </div>
-        <a
-          href="sms:+6494126030"
-          class="btn btn--outline builder-mobile-bar__sms"
-          id="builder-mobile-sms"
-          aria-label="Order via SMS"
-        >
-          <svg class="icon" aria-hidden="true">
-            <use href="#icon-message"></use>
-          </svg>
-        </a>
-        <a href="tel:+6494126030" class="btn btn--ember">Add kebab to order</a>
+        <button type="button" class="btn btn--ember" id="builder-mobile-add-btn">
+          Add kebab to order
+        </button>
       </div>
 
       <!-- ========== REVIEWS ========== -->
@@ -3102,9 +3132,69 @@
       </a>
     </div>
 
+    <!-- Order cart — a shopper can add items from the menu below and/or
+         from Build Your Kebab; this drawer is the one place the whole
+         order (across both sources) is reviewed, edited and sent. -->
+    <div class="cart-drawer" id="cart-drawer" inert>
+      <div class="cart-drawer__backdrop" id="cart-drawer-backdrop"></div>
+      <div
+        class="cart-drawer__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Your order"
+      >
+        <div class="cart-drawer__head">
+          <h2 class="cart-drawer__title">Your Order</h2>
+          <button
+            type="button"
+            class="cart-drawer__close"
+            id="cart-drawer-close"
+            aria-label="Close order"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="#icon-x"></use>
+            </svg>
+          </button>
+        </div>
+
+        <div class="cart-drawer__body" id="cart-drawer-body"></div>
+
+        <div class="cart-drawer__footer">
+          <div class="cart-drawer__total-row">
+            <span class="cart-drawer__total-label">Total</span>
+            <span class="cart-drawer__total" id="cart-drawer-total"
+              >$0.00</span
+            >
+          </div>
+          <a
+            href="sms:+6494126030"
+            class="btn btn--ember btn--block"
+            id="cart-sms-btn"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="#icon-message"></use>
+            </svg>
+            Send Order via SMS
+          </a>
+          <a href="tel:+6494126030" class="btn btn--ghost btn--block">
+            Call to Order Instead
+          </a>
+          <button
+            type="button"
+            class="cart-drawer__clear"
+            id="cart-drawer-clear"
+          >
+            Clear order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/cart.js"></script>
     <script type="module" src="js/main.js"></script>
     <script src="js/hero.js"></script>
     <script src="js/builder.js"></script>
+    <script src="js/menu-cart.js"></script>
     <script type="module" src="js/reviews-deck.js"></script>
   </body>
 </html>
