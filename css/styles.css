@@ -3281,7 +3281,14 @@ body.cart-drawer-open {
     max-width: none;
   }
   .hero__video {
-    object-position: center 35%;
+    /* The spit sits around 72% across the source frame, and at this
+       viewport `cover` scales the 16:9 clip to ~1443px wide inside a
+       ~375px window — so a centred crop threw away almost everything to
+       the right of frame and left only a sliver of the kebab on screen.
+       Biasing the crop right pulls the spit back into view (the image
+       shifts left) while keeping enough dark surround for the headline
+       to stay legible. */
+    object-position: 65% 35%;
     -webkit-mask-image: none;
     mask-image: none;
   }

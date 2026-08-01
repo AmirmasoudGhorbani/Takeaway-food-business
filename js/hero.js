@@ -71,19 +71,20 @@
   function applyProgress(progress) {
     if (!duration || seekingNow) return;
 
-    // The source clip is a boomerang (forward half, then the same frames
-    // played in reverse) built for ambient looping, not a real 360° spin —
-    // see feedback_video_loops memory. Only the forward half is a genuine
-    // one-direction turn, so that's the only part scroll should scrub
-    // through; scrubbing the back half would visibly un-rotate the donor.
-    // One full scroll pass through the hero = one single pass through it,
-    // slow and deliberate rather than looping multiple times.
-    var forwardHalf = duration / 2;
-    var time = progress * forwardHalf;
+    // The source clip used to be a boomerang (a forward pass, then the
+    // same frames in reverse) built for ambient looping, so this scrubbed
+    // only its first half — the back half would have visibly un-rotated
+    // the donor. The shipped file is now trimmed to that forward pass
+    // alone: the reverse frames were downloaded on every visit and never
+    // once displayed, and dropping them paid for a 6x denser keyframe
+    // interval at a slightly smaller file size. So scrub the whole clip
+    // now — the mapping is unchanged, one full scroll pass through the
+    // hero is still one single, deliberate pass through the turn.
+    var time = progress * duration;
 
-    // Never land exactly on the half-duration boundary — some browsers
-    // stall/flicker seeking right at a boundary.
-    time = Math.min(time, forwardHalf - 0.05);
+    // Never land exactly on the final frame — some browsers stall or
+    // flicker seeking right at a boundary.
+    time = Math.min(time, duration - 0.05);
 
     if (Math.abs(video.currentTime - time) > 0.01) {
       video.currentTime = time;
