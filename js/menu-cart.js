@@ -21,6 +21,16 @@
     el.classList.add('is-added');
   }
 
+  // Panels point at their own tab via aria-labelledby, so the tab's label
+  // ("Doner Kebab", "Sides", ...) is already the category name — no second
+  // list of category strings to keep in sync with the markup.
+  function categoryFor(article) {
+    var panel = article.closest('.menu__panel');
+    if (!panel) return 'Other';
+    var tab = document.getElementById(panel.getAttribute('aria-labelledby'));
+    return tab ? tab.textContent.replace(/\s+/g, ' ').trim() : 'Other';
+  }
+
   function addIcon() {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'icon');
@@ -35,11 +45,15 @@
     var nameEl = article.querySelector('.menu-item__name');
     if (!nameEl) return;
     var name = nameEl.textContent.trim();
-    var descEl = article.querySelector('.menu-item__desc');
-    // .menu-item__desc text wraps across multiple indented lines in the
-    // HTML source — collapse that whitespace so it doesn't leak into the
-    // SMS body as literal line breaks and run-on indentation.
-    var detail = descEl ? descEl.textContent.replace(/\s+/g, ' ').trim() : '';
+
+    // The item's own menu category, read off the tab that labels the panel
+    // it sits in, so the order can be grouped the same way the menu is.
+    // The description deliberately isn't carried into the order: it's menu
+    // blurb ("Lamb cooked on a vertical spit and shaved into thin
+    // slices."), which just buries the actual items for whoever reads the
+    // text at the shop.
+    var detail = '';
+    var category = categoryFor(article);
 
     var sizedPrice = article.querySelector('.menu-item__price--sizes');
     if (sizedPrice) {
@@ -57,6 +71,7 @@
           window.KebabCart.add({
             name: name + ' (' + sizeLabel + ')',
             detail: detail,
+            category: category,
             price: price
           }, article);
           pulse(row);
@@ -82,7 +97,7 @@
     btn.setAttribute('aria-label', 'Add ' + name + ' to order');
     btn.appendChild(addIcon());
     btn.addEventListener('click', function () {
-      window.KebabCart.add({ name: name, detail: detail, price: price }, article);
+      window.KebabCart.add({ name: name, detail: detail, category: category, price: price }, article);
       pulse(btn);
     });
     priceEl.appendChild(btn);
@@ -97,7 +112,8 @@
     btn.addEventListener('click', function () {
       window.KebabCart.add({
         name: btn.dataset.name,
-        detail: btn.dataset.detail || '',
+        detail: '',
+        category: 'Add-ons',
         price: parseFloat(btn.dataset.price) || 0
       }, btn.closest('.combo-card'));
       pulse(btn);

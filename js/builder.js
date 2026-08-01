@@ -261,7 +261,13 @@
     var name = dishTitle ? dishTitle.textContent.replace(/^Your\s+/, '').trim() : 'Kebab';
     var detail = dishSubtitle ? dishSubtitle.textContent.trim() : '';
     var price = parseFloat(totalEl.textContent.replace('$', '')) || 0;
-    window.KebabCart.add({ name: name, detail: detail, price: price }, document.querySelector('.builder__card'));
+    // Unlike the fixed menu items, `detail` here is the build itself
+    // (base / salad / sauce), so it travels with the order rather than
+    // being dropped as blurb.
+    window.KebabCart.add(
+      { name: name, detail: detail, category: 'Build Your Own', price: price },
+      document.querySelector('.builder__card')
+    );
     resetSelections();
   }
 

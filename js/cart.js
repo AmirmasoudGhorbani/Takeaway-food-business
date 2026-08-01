@@ -129,6 +129,7 @@
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
         name: item.name,
         detail: item.detail || '',
+        category: item.category || 'Other',
         price: item.price,
         qty: qty
       });
@@ -193,15 +194,56 @@
     cartCount.hidden = n === 0;
   }
 
+  // Groups the order under its menu categories so whoever reads it at the
+  // shop can work down it section by section, rather than parsing one flat
+  // run of names. Categories are emitted in menu order (CATEGORY_ORDER),
+  // with anything unrecognised — e.g. a cart saved before categories
+  // existed — falling to the end rather than being dropped.
+  var CATEGORY_ORDER = [
+    'Doner Kebab',
+    'Special Kebab',
+    'Meat on Rice',
+    'Meat on Salad',
+    'Meat on Chips',
+    'Shawarma',
+    'Burgers',
+    'Sides',
+    'Drinks',
+    'Build Your Own',
+    'Add-ons'
+  ];
+
+  function categoryRank(name) {
+    var i = CATEGORY_ORDER.indexOf(name);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  }
+
   function buildSmsBody() {
-    var lines = ["Hi, I'd like to order:"];
+    var groups = {};
     cart.forEach(function (c) {
-      var qtyPrefix = c.qty > 1 ? c.qty + 'x ' : '';
-      var line = qtyPrefix + c.name;
-      if (c.detail) line += ' (' + c.detail + ')';
-      lines.push(line);
+      var cat = c.category || 'Other';
+      (groups[cat] = groups[cat] || []).push(c);
     });
-    lines.push('Total: $' + totalPrice().toFixed(2));
+
+    var names = Object.keys(groups).sort(function (a, b) {
+      var d = categoryRank(a) - categoryRank(b);
+      return d !== 0 ? d : a.localeCompare(b);
+    });
+
+    var lines = ["Hi, I'd like to order:"];
+    names.forEach(function (cat) {
+      lines.push('');
+      lines.push(cat.toUpperCase());
+      groups[cat].forEach(function (c) {
+        lines.push('  ' + c.qty + 'x ' + c.name + '  $' + (c.price * c.qty).toFixed(2));
+        // Only built-to-order items carry a detail line, and for those it
+        // is the actual spec (base/salad/sauce) rather than menu blurb —
+        // so it has to travel with the order.
+        if (c.detail) lines.push('     ' + c.detail);
+      });
+    });
+    lines.push('');
+    lines.push('TOTAL: $' + totalPrice().toFixed(2));
     return lines.join('\n');
   }
 
