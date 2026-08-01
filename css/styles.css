@@ -2676,7 +2676,11 @@ ul {
    out of the tab order and defeat the point.
    ======================================== */
 .skip-link {
-  position: absolute;
+  /* fixed, not absolute: an absolutely positioned element nudged off the
+     top sits at negative document coordinates, which is exactly the strip
+     that rubber-band/elastic overscroll exposes on macOS trackpads and
+     iOS Safari — so it would flash into view on an ordinary scroll. */
+  position: fixed;
   top: 8px;
   left: 8px;
   z-index: 2000;
@@ -2686,11 +2690,19 @@ ul {
   color: #fff;
   font-weight: 700;
   font-size: 0.9rem;
-  transform: translateY(-150%);
-  transition: transform var(--duration) var(--ease-out);
+  /* Hidden by clipping rather than by being moved somewhere off-screen:
+     there is no scroll position or overscroll state that can reveal a
+     fully clipped box, and it stays in the tab order either way. */
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration) var(--ease-out);
 }
+
 .skip-link:focus {
-  transform: translateY(0);
+  clip-path: none;
+  opacity: 1;
+  pointer-events: auto;
   outline: 2px solid var(--ember-light);
   outline-offset: 3px;
 }
