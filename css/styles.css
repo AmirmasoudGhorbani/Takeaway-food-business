@@ -3281,16 +3281,12 @@ body.cart-drawer-open {
     max-width: none;
   }
   .hero__video {
-    /* The spit sits around 72% across the source frame, and at this
-       viewport `cover` scales the 16:9 clip to ~1443px wide inside a
-       ~375px window — so a centred crop threw away almost everything to
-       the right of frame and left only a sliver of the kebab on screen.
-       Biasing the crop right pulls the spit back into view (the image
-       shifts left) while keeping enough dark surround for the headline
-       to stay legible. */
-    object-position: 65% 35%;
-    -webkit-mask-image: none;
-    mask-image: none;
+    /* The spit sits around 72% across the source frame, and narrower
+       viewports crop hard enough off both sides that a centred crop
+       leaves barely any of it on screen. Biasing the crop right pulls
+       the spit back into view (the image shifts left) while keeping
+       enough dark surround for the headline to stay legible. */
+    object-position: 65% 50%;
   }
   .hero__video-scrim {
     background: linear-gradient(
@@ -3336,6 +3332,25 @@ body.cart-drawer-open {
     align-items: stretch;
     max-width: 300px;
     margin: 0 auto;
+  }
+
+  /* Zoomed out for phones specifically. `cover` is by definition the
+     *smallest* scale that fills its box, so the only way to zoom out is
+     to stop asking a 16:9 clip to fill a tall portrait screen — capping
+     the height scales the frame down until the whole spit fits across
+     the width. (The source is already a tight close-up, the meat spans
+     nearly the full frame height, so this is about as wide as the shot
+     can usefully go.) The bottom is faded out so the clip dissolves into
+     the section rather than stopping at a hard horizontal edge. */
+  .hero__visual {
+    height: clamp(400px, 76vh, 660px);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 72%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
   }
 
   .story__stats {
