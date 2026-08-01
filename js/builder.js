@@ -224,6 +224,46 @@
     chips: 'Loaded Chips'
   };
 
+  // ── Single source of truth for what has been built ──
+  // Both the card (title/subtitle/total) and the line item sent to the
+  // cart derive from this. They used to be read back out of the rendered
+  // subtitle instead, which silently dropped Extras from the order: the
+  // subtitle never listed them, so a kebab with cheese was *charged* for
+  // the cheese but reached the shop with no mention of it. Anything that
+  // affects the price has to be described here.
+  function currentSelection() {
+    var base = getActive('base')[0];
+    var meat = getActive('meat')[0];
+    var salads = getActive('salads');
+    var sauces = getActive('sauces');
+    var extras = getActive('extras');
+
+    var meatName = meat ? cleanName(meat.dataset.name) : '';
+    var dishNoun = BASE_NOUN[base ? base.dataset.id : 'wrap'] || 'Kebab';
+
+    var parts = [];
+    if (base && base.dataset.band) parts.push(titleCase(base.dataset.band));
+    salads.forEach(function (o) { parts.push(o.dataset.name); });
+    sauces.forEach(function (o) { parts.push(o.dataset.name); });
+    // Marked with a + so a paid addition is not mistaken for one of the
+    // included salads/sauces when the order is read off a phone.
+    extras.forEach(function (o) { parts.push('+ ' + o.dataset.name); });
+
+    var price = priceForCombo(base, meat ? meat.dataset.id : '');
+    extras.forEach(function (o) { price += parseFloat(o.dataset.price) || 0; });
+
+    return {
+      name: meatName ? meatName + ' ' + dishNoun : dishNoun,
+      detail: parts.join(' · '),
+      price: price,
+      base: base,
+      meat: meat,
+      salads: salads,
+      sauces: sauces,
+      extras: extras
+    };
+  }
+
   // ── Add current build to the shared cart ──
   // Reuses whatever's already rendered (dish title/subtitle/total) rather
   // than re-deriving it, since update() keeps all three in sync already.
@@ -258,14 +298,17 @@
 
   function addCurrentToCart() {
     if (!window.KebabCart) return;
-    var name = dishTitle ? dishTitle.textContent.replace(/^Your\s+/, '').trim() : 'Kebab';
-    var detail = dishSubtitle ? dishSubtitle.textContent.trim() : '';
-    var price = parseFloat(totalEl.textContent.replace('$', '')) || 0;
+    var sel = currentSelection();
     // Unlike the fixed menu items, `detail` here is the build itself
-    // (base / salad / sauce), so it travels with the order rather than
-    // being dropped as blurb.
+    // (base / salad / sauce / extras), so it travels with the order
+    // rather than being dropped as blurb.
     window.KebabCart.add(
-      { name: name, detail: detail, category: 'Build Your Own', price: price },
+      {
+        name: sel.name,
+        detail: sel.detail,
+        category: 'Build Your Own',
+        price: sel.price
+      },
       document.querySelector('.builder__card')
     );
     resetSelections();
@@ -295,44 +338,30 @@
     syncMeatAvailability();
     syncMultiCaps();
 
-    var base = getActive('base')[0];
-    var meat = getActive('meat')[0];
-    var salads = getActive('salads');
-    var sauces = getActive('sauces');
-    var extras = getActive('extras');
+    // Everything below renders from this one object, so the card can
+    // never describe a different kebab than the one the cart receives.
+    var sel = currentSelection();
+    var base = sel.base;
+    var meat = sel.meat;
 
     // ── dynamic title + subtitle ──
-    var meatName = meat ? cleanName(meat.dataset.name) : '';
-    var baseId = base ? base.dataset.id : 'wrap';
-    var dishNoun = BASE_NOUN[baseId] || 'Kebab';
-    if (dishTitle) {
-      dishTitle.textContent = meatName ? 'Your ' + meatName + ' ' + dishNoun : 'Your ' + dishNoun;
-    }
+    if (dishTitle) dishTitle.textContent = 'Your ' + sel.name;
     if (dishSubtitle) {
-      var subtitleParts = [];
-      if (base && base.dataset.band) subtitleParts.push(titleCase(base.dataset.band));
-      salads.forEach(function (o) { subtitleParts.push(o.dataset.name); });
-      sauces.forEach(function (o) { subtitleParts.push(o.dataset.name); });
-      dishSubtitle.textContent = subtitleParts.length
-        ? subtitleParts.join(' · ')
-        : 'Made exactly the way you like it.';
+      dishSubtitle.textContent = sel.detail || 'Made exactly the way you like it.';
     }
 
     // ── summary ──
     summary.innerHTML = '';
     summary.appendChild(summaryRow('base', 'Base', base ? base.dataset.name : '', iconImg(base, 18)));
     summary.appendChild(summaryRow('meat', 'Meat', meat ? meat.dataset.name : '', iconImg(meat, 18)));
-    summary.appendChild(summaryRow('salads', 'Salad', names(salads), salads[0] ? iconImg(salads[0], 18) : null));
-    summary.appendChild(summaryRow('sauces', 'Sauce', names(sauces), sauces[0] ? swatchDot(sauces[0], 16) : null));
-    if (extras.length) {
-      summary.appendChild(summaryRow('extras', 'Extras', names(extras), iconImg(extras[0], 18)));
+    summary.appendChild(summaryRow('salads', 'Salad', names(sel.salads), sel.salads[0] ? iconImg(sel.salads[0], 18) : null));
+    summary.appendChild(summaryRow('sauces', 'Sauce', names(sel.sauces), sel.sauces[0] ? swatchDot(sel.sauces[0], 16) : null));
+    if (sel.extras.length) {
+      summary.appendChild(summaryRow('extras', 'Extras', names(sel.extras), iconImg(sel.extras[0], 18)));
     }
 
     // ── total ──
-    var total = priceForCombo(base, meat ? meat.dataset.id : '');
-    extras.forEach(function (o) { total += parseFloat(o.dataset.price) || 0; });
-    var totalText = '$' + total.toFixed(2);
-    bumpTotal(totalText);
+    bumpTotal('$' + sel.price.toFixed(2));
 
     updateMobileBar();
   }
