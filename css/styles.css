@@ -2789,6 +2789,112 @@ ul {
 }
 
 /* ========================================
+   MOBILE SECTION JUMP BAR + BACK TO TOP
+   Both are phone-only: on desktop the full nav is always visible, so
+   neither has anything to add there.
+   ======================================== */
+.jump-bar,
+.to-top {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .jump-bar {
+    display: flex;
+    gap: 8px;
+    position: fixed;
+    /* Sits directly under the fixed header (85px, constant across mobile
+       widths) rather than at top:0, where the header's higher z-index
+       would render straight over it. */
+    top: 85px;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    padding: 10px clamp(18px, 5vw, 40px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background: rgba(13, 10, 9, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-100%);
+    transition: transform var(--duration-slow) var(--ease-plastic);
+  }
+  .jump-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .jump-bar.is-visible {
+    transform: translateY(0);
+  }
+
+  /* The header slides away near the footer to avoid colliding with the
+     footer's own logo; the jump bar has to travel with it or it would be
+     left stranded against the top of the viewport. */
+  body:has(.site-header.at-footer) .jump-bar {
+    transform: translateY(calc(-100% - 85px));
+  }
+
+  .jump-bar__link {
+    flex: 0 0 auto;
+    padding: 7px 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong);
+    background: rgba(245, 237, 224, 0.05);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .jump-bar__link.is-current {
+    background: var(--ember-soft);
+    border-color: var(--ember);
+    color: var(--text-cream);
+  }
+
+  .to-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: clamp(14px, 4vw, 22px);
+    /* Clear of the sticky order / builder bars that own the bottom edge. */
+    bottom: calc(84px + env(safe-area-inset-bottom));
+    z-index: 900;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(20, 16, 14, 0.92);
+    border: 1px solid var(--border-strong);
+    color: var(--text-cream);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+    pointer-events: none;
+    transition: opacity var(--duration) var(--ease-out),
+      transform var(--duration) var(--ease-plastic);
+  }
+  .to-top.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .to-top .icon {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jump-bar,
+  .to-top {
+    transition: none;
+  }
+}
+
+/* ========================================
    CART DRAWER
    Slide-in panel listing everything added from the menu and/or Build
    Your Kebab. Above the mobile nav overlay (1005) and its close button
@@ -3351,6 +3457,108 @@ body.cart-drawer-open {
       transparent 100%
     );
     mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  }
+
+  /* Nine category chips wrapped onto five rows here — 260px, roughly a
+     third of the viewport, spent before a single menu item was visible.
+     One swipeable row instead, with scroll-snap so chips come to rest
+     aligned and the cut-off chip at the edge signals there is more. */
+  .menu__tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 1.4rem;
+    /* Bleed to the screen edges so the row reads as scrollable rather
+       than as a clipped block, while chips still line up with the
+       container's text on both sides. */
+    margin-left: calc(-1 * clamp(18px, 5vw, 40px));
+    margin-right: calc(-1 * clamp(18px, 5vw, 40px));
+    padding-left: clamp(18px, 5vw, 40px);
+    padding-right: clamp(18px, 5vw, 40px);
+  }
+  .menu__tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .menu__tab {
+    scroll-snap-align: start;
+  }
+
+  /* Step accordion — see the matching block in js/builder.js. Scoped to
+     a class that script adds, so with JS off the groups stay open and
+     usable rather than collapsing shut with no way to reopen them. */
+  body.builder-accordion .builder__group {
+    padding: 0;
+  }
+  body.builder-accordion .builder__group-head {
+    display: grid;
+    /* title | hint | chevron. The chevron needs its own column: sharing
+       one with the hint made the two overlap once the step was open and
+       both sat in row 1 ("pick on" with an arrow through it). */
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 2px 12px;
+    margin: 0;
+    padding: 16px 18px;
+    cursor: pointer;
+  }
+  body.builder-accordion .builder__group-hint {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  body.builder-accordion .builder__group-value {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ember-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* An open step already shows its picks as highlighted chips, so
+     repeating them in the header would just be noise. */
+  body.builder-accordion
+    .builder__group:not(.is-collapsed)
+    .builder__group-value {
+    display: none;
+  }
+  body.builder-accordion .builder__group-head::after {
+    content: "";
+    grid-column: 3;
+    grid-row: 1 / -1;
+    align-self: center;
+    justify-self: end;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid var(--text-dim);
+    border-bottom: 2px solid var(--text-dim);
+    transform: rotate(45deg) translateY(-3px);
+    transition: transform var(--duration) var(--ease);
+  }
+  body.builder-accordion
+    .builder__group:not(.is-collapsed)
+    .builder__group-head::after {
+    transform: rotate(-135deg) translateY(-3px);
+  }
+  body.builder-accordion .builder__group-head:focus-visible {
+    outline: 2px solid var(--ember-light);
+    outline-offset: -2px;
+  }
+  body.builder-accordion .builder__options {
+    padding: 0 18px 18px;
+  }
+  body.builder-accordion .builder__group.is-collapsed .builder__options {
+    display: none;
+  }
+
+  /* 220vh of runway is over two full screens of thumb-scrolling before
+     any content on a phone. The extra distance exists to scrub the
+     donor's rotation, which is the least valuable part of the page on a
+     small screen — shorter track, same rotation, just covered faster. */
+  .hero-scroll-track {
+    height: 140vh;
   }
 
   .story__stats {

@@ -162,6 +162,9 @@
   function jumpToGroup(groupName) {
     var group = document.querySelector('.builder__group[data-group="' + groupName + '"]');
     if (!group) return;
+    // Under the mobile accordion the target step is probably collapsed,
+    // so scrolling to it alone would land on a closed header.
+    if (accordionOn) openGroup(group);
     group.scrollIntoView({
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
       block: 'center'
@@ -363,8 +366,120 @@
     // ── total ──
     bumpTotal('$' + sel.price.toFixed(2));
 
+    syncAccordionValues();
     updateMobileBar();
   }
 
+  // ── Mobile step accordion ──
+  // The five option groups stack to ~1716px on a phone — a wall of chips
+  // with no sense of progress. Collapsing all but the open one turns the
+  // same markup into a guided 1-2-3 flow. Layered on at runtime and only
+  // while the query matches, so the desktop layout and the underlying
+  // markup are untouched; with JS off every group simply stays open as
+  // it does today.
+  var accordionQuery = window.matchMedia('(max-width: 768px)');
+  var accordionOn = false;
+
+  function groupHead(group) {
+    return group.querySelector('.builder__group-head');
+  }
+
+  function openGroup(target) {
+    groups.forEach(function (group) {
+      var isTarget = group === target;
+      group.classList.toggle('is-collapsed', !isTarget);
+      var head = groupHead(group);
+      if (head) head.setAttribute('aria-expanded', isTarget ? 'true' : 'false');
+    });
+  }
+
+  // Mirrors each group's current pick into its header, so a collapsed
+  // step still says what it holds instead of just its number.
+  function syncAccordionValues() {
+    groups.forEach(function (group) {
+      var valueEl = group.querySelector('.builder__group-value');
+      if (!valueEl) return;
+      var picked = group.querySelectorAll('.builder__option.is-active');
+      valueEl.textContent = picked.length
+        ? Array.prototype.map.call(picked, function (o) { return o.dataset.name; }).join(', ')
+        : 'None';
+    });
+  }
+
+  function enableAccordion() {
+    if (accordionOn) return;
+    accordionOn = true;
+    groups.forEach(function (group) {
+      var head = groupHead(group);
+      if (!head) return;
+      if (!group.querySelector('.builder__group-value')) {
+        var value = document.createElement('span');
+        value.className = 'builder__group-value';
+        head.appendChild(value);
+      }
+      head.setAttribute('role', 'button');
+      head.setAttribute('tabindex', '0');
+      if (!head.dataset.accordionBound) {
+        head.dataset.accordionBound = '1';
+        head.addEventListener('click', function () {
+          if (!accordionOn) return;
+          openGroup(group.classList.contains('is-collapsed') ? group : null);
+        });
+        head.addEventListener('keydown', function (e) {
+          if (!accordionOn) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openGroup(group.classList.contains('is-collapsed') ? group : null);
+          }
+        });
+      }
+    });
+    document.body.classList.add('builder-accordion');
+    openGroup(groups[0]);
+    syncAccordionValues();
+  }
+
+  function disableAccordion() {
+    if (!accordionOn) return;
+    accordionOn = false;
+    document.body.classList.remove('builder-accordion');
+    groups.forEach(function (group) {
+      group.classList.remove('is-collapsed');
+      var head = groupHead(group);
+      if (head) {
+        head.removeAttribute('role');
+        head.removeAttribute('tabindex');
+        head.removeAttribute('aria-expanded');
+      }
+    });
+  }
+
+  function syncAccordion() {
+    if (accordionQuery.matches) enableAccordion();
+    else disableAccordion();
+  }
+
+  if (accordionQuery.addEventListener) {
+    accordionQuery.addEventListener('change', syncAccordion);
+  } else if (accordionQuery.addListener) {
+    accordionQuery.addListener(syncAccordion); // Safari < 14
+  }
+
+  // Picking in a single-choice step advances to the next one, so the
+  // flow moves forward on its own instead of needing a second tap on the
+  // next header. Multi-select steps stay put — you are usually adding
+  // several things at once there.
+  groups.forEach(function (group, i) {
+    if (group.getAttribute('data-mode') !== 'single') return;
+    group.querySelectorAll('.builder__option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        if (!accordionOn || opt.disabled) return;
+        var next = groups[i + 1];
+        if (next) openGroup(next);
+      });
+    });
+  });
+
+  syncAccordion();
   update();
 })();

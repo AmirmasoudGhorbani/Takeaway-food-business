@@ -3173,6 +3173,30 @@
       </a>
     </div>
 
+    <!-- Mobile-only section jump bar. The page runs to ~9 screens on a
+         phone, and the only other way to move between sections is
+         opening the hamburger menu. Slides in once the hero is behind
+         you; `inert` keeps it out of the tab order until then. -->
+    <nav class="jump-bar" id="jump-bar" aria-label="Jump to section" inert>
+      <a href="#menu" class="jump-bar__link">Menu</a>
+      <a href="#builder" class="jump-bar__link">Build Yours</a>
+      <a href="#combos" class="jump-bar__link">Combos</a>
+      <a href="#reviews" class="jump-bar__link">Reviews</a>
+      <a href="#find-us" class="jump-bar__link">Find Us</a>
+    </nav>
+
+    <button
+      type="button"
+      class="to-top"
+      id="to-top"
+      aria-label="Back to top"
+      inert
+    >
+      <svg class="icon" aria-hidden="true">
+        <use href="#icon-upsize"></use>
+      </svg>
+    </button>
+
     <!-- Order cart — a shopper can add items from the menu below and/or
          from Build Your Kebab; this drawer is the one place the whole
          order (across both sources) is reviewed, edited and sent. -->

@@ -71,6 +71,54 @@
     stickyOrder.inert = !shouldShow;
   }
 
+  // ── Mobile section jump bar + back to top ──
+  // Both ride the same signal as the order bar: once the hero is behind
+  // you, you are deep enough in a ~9-screen page to need a way around it.
+  // `inert` keeps each out of the tab/AT order while hidden.
+  var jumpBar = document.getElementById('jump-bar');
+  var toTop = document.getElementById('to-top');
+  var jumpLinks = jumpBar
+    ? Array.prototype.slice.call(jumpBar.querySelectorAll('.jump-bar__link'))
+    : [];
+
+  function updateJumpBar() {
+    if (!heroSection) return;
+    var pastHero = heroSection.getBoundingClientRect().bottom < 0;
+    var navOpen = navLinks.classList.contains('open');
+    var show = pastHero && !navOpen;
+
+    if (jumpBar) {
+      jumpBar.classList.toggle('is-visible', show);
+      jumpBar.inert = !show;
+    }
+    if (toTop) {
+      toTop.classList.toggle('is-visible', show);
+      toTop.inert = !show;
+    }
+    if (!show || !jumpLinks.length) return;
+
+    // Highlight whichever section currently owns the upper third of the
+    // viewport, so the bar doubles as a "you are here" indicator.
+    var marker = window.innerHeight * 0.33;
+    var current = null;
+    jumpLinks.forEach(function (link) {
+      var section = document.querySelector(link.getAttribute('href'));
+      if (section && section.getBoundingClientRect().top <= marker) current = link;
+    });
+    jumpLinks.forEach(function (link) {
+      link.classList.toggle('is-current', link === current);
+    });
+  }
+
+  if (toTop) {
+    toTop.addEventListener('click', function () {
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth'
+      });
+    });
+  }
+
   // ── Keep the fixed header off the footer's own logo ──
   // The footer carries its own logo + tagline right at its top edge. On
   // short documents (mostly stacked single-column mobile layouts) that
@@ -104,6 +152,7 @@
   function onScroll() {
     updateScrollProgress();
     updateStickyOrder();
+    updateJumpBar();
     updateHeaderFooterAvoidance();
     updateAmbientGlow();
   }
@@ -118,6 +167,7 @@
     navToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
     document.body.style.overflow = isOpen ? 'hidden' : '';
     updateStickyOrder();
+    updateJumpBar();
   });
 
   navLinks.querySelectorAll('.nav__link').forEach(function (link) {
@@ -128,6 +178,7 @@
       navToggle.setAttribute('aria-label', 'Open menu');
       document.body.style.overflow = '';
       updateStickyOrder();
+      updateJumpBar();
     });
   });
 
