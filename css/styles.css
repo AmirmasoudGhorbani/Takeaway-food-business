@@ -1810,6 +1810,17 @@ ul {
   align-items: start;
 }
 
+/* A `1fr` track is `minmax(auto, 1fr)`, and that `auto` floor is the
+   item's min-content width — which for the preview card includes its
+   nowrap summary values ("Onion, Parsley, Tomato, Mixed Cabbage,
+   Lettuce"). Picking four or five salads therefore pushed the track
+   past the container and shoved the whole page sideways, worst on
+   phones where the grid collapses to one column and has no slack.
+   min-width:0 lets the track shrink so the ellipsis actually engages. */
+.builder__grid > * {
+  min-width: 0;
+}
+
 .builder__groups {
   display: flex;
   flex-direction: column;
@@ -3516,6 +3527,9 @@ body.cart-drawer-open {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* Same reasoning as .builder__grid > * — keeps this nowrap string
+       from setting a min-content floor on the header's own grid track. */
+    min-width: 0;
   }
   /* An open step already shows its picks as highlighted chips, so
      repeating them in the header would just be noise. */
