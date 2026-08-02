@@ -99,11 +99,23 @@
 
     // Highlight whichever section currently owns the upper third of the
     // viewport, so the bar doubles as a "you are here" indicator.
+    // Picks the *lowest* section that has already started, by comparing
+    // positions rather than by taking the last match in link order — the
+    // chips don't have to be listed in document order for this to be
+    // right, which they previously weren't (Combos sits above Build
+    // Yours on the page but was listed after it, so Combos won every
+    // time and Build Yours could never light up).
     var marker = window.innerHeight * 0.33;
     var current = null;
+    var currentTop = -Infinity;
     jumpLinks.forEach(function (link) {
       var section = document.querySelector(link.getAttribute('href'));
-      if (section && section.getBoundingClientRect().top <= marker) current = link;
+      if (!section) return;
+      var top = section.getBoundingClientRect().top;
+      if (top <= marker && top > currentTop) {
+        currentTop = top;
+        current = link;
+      }
     });
     jumpLinks.forEach(function (link) {
       link.classList.toggle('is-current', link === current);

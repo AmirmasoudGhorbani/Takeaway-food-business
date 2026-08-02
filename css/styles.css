@@ -3621,13 +3621,51 @@ body.cart-drawer-open {
     flex-direction: column;
   }
 
+  /* The footer ran to 931px stacked — the Explore links alone took
+     252px at one full-width row each. Laying them out as a wrapped
+     row and tightening the surrounding space cuts that roughly in
+     half without shrinking any tap target below the ~44px minimum. */
+  .footer {
+    padding: var(--space-xl) 0 var(--space-lg);
+  }
   .footer__grid {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 20px;
+    margin-bottom: 1.4rem;
   }
   .footer__logo {
     justify-content: center;
   }
+  .footer__tagline {
+    margin-inline: auto;
+  }
+  .footer__heading {
+    margin-bottom: 6px;
+  }
+
+  /* Explore: a centred wrapped row instead of five stacked rows. */
+  .footer__col {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px 18px;
+  }
+  .footer__col .footer__heading {
+    flex: 0 0 100%;
+  }
+
+  /* Visit: these are static address lines rather than links, so they
+     don't need a touch target — only the phone number does, and it
+     keeps its full padding below. */
+  .footer__col p {
+    padding: 2px 0;
+    flex: 0 0 100%;
+  }
+  .footer__col a {
+    padding: 8px 0;
+  }
+
   .footer__bottom {
     justify-content: center;
     text-align: center;
