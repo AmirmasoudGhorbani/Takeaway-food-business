@@ -2129,7 +2129,7 @@ ul {
 /* ========================================
    STICKY MOBILE BUILDER TOTAL BAR
    ======================================== */
-.builder__sms-btn {
+.builder__call-btn {
   margin-top: 10px;
 }
 
@@ -3016,6 +3016,36 @@ body.cart-drawer-open {
   line-height: 1.6;
 }
 
+/* Orders are read out over the phone, so the list is grouped under the
+   menu's own headings — the customer works down it in the same order the
+   shop writes it onto the docket. */
+.cart-drawer__group {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ember-light);
+}
+.cart-drawer__group:first-child {
+  margin-top: 0;
+}
+
+.cart-drawer__note {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* An inline <svg> with no width/height stretches to fill its flex line,
+   so the footer's phone icon needs an explicit size or it swallows the
+   whole button. */
+.cart-drawer__footer .btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
 .cart-drawer__footer {
   flex: none;
   padding: 18px 22px calc(18px + env(safe-area-inset-bottom));
@@ -3045,15 +3075,7 @@ body.cart-drawer-open {
   color: var(--gold);
 }
 
-#cart-sms-btn.is-disabled {
-  opacity: 0.4;
-  pointer-events: none;
-}
 
-#cart-sms-btn .icon {
-  width: 18px;
-  height: 18px;
-}
 
 .cart-drawer__clear {
   align-self: center;

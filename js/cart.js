@@ -3,14 +3,13 @@
    Shared cart used by both the static menu (js/menu-cart.js) and the
    Build Your Kebab customizer (js/builder.js) — either can push a line
    item in via window.KebabCart.add(), and everything ends up in one
-   list the shopper reviews, edits and sends as a single SMS.
+   list the shopper reviews and edits, then reads out over the phone.
    ======================================== */
 
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'ksk_cart_v1';
-  var SMS_NUMBER = '+6494126030';
 
   var cartBtn = document.getElementById('nav-cart-btn');
   var cartCount = document.getElementById('nav-cart-count');
@@ -19,7 +18,7 @@
   var closeBtn = document.getElementById('cart-drawer-close');
   var body = document.getElementById('cart-drawer-body');
   var totalEl = document.getElementById('cart-drawer-total');
-  var smsBtn = document.getElementById('cart-sms-btn');
+  var note = document.getElementById('cart-drawer-note');
   var clearBtn = document.getElementById('cart-drawer-clear');
   if (!cartBtn || !drawer || !body) return;
 
@@ -194,11 +193,12 @@
     cartCount.hidden = n === 0;
   }
 
-  // Groups the order under its menu categories so whoever reads it at the
-  // shop can work down it section by section, rather than parsing one flat
-  // run of names. Categories are emitted in menu order (CATEGORY_ORDER),
-  // with anything unrecognised — e.g. a cart saved before categories
-  // existed — falling to the end rather than being dropped.
+  // Orders are placed by phone, so this list is read aloud rather than
+  // sent anywhere. Grouping it under the menu's own categories means the
+  // customer reads it out in the same order the shop writes it down,
+  // instead of reciting one flat run of names. Categories are emitted in
+  // menu order, with anything unrecognised — e.g. a cart saved before
+  // categories existed — falling to the end rather than being dropped.
   var CATEGORY_ORDER = [
     'Doner Kebab',
     'Special Kebab',
@@ -218,40 +218,20 @@
     return i === -1 ? CATEGORY_ORDER.length : i;
   }
 
-  function buildSmsBody() {
+  function groupedCart() {
     var groups = {};
     cart.forEach(function (c) {
       var cat = c.category || 'Other';
       (groups[cat] = groups[cat] || []).push(c);
     });
-
-    var names = Object.keys(groups).sort(function (a, b) {
-      var d = categoryRank(a) - categoryRank(b);
-      return d !== 0 ? d : a.localeCompare(b);
-    });
-
-    var lines = ["Hi, I'd like to order:"];
-    names.forEach(function (cat) {
-      lines.push('');
-      lines.push(cat.toUpperCase());
-      groups[cat].forEach(function (c) {
-        lines.push('  ' + c.qty + 'x ' + c.name + '  $' + (c.price * c.qty).toFixed(2));
-        // Only built-to-order items carry a detail line, and for those it
-        // is the actual spec (base/salad/sauce) rather than menu blurb —
-        // so it has to travel with the order.
-        if (c.detail) lines.push('     ' + c.detail);
+    return Object.keys(groups)
+      .sort(function (a, b) {
+        var d = categoryRank(a) - categoryRank(b);
+        return d !== 0 ? d : a.localeCompare(b);
+      })
+      .map(function (cat) {
+        return { name: cat, items: groups[cat] };
       });
-    });
-    lines.push('');
-    lines.push('TOTAL: $' + totalPrice().toFixed(2));
-    return lines.join('\n');
-  }
-
-  // The "?&" before body (rather than a plain "?") is the one query form
-  // that both iOS and Android Messages reliably prefill from.
-  function updateSmsHref() {
-    if (!smsBtn) return;
-    smsBtn.href = 'sms:' + SMS_NUMBER + '?&body=' + encodeURIComponent(buildSmsBody());
   }
 
   function qtyButton(iconId, label, onClick) {
@@ -340,17 +320,19 @@
       empty.textContent = 'Your order is empty. Add something from the menu or build your own kebab.';
       body.appendChild(empty);
     } else {
-      cart.forEach(function (item) {
-        body.appendChild(itemRow(item));
+      groupedCart().forEach(function (group) {
+        var heading = document.createElement('p');
+        heading.className = 'cart-drawer__group';
+        heading.textContent = group.name;
+        body.appendChild(heading);
+        group.items.forEach(function (item) {
+          body.appendChild(itemRow(item));
+        });
       });
     }
     if (totalEl) totalEl.textContent = '$' + totalPrice().toFixed(2);
     if (clearBtn) clearBtn.hidden = cart.length === 0;
-    if (smsBtn) {
-      smsBtn.classList.toggle('is-disabled', cart.length === 0);
-      smsBtn.setAttribute('aria-disabled', cart.length === 0 ? 'true' : 'false');
-    }
-    updateSmsHref();
+    if (note) note.hidden = cart.length === 0;
   }
 
   // ── Drawer open/close ──
