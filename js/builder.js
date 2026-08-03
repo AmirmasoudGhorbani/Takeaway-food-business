@@ -1,7 +1,9 @@
 /* ========================================
    KEBAB STATION KUMEU — Build Your Kebab
-   Reads option data-attributes, renders a
-   live summary + running total
+   Reads option data-attributes, renders a live summary + running total.
+   Orders are placed by phone, so this is a price calculator and a
+   prompt sheet: the shopper settles on a combo here, sees what it
+   costs, then calls and reads the summary out.
 
    Pricing matches the real menu exactly, which prices Falafel/Super
    differently per base (e.g. Falafel is -$1 on a Wrap but -$2 on Rice) —
@@ -20,8 +22,6 @@
   var totalEl = document.getElementById('builder-total');
   var mobileBar = document.getElementById('builder-mobile-bar');
   var mobileTotalEl = document.getElementById('builder-mobile-total');
-  var addBtn = document.getElementById('builder-add-btn');
-  var mobileAddBtn = document.getElementById('builder-mobile-add-btn');
   var builderSection = document.getElementById('builder');
   if (!summary || !totalEl) return;
 
@@ -266,59 +266,6 @@
       extras: extras
     };
   }
-
-  // ── Add current build to the shared cart ──
-  // Reuses whatever's already rendered (dish title/subtitle/total) rather
-  // than re-deriving it, since update() keeps all three in sync already.
-  // After adding, every group resets to its original default selection so
-  // the shopper can build a second, different kebab without the previous
-  // picks lingering.
-  var DEFAULT_ACTIVE = {
-    base: ['wrap'],
-    meat: ['chicken'],
-    salads: ['tomato', 'lettuce'],
-    sauces: ['garlicyoghurt'],
-    extras: []
-  };
-
-  function resetSelections() {
-    groups.forEach(function (group) {
-      var groupName = group.getAttribute('data-group');
-      var mode = group.getAttribute('data-mode');
-      var defaults = DEFAULT_ACTIVE[groupName] || [];
-      group.querySelectorAll('.builder__option').forEach(function (opt) {
-        opt.disabled = false;
-        opt.classList.remove('is-disabled');
-        opt.setAttribute('aria-disabled', 'false');
-        var shouldBeActive = defaults.indexOf(opt.dataset.id) !== -1;
-        opt.classList.toggle('is-active', shouldBeActive);
-        if (mode === 'single') opt.setAttribute('aria-checked', shouldBeActive ? 'true' : 'false');
-        else opt.setAttribute('aria-pressed', shouldBeActive ? 'true' : 'false');
-      });
-    });
-    update();
-  }
-
-  function addCurrentToCart() {
-    if (!window.KebabCart) return;
-    var sel = currentSelection();
-    // Unlike the fixed menu items, `detail` here is the build itself
-    // (base / salad / sauce / extras), so it travels with the order
-    // rather than being dropped as blurb.
-    window.KebabCart.add(
-      {
-        name: sel.name,
-        detail: sel.detail,
-        category: 'Build Your Own',
-        price: sel.price
-      },
-      document.querySelector('.builder__card')
-    );
-    resetSelections();
-  }
-
-  if (addBtn) addBtn.addEventListener('click', addCurrentToCart);
-  if (mobileAddBtn) mobileAddBtn.addEventListener('click', addCurrentToCart);
 
   // ── Mobile sticky total bar ──
   // Mirrors the site-wide sticky order bar's own visibility logic (see

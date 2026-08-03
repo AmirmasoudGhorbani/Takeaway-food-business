@@ -581,72 +581,10 @@ ul {
   gap: 2rem;
 }
 
-.nav__cart-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(245, 237, 224, 0.06);
-  border: 1px solid var(--border-strong);
-  color: var(--text-cream);
-  transition: background var(--duration) var(--ease),
-    border-color var(--duration) var(--ease);
-}
-.nav__cart-btn:hover {
-  background: rgba(245, 237, 224, 0.12);
-  border-color: rgba(232, 83, 31, 0.4);
-}
-.nav__cart-btn .icon {
-  width: 20px;
-  height: 20px;
-}
 
-.nav__cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  min-width: 19px;
-  height: 19px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  background: var(--ember);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 800;
-  border: 2px solid var(--bg-base);
-}
 
-/* display:flex above would otherwise beat the UA [hidden]{display:none}
-   default, since author styles always win over user-agent ones. */
-.nav__cart-count[hidden] {
-  display: none;
-}
 
-@keyframes cart-count-bump {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.28);
-  }
-}
-.nav__cart-count.is-bumping {
-  animation: cart-count-bump 0.4s var(--ease-out);
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .nav__cart-count.is-bumping {
-    animation: none;
-  }
-}
 
 .nav__link {
   position: relative;
@@ -1531,64 +1469,9 @@ ul {
   flex-shrink: 0;
 }
 
-/* Injected by js/menu-cart.js next to each item's price — adds that item
-   (name + description as its detail line) straight to the shared cart. */
-.menu-item__add {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--ember-soft);
-  border: 1px solid rgba(232, 83, 31, 0.5);
-  color: var(--ember-light);
-  transition: background var(--duration) var(--ease),
-    transform var(--duration) var(--ease);
-}
-.menu-item__add:hover {
-  background: rgba(232, 83, 31, 0.32);
-  transform: scale(1.08);
-}
-.menu-item__add .icon {
-  width: 16px;
-  height: 16px;
-}
 
-/* Sized items (S/L) have no separate add button — each price row itself
-   becomes the add trigger for that size. */
-.menu-item__price-row--addable {
-  cursor: pointer;
-  padding: 3px 8px;
-  margin: -3px -8px;
-  border-radius: var(--radius-sm);
-  transition: background var(--duration) var(--ease);
-}
-.menu-item__price-row--addable:hover,
-.menu-item__price-row--addable:focus-visible {
-  background: var(--ember-soft);
-  outline: none;
-}
 
-@keyframes menu-add-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(1.22);
-  }
-}
-.is-added {
-  animation: menu-add-pulse 0.4s var(--ease-out);
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .is-added {
-    animation: none;
-  }
-}
 
 /* For items sold in two sizes (e.g. chips, wedges) — stacks S/L prices
    instead of a single figure, at a smaller scale so it doesn't outweigh
@@ -1773,13 +1656,6 @@ ul {
   color: var(--text-dim);
 }
 
-.combo-card__add {
-  margin-top: 4px;
-}
-.combo-card__add .icon {
-  width: 15px;
-  height: 15px;
-}
 
 /* ========================================
    BUILD YOUR KEBAB
@@ -2129,11 +2005,21 @@ ul {
 /* ========================================
    STICKY MOBILE BUILDER TOTAL BAR
    ======================================== */
-.builder__call-btn {
+.builder__order-note {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.builder__uber-btn {
   margin-top: 10px;
 }
 
-#builder-add-btn .icon {
+/* An inline <svg> with no width/height stretches to fill its flex line,
+   so this needs an explicit size or it swallows the whole button. */
+.builder__call-btn .icon {
   width: 18px;
   height: 18px;
 }
@@ -2619,67 +2505,6 @@ ul {
 }
 
 /* ========================================
-   ADD-TO-ORDER FEEDBACK
-   Toast + a ghost that flies from the item to the cart button, so a tap
-   is confirmed by something more noticeable than the badge ticking up.
-   Both are created on demand in js/cart.js.
-   ======================================== */
-.cart-toast {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  z-index: 1200;
-  padding: 12px 22px;
-  border-radius: var(--radius-full);
-  background: rgba(20, 16, 14, 0.96);
-  border: 1px solid rgba(232, 83, 31, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
-  color: var(--text-cream);
-  font-size: 0.88rem;
-  font-weight: 700;
-  white-space: nowrap;
-  max-width: calc(100vw - 32px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, 16px);
-  transition: opacity var(--duration) var(--ease-out),
-    transform var(--duration) var(--ease-plastic);
-}
-
-.cart-toast.is-visible {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-/* Clear of the mobile sticky bars, which own the same corner. */
-@media (max-width: 768px) {
-  .cart-toast {
-    bottom: 92px;
-  }
-}
-
-.cart-fly {
-  position: fixed;
-  z-index: 1150;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--ember-light), var(--ember-deep));
-  box-shadow: 0 6px 18px rgba(232, 83, 31, 0.55);
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cart-toast {
-    transition: none;
-  }
-}
-
-/* ========================================
    SKIP LINK
    There are ~150 focusable elements on this page; without this a keyboard
    or screen-reader user tabs the entire nav before reaching any content.
@@ -2902,325 +2727,6 @@ ul {
   .jump-bar,
   .to-top {
     transition: none;
-  }
-}
-
-/* ========================================
-   CART DRAWER
-   Slide-in panel listing everything added from the menu and/or Build
-   Your Kebab. Above the mobile nav overlay (1005) and its close button
-   (1010) so it's reachable even if a shopper opens it right after the
-   menu — not that both are ever open at once in normal use.
-   ======================================== */
-body.cart-drawer-open {
-  overflow: hidden;
-}
-
-.cart-drawer {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.cart-drawer.is-open {
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.cart-drawer__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(8, 5, 4, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  transition: opacity var(--duration-slow) var(--ease-out);
-}
-
-.cart-drawer.is-open .cart-drawer__backdrop {
-  opacity: 1;
-}
-
-.cart-drawer__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(420px, 100vw);
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, var(--bg-card-1), var(--bg-deep));
-  border-left: 1px solid var(--border-strong);
-  box-shadow: -24px 0 48px rgba(0, 0, 0, 0.5);
-  transform: translateX(100%);
-  transition: transform var(--duration-slow) var(--ease-plastic);
-}
-
-.cart-drawer.is-open .cart-drawer__panel {
-  transform: translateX(0);
-}
-
-.cart-drawer__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 22px 16px;
-  border-bottom: 1px solid var(--border);
-  flex: none;
-}
-
-.cart-drawer__title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.3rem;
-  color: var(--text-cream);
-}
-
-.cart-drawer__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(245, 237, 224, 0.06);
-  border: 1px solid var(--border-strong);
-  color: var(--text-cream);
-  flex: none;
-  transition: background var(--duration) var(--ease);
-}
-.cart-drawer__close:hover {
-  background: rgba(245, 237, 224, 0.14);
-}
-.cart-drawer__close .icon {
-  width: 16px;
-  height: 16px;
-}
-
-.cart-drawer__body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cart-drawer__empty {
-  padding: 40px 0;
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-/* Orders are read out over the phone, so the list is grouped under the
-   menu's own headings — the customer works down it in the same order the
-   shop writes it onto the docket. */
-.cart-drawer__group {
-  margin-top: 6px;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ember-light);
-}
-.cart-drawer__group:first-child {
-  margin-top: 0;
-}
-
-.cart-drawer__note {
-  font-size: 0.78rem;
-  line-height: 1.5;
-  color: var(--text-dim);
-  text-align: center;
-}
-
-/* An inline <svg> with no width/height stretches to fill its flex line,
-   so the footer's phone icon needs an explicit size or it swallows the
-   whole button. */
-.cart-drawer__footer .btn .icon {
-  width: 18px;
-  height: 18px;
-}
-
-.cart-drawer__footer {
-  flex: none;
-  padding: 18px 22px calc(18px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--border-strong);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cart-drawer__total-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.cart-drawer__total-label {
-  font-size: 0.88rem;
-  color: var(--text-faint);
-  font-weight: 600;
-}
-
-.cart-drawer__total {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.5rem;
-  color: var(--gold);
-}
-
-
-
-.cart-drawer__clear {
-  align-self: center;
-  padding: 6px 10px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  transition: color var(--duration) var(--ease);
-}
-.cart-drawer__clear:hover {
-  color: #f28b6a;
-}
-
-/* ── Line items ── */
-.cart-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  background: rgba(245, 237, 224, 0.03);
-  border: 1px solid var(--border);
-  animation: cart-item-in 0.25s var(--ease-out) backwards;
-}
-
-@keyframes cart-item-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.cart-item__info {
-  flex: 1;
-  min-width: 0;
-}
-
-.cart-item__name {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text-cream);
-  line-height: 1.35;
-}
-
-.cart-item__detail {
-  margin-top: 2px;
-  font-size: 0.76rem;
-  color: var(--text-dim);
-  line-height: 1.4;
-}
-
-.cart-item__controls {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.cart-item__controls-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cart-item__qty {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.cart-item__qty-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(245, 237, 224, 0.08);
-  border: 1px solid var(--border-strong);
-  color: var(--text-cream);
-  flex: none;
-  transition: background var(--duration) var(--ease);
-}
-.cart-item__qty-btn:hover {
-  background: rgba(232, 83, 31, 0.24);
-}
-.cart-item__qty-btn .icon {
-  width: 12px;
-  height: 12px;
-}
-
-.cart-item__qty-value {
-  min-width: 16px;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-cream);
-}
-
-.cart-item__price {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--gold);
-}
-
-.cart-item__remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  color: var(--text-dim);
-  flex: none;
-  transition: color var(--duration) var(--ease),
-    background var(--duration) var(--ease);
-}
-.cart-item__remove:hover {
-  color: #f28b6a;
-  background: rgba(232, 83, 31, 0.14);
-}
-.cart-item__remove .icon {
-  width: 14px;
-  height: 14px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cart-drawer__backdrop,
-  .cart-drawer__panel {
-    transition: none;
-  }
-  .cart-item {
-    animation: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .cart-drawer__panel {
-    width: 100vw;
   }
 }
 
