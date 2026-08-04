@@ -396,10 +396,6 @@ ul {
   background: rgba(232, 83, 31, 0.18);
 }
 
-.btn--sm {
-  padding: 0.7rem 1.4rem;
-  font-size: 0.85rem;
-}
 
 /* Pressed state: tilts toward the press point and compresses, force
    scaling everything via --pf (0–1). Fast, un-eased tracking while held
@@ -1130,12 +1126,6 @@ ul {
   margin-bottom: 2.4rem;
 }
 
-.menu__intro {
-  max-width: 340px;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-faint);
-}
 
 .menu__tabs {
   display: flex;
