@@ -8,6 +8,57 @@
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ── Preloader ──
+  // Keeps the page hidden behind a full-screen overlay until fonts, the
+  // hero video's metadata, and every other initially-requested resource
+  // have settled — so the first thing a visitor sees is the finished
+  // layout, not fonts swapping in or the hero popping in mid-fetch. Runs
+  // after hero.js (see index.html's script order: the two hero.js branches
+  // that touch #hero-video's src both execute synchronously before this
+  // module code runs), so checking the video's current src/readyState here
+  // already reflects whichever path hero.js took. Capped at 5s so a slow
+  // or blocked resource can never strand a visitor behind it, and the
+  // <noscript> rule in index.html hides the overlay outright when this
+  // script never runs at all.
+  (function preload() {
+    var preloader = document.getElementById('preloader');
+    if (!preloader) return;
+
+    var pageLoaded = new Promise(function (resolve) {
+      if (document.readyState === 'complete') resolve();
+      else window.addEventListener('load', resolve, { once: true });
+    });
+
+    var fontsReady =
+      document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+
+    var heroVideo = document.getElementById('hero-video');
+    var videoReady = new Promise(function (resolve) {
+      if (!heroVideo || !heroVideo.hasAttribute('src') || heroVideo.readyState >= 1) {
+        resolve();
+        return;
+      }
+      heroVideo.addEventListener('loadedmetadata', resolve, { once: true });
+      heroVideo.addEventListener('error', resolve, { once: true });
+    });
+
+    var timeout = new Promise(function (resolve) {
+      setTimeout(resolve, 5000);
+    });
+
+    Promise.race([Promise.all([pageLoaded, fontsReady, videoReady]), timeout]).then(function () {
+      preloader.classList.add('is-hidden');
+      // transitionend covers the normal fade; the fallback timer catches
+      // reduced-motion visitors, whose CSS drops the transition entirely
+      // (so transitionend would never fire) and anyone else it might miss.
+      var remove = function () {
+        preloader.hidden = true;
+      };
+      preloader.addEventListener('transitionend', remove, { once: true });
+      setTimeout(remove, 700);
+    });
+  })();
+
   // ── Motion library: loaded on the side, never blocking ──
   // This used to be a static top-level `import` of the CDN module. That
   // meant a blocked/slow/failed fetch (ad-blockers, flaky mobile networks,

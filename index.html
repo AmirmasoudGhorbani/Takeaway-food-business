@@ -112,6 +112,32 @@
     </script>
   </head>
   <body>
+    <!-- Preloader: covers the page while fonts, the hero video's metadata,
+         and every other initial resource load, so nothing shifts, pops in
+         unstyled, or shows mid-fetch on first paint. main.js hides it once
+         everything's ready, capped at 5s so a slow/blocked resource can
+         never strand a visitor behind it; the <noscript> rule hides it
+         outright when JS never runs at all. -->
+    <div class="preloader" id="preloader" aria-hidden="true">
+      <div class="preloader__mark">
+        <img
+          class="preloader__logo"
+          src="assets/icons/logo-mark.png"
+          alt=""
+          width="38"
+          height="38"
+        />
+        <span class="preloader__ring"></span>
+      </div>
+    </div>
+    <noscript>
+      <style>
+        .preloader {
+          display: none !important;
+        }
+      </style>
+    </noscript>
+
     <svg
       class="icon-sprite"
       aria-hidden="true"
