@@ -2686,7 +2686,10 @@ ul {
   /* A glow alone (ks-glow, what .hero__accent uses on "fire" in the
      headline) reads as a colour shift, not motion — fine for a big
      headline word, too subtle for four small words in the footer's fine
-     print. Breathing the scale too makes the movement unmistakable. */
+     print. Breathing the scale handled "noticeable" but stayed anchored
+     in place; adding the same gentle rise-and-settle .hero__title--float
+     uses (translateY, a few px) is what actually reads as it moving,
+     not just pulsing. */
   animation: footer-credit-pulse 3s ease-in-out infinite;
 }
 
@@ -2694,11 +2697,11 @@ ul {
   0%,
   100% {
     filter: drop-shadow(0 0 12px rgba(232, 83, 31, 0.4));
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
   50% {
     filter: drop-shadow(0 0 20px rgba(240, 167, 46, 0.7));
-    transform: scale(1.08);
+    transform: translateY(-3px) scale(1.08);
   }
 }
 
