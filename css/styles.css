@@ -2675,6 +2675,18 @@ ul {
   color: var(--text-dim);
 }
 
+.footer__bottom a {
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+  transition: color var(--duration) var(--ease);
+}
+
+.footer__bottom a:hover {
+  color: var(--ember-light);
+}
+
 /* ========================================
    SKIP LINK
    There are ~150 focusable elements on this page; without this a keyboard
@@ -3335,8 +3347,12 @@ ul {
      252px at one full-width row each. Laying them out as a wrapped
      row and tightening the surrounding space cuts that roughly in
      half without shrinking any tap target below the ~44px minimum. */
+  /* Extra bottom clearance so the fixed sticky-order bar (~84px, see its
+     own scroll-padding-bottom above) never sits over the last real
+     content — a plain scroll to the bottom isn't scroll-padding's doing,
+     that only affects anchor/scroll-snap targets. */
   .footer {
-    padding: var(--space-xl) 0 var(--space-lg);
+    padding: var(--space-xl) 0 calc(var(--space-lg) + 84px);
   }
   .footer__grid {
     grid-template-columns: 1fr;
