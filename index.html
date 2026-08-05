@@ -9,9 +9,19 @@
     />
     <title>Kebab Station Kumeu — Carved Over Fire, Served Fast</title>
 
+    <!-- TODO: swap these to the production domain once a custom domain is
+         live (see the matching TODOs on sitemap.xml/robots.txt). -->
+    <link
+      rel="canonical"
+      href="https://amirmasoudghorbani.github.io/takeaway-food-business/"
+    />
+
     <!-- Open Graph -->
-    <!-- TODO once the production domain is known: add <link rel="canonical"> and an og:url meta tag pointing to it. -->
-    <meta property="og:type" content="restaurant" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://amirmasoudghorbani.github.io/takeaway-food-business/"
+    />
     <meta
       property="og:title"
       content="Kebab Station Kumeu — Carved Over Fire, Served Fast"
@@ -20,8 +30,28 @@
       property="og:description"
       content="Halal lamb and chicken doner, shaved fresh from the spit. Warm flatbread, crisp salad, house-made sauces. 2/42 Main Road, Kumeu, Auckland."
     />
-    <meta property="og:image" content="assets/images/og-logo.jpg" />
+    <meta
+      property="og:image"
+      content="https://amirmasoudghorbani.github.io/takeaway-food-business/assets/images/og-logo.jpg"
+    />
     <meta property="og:locale" content="en_NZ" />
+
+    <!-- Twitter/X card (falls back to Open Graph tags above for everything
+         except twitter:card, but crawlers look for these explicitly) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Kebab Station Kumeu — Carved Over Fire, Served Fast"
+    />
+    <meta
+      name="twitter:description"
+      content="Halal lamb and chicken doner, shaved fresh from the spit. Warm flatbread, crisp salad, house-made sauces. 2/42 Main Road, Kumeu, Auckland."
+    />
+    <meta
+      name="twitter:image"
+      content="https://amirmasoudghorbani.github.io/takeaway-food-business/assets/images/og-logo.jpg"
+    />
+
     <meta name="theme-color" content="#14100E" />
 
     <!-- Favicon: doner skewer mark on the brand's dark rounded-square badge -->
@@ -42,14 +72,18 @@
     <link rel="stylesheet" href="css/styles.css" />
 
     <!-- Structured data for search engines (Google rich results: hours, price range, map).
-       "url"/"image"/"sameAs" are intentionally omitted until a production domain and
-       real social profile links exist — fill in once known. priceRange is a placeholder
+       "sameAs" (social profile links) is intentionally omitted until real
+       social links exist — fill in once known. "url"/"image" point at the
+       current github.io address; swap alongside the canonical/og:url TODOs
+       above if a custom domain goes live. priceRange is a placeholder
        estimate ($$ = casual dining ~$15-27 mains); adjust if it doesn't fit. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Restaurant",
         "name": "Kebab Station Kumeu",
+        "url": "https://amirmasoudghorbani.github.io/takeaway-food-business/",
+        "image": "https://amirmasoudghorbani.github.io/takeaway-food-business/assets/images/og-logo.jpg",
         "servesCuisine": ["Turkish", "Middle Eastern", "Halal"],
         "priceRange": "$$",
         "telephone": "+64-9-412-6030",
@@ -634,7 +668,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/donor-kebab.webp')"
+                style="--banner-bg: url('../assets/images/donor-kebab.webp')"
               >
                 <img
                   src="assets/images/donor-kebab.webp"
@@ -801,7 +835,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/special-kebab.webp')"
+                style="--banner-bg: url('../assets/images/special-kebab.webp')"
               >
                 <img
                   src="assets/images/special-kebab.webp"
@@ -905,7 +939,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/donor-on-rice.webp')"
+                style="--banner-bg: url('../assets/images/donor-on-rice.webp')"
               >
                 <img
                   src="assets/images/donor-on-rice.webp"
@@ -1029,7 +1063,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/menu-salad.webp')"
+                style="--banner-bg: url('../assets/images/menu-salad.webp')"
               >
                 <img
                   src="assets/images/menu-salad.webp"
@@ -1154,7 +1188,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/donor-on-chips.webp')"
+                style="--banner-bg: url('../assets/images/donor-on-chips.webp')"
               >
                 <img
                   src="assets/images/donor-on-chips.webp"
@@ -1239,7 +1273,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/menu-shawarma.webp')"
+                style="--banner-bg: url('../assets/images/menu-shawarma.webp')"
               >
                 <img
                   src="assets/images/menu-shawarma.webp"
@@ -1325,7 +1359,7 @@
             >
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/menu-burgers.webp')"
+                style="--banner-bg: url('../assets/images/menu-burgers.webp')"
               >
                 <img
                   src="assets/images/menu-burgers.webp"
@@ -1415,7 +1449,7 @@
                    of the actual sides is shot. Swap the src/--banner-bg when ready. -->
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/menu-sides.webp')"
+                style="--banner-bg: url('../assets/images/menu-sides.webp')"
               >
                 <img
                   src="assets/images/menu-sides.webp"
@@ -1608,7 +1642,7 @@
                    of the actual milkshakes is shot. Swap the src/--banner-bg when ready. -->
               <div
                 class="menu__banner reveal"
-                style="--banner-bg: url('/assets/images/menu-drinks.webp')"
+                style="--banner-bg: url('../assets/images/menu-drinks.webp')"
               >
                 <img
                   src="assets/images/Drinks.webp"
