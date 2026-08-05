@@ -493,6 +493,12 @@
         // .reveal.is-settling in styles.css) rather than a transition that
         // would blunt the live tracking too.
         card.classList.add('is-settling');
+        // Without this, the class and the value change land in the same
+        // style recalculation and the browser has no committed "before"
+        // frame to transition from — it's a coin flip per-browser whether
+        // that animates at all, which is exactly what read as glitchy
+        // rather than reliably smooth or reliably snapping.
+        void card.offsetWidth;
         card.style.setProperty('--tilt-x', '0deg');
         card.style.setProperty('--tilt-y', '0deg');
         settleTimer = setTimeout(function () {
