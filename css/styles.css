@@ -2685,16 +2685,24 @@ ul {
   transition: color var(--duration) var(--ease);
   /* Scaling it up (an earlier attempt) grew the text in place without
      reflowing "Site by " right before it — at the top of the pulse the
-     two visually overlapped, reading like a stacking/z-index glitch. The
-     hero H1 words never have that problem since they only ever move
-     vertically, so this reuses that exact animation (hero-word-float) —
-     same keyframe, same 4.5s timing — layered with the same glow
-     .hero__accent uses on "fire". Two separate animations rather than
-     one combined one, so each keeps its own independent timing exactly
-     as it already exists elsewhere, instead of a new keyframe that has
-     to stay manually in sync with both. */
-  animation: hero-word-float 4.5s ease-in-out infinite,
+     two visually overlapped, reading like a stacking/z-index glitch. Same
+     vertical-only idea as the hero H1 words' hero-word-float, but that
+     animation's -7px suits a big heading word — proportionally huge on
+     this much smaller footer text — so this is its own keyframe with a
+     smaller rise instead, same 4.5s timing and easing, still layered
+     with the same glow .hero__accent uses on "fire". */
+  animation: footer-credit-float 4.5s ease-in-out infinite,
     ks-glow 3s ease-in-out infinite;
+}
+
+@keyframes footer-credit-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
