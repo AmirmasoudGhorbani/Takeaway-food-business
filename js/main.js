@@ -46,7 +46,20 @@
       setTimeout(resolve, 5000);
     });
 
-    Promise.race([Promise.all([pageLoaded, fontsReady, videoReady]), timeout]).then(function () {
+    var ready = Promise.race([Promise.all([pageLoaded, fontsReady, videoReady]), timeout]);
+
+    // The animated mark is a deliberate flourish, not just a stall
+    // indicator, so it's held on screen for a minimum stretch even when
+    // everything's ready instantly (a warm cache, a fast connection) —
+    // otherwise it'd just flash. Reduced-motion visitors skip this: there's
+    // no animation for the wait to show off, so it'd just be a delay.
+    var minDisplay = prefersReducedMotion
+      ? Promise.resolve()
+      : new Promise(function (resolve) {
+          setTimeout(resolve, 3000);
+        });
+
+    Promise.all([ready, minDisplay]).then(function () {
       preloader.classList.add('is-hidden');
       // transitionend covers the normal fade; the fallback timer catches
       // reduced-motion visitors, whose CSS drops the transition entirely
