@@ -2918,6 +2918,17 @@ ul {
     rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
 }
 
+/* Set by the tilt handler in main.js for the moment right after the
+   cursor leaves (.combo-card/.menu-item/.story__image) — glides the tilt
+   back to flat instead of snapping. Scoped to just that moment rather
+   than transitioning .reveal generally, since a transition active during
+   pointermove would blunt the live cursor-tracking into a laggy trail
+   instead of a snappy 1:1 follow. Motion's own reveal-in spring is
+   already done well before hover is possible, so this can't fight it. */
+.reveal.is-settling {
+  transition: transform 0.4s var(--ease-out);
+}
+
 /* Stagger for these three now lives in main.js (staggerDelayFor), passed as
    Motion's `delay` option — transition-delay has no effect without a
    CSS transition, which .reveal no longer has. */
