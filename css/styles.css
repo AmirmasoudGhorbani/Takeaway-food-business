@@ -874,10 +874,31 @@ ul {
   animation: hero-word-float 4.5s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  /* animation: none alone would leave the line stuck at hero-word-in's
+     opacity: 0 starting state — fill-mode: both is what's holding it
+     there once the animation's gone, so opacity needs setting back
+     explicitly, same as .hero__title--float already does above for the
+     same reason. */
+  .hero__title > span {
+    opacity: 1;
+    animation: none;
+  }
+  .hero__title > span.hero__title--float {
+    animation: none;
+  }
+}
+
 .hero__accent {
   position: relative;
   color: var(--ember);
   animation: ks-glow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__accent {
+    animation: none;
+  }
 }
 
 /* Full-inset overlay so each spark's bottom/left % positions relative to
@@ -1195,6 +1216,15 @@ ul {
   animation: ks-marquee 34s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  /* The pills are one set duplicated once, for a seamless loop back to
+     0% — freezing here just shows that first, complete set normally,
+     rather than cutting anything off mid-scroll. */
+  .marquee__track {
+    animation: none;
+  }
+}
+
 .marquee__pill {
   flex: 0 0 auto;
   display: flex;
@@ -1400,6 +1430,12 @@ ul {
 .menu__panel.active {
   display: block;
   animation: fadeInUp 0.5s var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu__panel.active {
+    animation: none;
+  }
 }
 
 /* Each panel groups a few of the original, more specific categories under
