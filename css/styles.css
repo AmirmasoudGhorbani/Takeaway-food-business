@@ -1472,7 +1472,6 @@ ul {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
 }
 .menu-item__icon {
   width: 20px;
@@ -1496,14 +1495,6 @@ ul {
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-}
-
-/* --text-dim, not --text-ghost — ghost's ~3.6:1 contrast on this background
-   fails WCAG AA for normal-size text, and this line is read on every item. */
-.menu-item__desc {
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--text-dim);
 }
 
 .menu-item__price {
@@ -3174,11 +3165,13 @@ ul {
     font-size: 1.5rem;
   }
   .menu__list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   .menu-item {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
+    padding: 14px;
   }
   .menu-item__price {
     justify-self: flex-start;
