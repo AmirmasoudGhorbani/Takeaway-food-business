@@ -2676,16 +2676,30 @@ ul {
 }
 
 .footer__bottom a {
+  display: inline-block;
   font-weight: 800;
   color: var(--gold);
   text-decoration: underline;
   text-decoration-color: rgba(240, 167, 46, 0.4);
   text-underline-offset: 2px;
   transition: color var(--duration) var(--ease);
-  /* Same slow pulsing glow as .hero__accent (the "fire" in the headline)
-     — reusing the site's own established way of making a word insist on
-     being noticed, rather than inventing a new one. */
-  animation: ks-glow 3s ease-in-out infinite;
+  /* A glow alone (ks-glow, what .hero__accent uses on "fire" in the
+     headline) reads as a colour shift, not motion — fine for a big
+     headline word, too subtle for four small words in the footer's fine
+     print. Breathing the scale too makes the movement unmistakable. */
+  animation: footer-credit-pulse 3s ease-in-out infinite;
+}
+
+@keyframes footer-credit-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 12px rgba(232, 83, 31, 0.4));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(240, 167, 46, 0.7));
+    transform: scale(1.08);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
