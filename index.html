@@ -2741,7 +2741,20 @@
         <div class="container">
           <div class="find-us__grid">
             <div class="find-us__map reveal">
+              <div class="find-us__map-placeholder" aria-hidden="true">
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
               <iframe
+                id="find-us-map-frame"
                 src="https://www.google.com/maps?q=2%2F42+Main+Road%2C+Kumeu%2C+Auckland%2C+New+Zealand&output=embed"
                 width="100%"
                 height="100%"

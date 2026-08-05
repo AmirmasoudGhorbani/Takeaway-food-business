@@ -210,6 +210,42 @@
     header.classList.toggle('at-footer', tooClose);
   }
 
+  // ── Find Us map: fade in once actually loaded ──
+  // A live Google Maps embed takes a beat to fetch and paint — it's a real
+  // page, not a static asset — so it starts at opacity 0 (see styles.css)
+  // and only fades in on its own 'load' event, with the pulsing pin
+  // placeholder showing underneath until then.
+  var mapFrame = document.getElementById('find-us-map-frame');
+  if (mapFrame) {
+    var revealMap = function () {
+      mapFrame.classList.add('is-loaded');
+    };
+    mapFrame.addEventListener('load', revealMap, { once: true });
+
+    // The frame is loading="lazy" and sits far down the page, so its fetch
+    // only begins once it nears the viewport — a fallback timer set at
+    // page-load time would fire long before that. Starting it instead once
+    // the frame actually scrolls into view keeps the safety net (never
+    // leave the map permanently hidden behind the placeholder if 'load'
+    // is somehow missed) correctly tied to when loading really starts.
+    if ('IntersectionObserver' in window) {
+      var mapObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              setTimeout(revealMap, 6000);
+              mapObserver.disconnect();
+            }
+          });
+        },
+        { rootMargin: '200px' }
+      );
+      mapObserver.observe(mapFrame);
+    } else {
+      setTimeout(revealMap, 6000);
+    }
+  }
+
   // ── Scroll-linked ambient glow ──
   // Drifts the .scroll-glow radial gradient (see index.html/styles.css)
   // slowly down the viewport as the page scrolls, so the sections read as
