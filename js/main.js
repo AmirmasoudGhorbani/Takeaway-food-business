@@ -424,10 +424,11 @@
   // tap landed and never move it, which reads as a mistake rather than an
   // effect). The glow's fade in/out is handled by the :hover rule in CSS;
   // this keeps --mx/--my tracking the pointer and --tilt-x/--tilt-y driving the
-  // perspective(...) rotate in the .combo-card / .menu-item transform.
+  // perspective(...) rotate in the .combo-card / .menu-item / .story__image
+  // transform.
   if (!prefersReducedMotion) {
     var TILT_MAX_DEG = 6;
-    document.querySelectorAll('.combo-card, .menu-item').forEach(function (card) {
+    document.querySelectorAll('.combo-card, .menu-item, .story__image').forEach(function (card) {
       card.addEventListener('pointermove', function (e) {
         if (e.pointerType !== 'mouse') return;
         var rect = card.getBoundingClientRect();

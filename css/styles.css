@@ -1051,21 +1051,38 @@ ul {
   aspect-ratio: 4 / 5;
 }
 
-/* Solid ember-color panel offset behind the photo — a brand-colored accent
-   rather than empty space, and since it's a pseudo-element on the same
-   .reveal target as the photo, it fades/slides in together with it on
-   scroll with no extra JS. Sits outside the photo's own edges, so it needs
-   the photo itself (not this element) to carry the clipping/border. */
+/* Cursor-follow spotlight — same language as the combo-card/menu-item
+   hover glow (see main.js, which tracks --mx/--my for this too). Desktop/
+   mouse only; harmless no-op elsewhere since the glow just never gets an
+   opacity to show. The 3D tilt itself needs nothing extra here — this
+   element is already .reveal, so it picks up --tilt-x/--tilt-y from the
+   shared .reveal/.reveal.visible transform. */
 .story__image::before {
   content: "";
   position: absolute;
-  top: 18px;
-  left: 18px;
-  right: -18px;
-  bottom: -18px;
-  z-index: 0;
+  inset: 0;
+  /* Above the ::after top-fade (also z-index 2, painted later in source
+     order) so the glow isn't dimmed under the darkened top of the photo. */
+  z-index: 3;
+  opacity: 0;
   border-radius: var(--radius-lg);
-  background: linear-gradient(145deg, var(--ember), var(--ember-deep));
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(232, 83, 31, 0.16),
+    transparent 70%
+  );
+  transition: opacity 0.4s var(--ease-out);
+  pointer-events: none;
+}
+
+.story__image:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story__image::before {
+    transition: none;
+  }
 }
 
 .story__image img {
@@ -1077,6 +1094,11 @@ ul {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
+  transition: border-color var(--duration) var(--ease);
+}
+
+.story__image:hover img {
+  border-color: rgba(232, 83, 31, 0.35);
 }
 
 .story__image::after {
@@ -1679,13 +1701,6 @@ ul {
   font-weight: 800;
   font-size: 1.05rem;
   color: var(--text-cream);
-  margin-bottom: 0.2rem;
-}
-
-.combo-card__desc {
-  font-size: 0.82rem;
-  color: var(--text-faint);
-  line-height: 1.45;
 }
 
 .combo-card__price-row {
