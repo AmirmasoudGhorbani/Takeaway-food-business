@@ -465,17 +465,8 @@
   if (!prefersReducedMotion) {
     var TILT_MAX_DEG = 6;
     document.querySelectorAll('.combo-card, .menu-item, .story__image').forEach(function (card) {
-      var settleTimer = null;
       card.addEventListener('pointermove', function (e) {
         if (e.pointerType !== 'mouse') return;
-        // A re-entry before the leave animation below finished settling —
-        // drop back to instant tracking so the tilt keeps up with the
-        // cursor instead of gliding toward it.
-        if (settleTimer) {
-          clearTimeout(settleTimer);
-          settleTimer = null;
-          card.classList.remove('is-settling');
-        }
         var rect = card.getBoundingClientRect();
         var xFrac = (e.clientX - rect.left) / rect.width;
         var yFrac = (e.clientY - rect.top) / rect.height;
@@ -486,25 +477,8 @@
       });
       card.addEventListener('pointerleave', function (e) {
         if (e.pointerType !== 'mouse') return;
-        // Tracking itself stays transition-free above so the tilt never
-        // lags behind the cursor while hovering — but resetting to flat by
-        // the same instant jump read as a snap once the cursor left. This
-        // is scoped to just the moment of leaving (is-settling, see
-        // .reveal.is-settling in styles.css) rather than a transition that
-        // would blunt the live tracking too.
-        card.classList.add('is-settling');
-        // Without this, the class and the value change land in the same
-        // style recalculation and the browser has no committed "before"
-        // frame to transition from — it's a coin flip per-browser whether
-        // that animates at all, which is exactly what read as glitchy
-        // rather than reliably smooth or reliably snapping.
-        void card.offsetWidth;
         card.style.setProperty('--tilt-x', '0deg');
         card.style.setProperty('--tilt-y', '0deg');
-        settleTimer = setTimeout(function () {
-          card.classList.remove('is-settling');
-          settleTimer = null;
-        }, 450);
       });
     });
   }

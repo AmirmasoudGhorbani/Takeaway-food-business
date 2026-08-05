@@ -1049,6 +1049,19 @@ ul {
 .story__image {
   position: relative;
   aspect-ratio: 4 / 5;
+  /* Same tilt-motion language as .combo-card/.menu-item: transform itself
+     lives on .reveal/.reveal.visible (this element is always also
+     .reveal), but the transition needs to sit here regardless, since
+     that's what actually smooths every --tilt-x/--tilt-y change coming
+     from the pointermove/pointerleave handler in main.js — both the live
+     cursor-tracking and the reset back to flat on hover-out. */
+  transition: transform 0.4s var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story__image {
+    transition: none;
+  }
 }
 
 /* Cursor-follow spotlight — same language as the combo-card/menu-item
@@ -2916,17 +2929,6 @@ ul {
   opacity: 1;
   transform: translateY(0) scale(1) perspective(900px)
     rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
-}
-
-/* Set by the tilt handler in main.js for the moment right after the
-   cursor leaves (.combo-card/.menu-item/.story__image) — glides the tilt
-   back to flat instead of snapping. Scoped to just that moment rather
-   than transitioning .reveal generally, since a transition active during
-   pointermove would blunt the live cursor-tracking into a laggy trail
-   instead of a snappy 1:1 follow. Motion's own reveal-in spring is
-   already done well before hover is possible, so this can't fight it. */
-.reveal.is-settling {
-  transition: transform 0.4s var(--ease-out);
 }
 
 /* Stagger for these three now lives in main.js (staggerDelayFor), passed as
