@@ -1046,31 +1046,48 @@ ul {
   align-items: center;
 }
 
+/* Deliberately never transforms. At this element's size, tilting it
+   directly used to visibly shift its own edges out from under a cursor
+   sitting near the border — pointer hit-testing follows the transformed
+   box, so that shift could drop the hover, snap the tilt back to flat,
+   put the cursor back inside, and re-trigger it: a flicker loop, worse
+   the longer the cursor held still near an edge. Splitting the hover
+   target (this, stable) from the visual tilt (.story__image-frame,
+   below) means the tilt can move however far it wants without ever
+   moving the box hover is actually measured against. .menu-item and
+   .combo-card don't need this same split — small enough that the same
+   6deg max tilt shifts their edges only a couple of pixels, not enough
+   to cross the cursor. */
 .story__image {
   position: relative;
   aspect-ratio: 4 / 5;
+}
+
+.story__image-frame {
+  position: absolute;
+  inset: 0;
   /* Same tilt-motion language as .combo-card/.menu-item: transform itself
      lives on .reveal/.reveal.visible (this element is always also
      .reveal), but the transition needs to sit here regardless, since
      that's what actually smooths every --tilt-x/--tilt-y change coming
      from the pointermove/pointerleave handler in main.js — both the live
-     cursor-tracking and the reset back to flat on hover-out. */
+     cursor-tracking and the reset back to flat on hover-out. --tilt-x/
+     --tilt-y themselves are set on .story__image (see main.js) and
+     inherit down to here, same as --mx/--my below. */
   transition: transform 0.4s var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .story__image {
+  .story__image-frame {
     transition: none;
   }
 }
 
 /* Cursor-follow spotlight — same language as the combo-card/menu-item
-   hover glow (see main.js, which tracks --mx/--my for this too). Desktop/
-   mouse only; harmless no-op elsewhere since the glow just never gets an
-   opacity to show. The 3D tilt itself needs nothing extra here — this
-   element is already .reveal, so it picks up --tilt-x/--tilt-y from the
-   shared .reveal/.reveal.visible transform. */
-.story__image::before {
+   hover glow (see main.js, which tracks --mx/--my for this too, set on
+   the stable .story__image above). Desktop/mouse only; harmless no-op
+   elsewhere since the glow just never gets an opacity to show. */
+.story__image-frame::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1088,17 +1105,17 @@ ul {
   pointer-events: none;
 }
 
-.story__image:hover::before {
+.story__image:hover .story__image-frame::before {
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .story__image::before {
+  .story__image-frame::before {
     transition: none;
   }
 }
 
-.story__image img {
+.story__image-frame img {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -1110,11 +1127,11 @@ ul {
   transition: border-color var(--duration) var(--ease);
 }
 
-.story__image:hover img {
+.story__image:hover .story__image-frame img {
   border-color: rgba(232, 83, 31, 0.35);
 }
 
-.story__image::after {
+.story__image-frame::after {
   content: "";
   position: absolute;
   z-index: 2;
