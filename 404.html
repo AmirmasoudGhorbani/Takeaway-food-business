@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found — Kebab Station Kumeu</title>
+    <meta name="theme-color" content="#14100E" />
+
+    <!-- GitHub Pages returns this file's content for ANY unmatched path,
+         but the browser still shows the URL the visitor actually hit —
+         e.g. /takeaway-food-business/some/deep/broken/link. Without a
+         <base>, every relative "css/styles.css" below would resolve
+         against that broken path instead of the site root, so the 404
+         page's own CSS, icons and "back home" link would each 404 too,
+         with the failure getting worse the deeper the bad URL was.
+         TODO: change this to "/" if/when a custom domain replaces the
+         github.io project-page path (the same swap canonical/sitemap/
+         robots.txt need — see their own TODOs). -->
+    <base href="/takeaway-food-business/" />
+
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Manrope:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- GitHub Pages serves this file automatically for any unmatched path
+         on the site, so it deliberately reuses styles.css rather than
+         shipping its own stylesheet — same look, one extra request, no
+         maintenance burden of a second set of colours/fonts to keep in
+         sync. It skips main.js/hero.js/builder.js entirely: those assume
+         elements (#hero, #menu-tab-doner, .builder__group, ...) that don't
+         exist on this page and aren't null-guarded everywhere, so loading
+         them here would just be dead weight with a real chance of a
+         console error on a page whose only job is "get the visitor back
+         on track". -->
+    <style>
+      .not-found {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: var(--space-lg) clamp(18px, 5vw, 40px);
+        gap: var(--space-md);
+      }
+      .not-found__mark {
+        width: 56px;
+        height: auto;
+        margin-bottom: var(--space-sm);
+      }
+      .not-found__code {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: clamp(3.5rem, 12vw, 6rem);
+        line-height: 1;
+        color: var(--ember);
+      }
+      .not-found__title {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(1.4rem, 4vw, 1.9rem);
+        color: var(--text-cream);
+      }
+      .not-found__body {
+        max-width: 46ch;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .not-found__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        justify-content: center;
+        margin-top: var(--space-xs);
+      }
+    </style>
+  </head>
+  <body style="background: var(--bg-base)">
+    <main class="not-found">
+      <img
+        class="not-found__mark"
+        src="assets/icons/logo-mark.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <p class="not-found__code">404</p>
+      <h1 class="not-found__title">This page has been carved away.</h1>
+      <p class="not-found__body">
+        The page you're looking for doesn't exist or has moved. Head back to
+        the homepage, or give us a call if you're trying to place an order.
+      </p>
+      <div class="not-found__actions">
+        <a href="./" class="btn btn--ember">Back to Home</a>
+        <a href="tel:+6494126030" class="btn btn--outline">Call to Order</a>
+      </div>
+    </main>
+  </body>
+</html>
