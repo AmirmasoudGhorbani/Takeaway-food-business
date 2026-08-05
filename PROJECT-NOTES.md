@@ -13,8 +13,8 @@
 | Contact name       | TBC |
 | Phone              | 09 412 6030 |
 | Email              | TBC |
-| Website URL        | TBC |
-| Domain             | TBC |
+| Website URL        | https://amirmasoudghorbani.github.io/takeaway-food-business/ |
+| Domain             | TBC — currently live on the github.io project-page URL above |
 | Industry           | Halal doner kebab restaurant / takeaway |
 | Location / Areas   | 2/42 Main Road, Kumeu, Auckland |
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TODO: swap the <loc> below to the production domain once a custom
+     domain is live (see the matching TODOs on canonical/og:url/robots.txt). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://amirmasoudghorbani.github.io/takeaway-food-business/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 
-# TODO: once the production domain is live, add the sitemap here, e.g.
-# Sitemap: https://example.com/sitemap.xml
+# TODO: swap to the production domain's sitemap URL once a custom domain
+# is live (see the matching TODOs on canonical/og:url in index.html).
+Sitemap: https://amirmasoudghorbani.github.io/takeaway-food-business/sitemap.xml
