@@ -1374,7 +1374,7 @@ ul {
 .menu__list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
 }
 
@@ -3170,6 +3170,11 @@ ul {
   }
   .menu-item {
     grid-template-columns: 1fr;
+    /* Row-mates now stretch to match each other's height (see .menu__list
+       align-items above) so every card in a row lines up — this keeps a
+       short one-line name from leaving a gap right under itself: the
+       price sinks to the card's bottom edge instead. */
+    align-content: space-between;
     gap: 6px;
     padding: 14px;
   }
