@@ -157,6 +157,14 @@
     var card = e.target.closest('.review-card');
     if (!card || card !== frontCard()) return;
 
+    // A gesture starting on the review text itself is left alone entirely
+    // — no dragging, no pointer capture — so it can scroll the text
+    // natively when a review runs long (see .review-card__text in
+    // styles.css). Capturing the pointer here would fight that scroll for
+    // every other gesture on the card, which is exactly what swiping the
+    // card away needs.
+    if (e.target.closest('.review-card__text')) return;
+
     activeCard = card;
     dragging = true;
     startX = e.clientX;
@@ -199,6 +207,24 @@
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp);
   window.addEventListener('pointercancel', onPointerUp);
+
+  // Marks each review's text as scrollable only once it actually overflows
+  // its box, so the fade-out hint (.has-more, see styles.css) never shows
+  // on a short review that already fits. All eight cards exist in the DOM
+  // at once (stacked, not swapped in/out), so one pass covers every review
+  // regardless of which is currently on top — but how many lines a given
+  // review needs depends on the card's width, which changes with the
+  // viewport, so this re-runs on resize rather than just once on load.
+  var reviewTexts = Array.prototype.slice.call(
+    deck.querySelectorAll('.review-card__text')
+  );
+  function updateScrollHints() {
+    reviewTexts.forEach(function (el) {
+      el.classList.toggle('has-more', el.scrollHeight - el.clientHeight > 2);
+    });
+  }
+  updateScrollHints();
+  window.addEventListener('resize', updateScrollHints);
 
   if (nextBtn) {
     nextBtn.addEventListener('click', function () {

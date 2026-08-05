@@ -2264,7 +2264,7 @@ ul {
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, var(--bg-card-1), var(--bg-card-2)),
     var(--bg-deep);
-  border: 2px solid var(--border-strong);
+  border: 1px solid var(--border);
   box-shadow: 0 24px 60px rgba(13, 10, 9, 0.5);
   padding: 24px;
   cursor: grab;
@@ -2325,16 +2325,37 @@ ul {
 }
 
 .review-card__text {
+  position: relative;
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--text-muted);
   margin-bottom: 14px;
   flex: 1;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6;
+  /* How many lines a review needs varies a lot by card width (up to 11 on
+     a narrow phone for the longest review, vs. 6-7 once the deck hits its
+     330px max-width) — no single line-clamp fits every review at every
+     width without either clipping the long ones or wasting space on the
+     short ones. Scrolling the text itself, instead of clamping it, means
+     every review is fully readable regardless of how long it is. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
   user-select: none;
+}
+
+/* Only shown once js/reviews-deck.js confirms the text actually overflows
+   (see updateScrollHints) — a fade that's always there would dim the last
+   line of plenty of reviews that fit just fine. */
+.review-card__text.has-more::after {
+  content: '';
+  position: sticky;
+  display: block;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22px;
+  margin-top: -22px;
+  background: linear-gradient(to bottom, transparent, var(--bg-card-2));
+  pointer-events: none;
 }
 
 .review-card__footer {
