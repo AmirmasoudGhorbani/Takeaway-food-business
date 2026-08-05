@@ -2683,26 +2683,18 @@ ul {
   text-decoration-color: rgba(240, 167, 46, 0.4);
   text-underline-offset: 2px;
   transition: color var(--duration) var(--ease);
-  /* A glow alone (ks-glow, what .hero__accent uses on "fire" in the
-     headline) reads as a colour shift, not motion — fine for a big
-     headline word, too subtle for four small words in the footer's fine
-     print. Breathing the scale handled "noticeable" but stayed anchored
-     in place; adding the same gentle rise-and-settle .hero__title--float
-     uses (translateY, a few px) is what actually reads as it moving,
-     not just pulsing. */
-  animation: footer-credit-pulse 3s ease-in-out infinite;
-}
-
-@keyframes footer-credit-pulse {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 12px rgba(232, 83, 31, 0.4));
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(240, 167, 46, 0.7));
-    transform: translateY(-3px) scale(1.08);
-  }
+  /* Scaling it up (an earlier attempt) grew the text in place without
+     reflowing "Site by " right before it — at the top of the pulse the
+     two visually overlapped, reading like a stacking/z-index glitch. The
+     hero H1 words never have that problem since they only ever move
+     vertically, so this reuses that exact animation (hero-word-float) —
+     same keyframe, same 4.5s timing — layered with the same glow
+     .hero__accent uses on "fire". Two separate animations rather than
+     one combined one, so each keeps its own independent timing exactly
+     as it already exists elsewhere, instead of a new keyframe that has
+     to stay manually in sync with both. */
+  animation: hero-word-float 4.5s ease-in-out infinite,
+    ks-glow 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
