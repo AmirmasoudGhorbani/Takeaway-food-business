@@ -1414,6 +1414,10 @@ ul {
   align-items: center;
   gap: 20px;
   padding: 18px 22px;
+  /* Every card the same height regardless of content — a two-line name,
+     one price line, or a stacked S/L price all fit within this, so
+     nothing needs to stretch or leave a gap to line up with its row. */
+  min-height: 96px;
   border-radius: var(--radius-md);
   background: linear-gradient(160deg, var(--bg-card-1), var(--bg-card-2));
   border: 1px solid var(--border);
@@ -1484,6 +1488,13 @@ ul {
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-cream);
+  /* Capped at two lines so a handful of longer names (e.g. "Beef
+     Camembert Burger") don't wrap to three and make their card taller
+     than every other card's fixed min-height below. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .menu-item__badge {
@@ -3170,10 +3181,14 @@ ul {
   }
   .menu-item {
     grid-template-columns: 1fr;
-    /* Row-mates now stretch to match each other's height (see .menu__list
-       align-items above) so every card in a row lines up — this keeps a
-       short one-line name from leaving a gap right under itself: the
-       price sinks to the card's bottom edge instead. */
+    /* Taller than the base min-height since names stack above the price
+       here instead of sitting beside it — tall enough for a two-line
+       name plus a stacked S/L price, so every card is this exact height. */
+    min-height: 125px;
+    /* Belt-and-braces alongside min-height: if a row-mate ever does end up
+       taller (see .menu__list align-items above), the price still sinks
+       to the card's bottom edge instead of leaving a gap under a short
+       name. */
     align-content: space-between;
     gap: 6px;
     padding: 14px;
