@@ -2682,6 +2682,16 @@ ul {
   text-decoration-color: rgba(240, 167, 46, 0.4);
   text-underline-offset: 2px;
   transition: color var(--duration) var(--ease);
+  /* Same slow pulsing glow as .hero__accent (the "fire" in the headline)
+     — reusing the site's own established way of making a word insist on
+     being noticed, rather than inventing a new one. */
+  animation: ks-glow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__bottom a {
+    animation: none;
+  }
 }
 
 .footer__bottom a:hover {
