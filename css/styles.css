@@ -84,6 +84,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Set by js/hero.js while the hero's video is still being scrubbed through
+   — structurally blocks scrollbar-drag and keyboard-scroll (wheel/touch are
+   also preventDefault'd directly, since iOS Safari doesn't reliably honour
+   overflow: hidden for touch alone) without needing to catch every possible
+   input method individually. */
+html.hero-scroll-locked,
+html.hero-scroll-locked body {
+  overflow: hidden;
+  height: 100%;
+}
+
 img,
 video {
   display: block;

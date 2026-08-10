@@ -39,11 +39,13 @@
     return;
   }
 
-  // ── Scroll-scrubbed rotation (prototype) ──
-  // Instead of looping on its own timer, the donor's rotation is driven
-  // directly by scroll position through the hero: scrolling down spins it,
-  // stopping freezes it mid-turn. Manual currentTime seeking replaces
-  // autoplay/loop entirely — the two would otherwise fight each other.
+  // ── Scroll-locked rotation ──
+  // Real scrolling is held (see .hero-scroll-locked in styles.css) until the
+  // donor has turned all the way through once: wheel/touch input advances a
+  // virtual progress instead of moving the page, and only once that's
+  // finished is the visitor let past the hero into the rest of the site.
+  // Manual currentTime seeking replaces autoplay/loop entirely — the two
+  // would otherwise fight each other.
   video.removeAttribute('autoplay');
   video.removeAttribute('loop');
   video.pause();
@@ -55,31 +57,13 @@
 
   var track = document.getElementById('hero-scroll-track') || hero;
 
-  // The hero is pinned (position: sticky) inside a taller track, so its own
-  // rect stays put at top:0 while stuck — progress has to come from how far
-  // we've scrolled through the taller track instead. Dividing by the full
-  // track height (not just the sticky portion) spreads the rotation across
-  // the pin phase *and* the natural scroll-off that follows, so the donor
-  // is still visibly turning as the next section slides into view instead
-  // of sitting frozen for that whole stretch.
-  function computeTargetProgress() {
-    var rect = track.getBoundingClientRect();
-    var progress = rect.height > 0 ? -rect.top / rect.height : 0;
-    return Math.max(0, Math.min(1, progress));
-  }
-
   function applyProgress(progress) {
     if (!duration || seekingNow) return;
 
     // The source clip used to be a boomerang (a forward pass, then the
-    // same frames in reverse) built for ambient looping, so this scrubbed
-    // only its first half — the back half would have visibly un-rotated
-    // the donor. The shipped file is now trimmed to that forward pass
-    // alone: the reverse frames were downloaded on every visit and never
-    // once displayed, and dropping them paid for a 6x denser keyframe
-    // interval at a slightly smaller file size. So scrub the whole clip
-    // now — the mapping is unchanged, one full scroll pass through the
-    // hero is still one single, deliberate pass through the turn.
+    // same frames in reverse) built for ambient looping. The shipped file
+    // is trimmed to that forward pass alone, so one full pass through
+    // `progress` 0→1 is one single, deliberate pass through the turn.
     var time = progress * duration;
 
     // Never land exactly on the final frame — some browsers stall or
@@ -91,55 +75,133 @@
     }
   }
 
-  // Eases the displayed frame toward wherever scroll currently is, instead
-  // of snapping straight to it on every scroll tick. Scroll input itself is
-  // naturally uneven (mouse-wheel notches, trackpad momentum), and video
-  // seeking has real decode latency, so a direct 1:1 mapping reads as
-  // stutter — this smooths over both without changing how far a given
-  // amount of scrolling turns the donor.
+  function trackHeight() {
+    var height = track.getBoundingClientRect().height;
+    return height > 0 ? height : 1;
+  }
+
+  var locked = false;
+  // inputProgress is the raw target, advanced directly by wheel/touch deltas
+  // (it can jump around a lot — trackpad momentum sends uneven, sometimes
+  // large deltas in quick bursts). smoothedProgress is what's actually
+  // applied to the video, eased toward that target every frame rather than
+  // snapped straight to it — video seeking has real decode latency, and
+  // applying every raw input delta synchronously is what read as stutter
+  // the first time this shipped. Gating the lock's release on the *smoothed*
+  // value reaching the end (not the raw input) means a fast flick can't
+  // release the page before the rotation has actually finished playing out
+  // on screen — the actual point of holding scroll here in the first place.
+  var inputProgress = 0;
+  var smoothedProgress = 0;
+  var touchStartY = null;
+  var rafId = null;
+
   var SMOOTHING = 0.15;
   var SETTLE_EPSILON = 0.0006;
-  var smoothedProgress = 0;
-  var rafId = null;
+
+  function engageLock() {
+    locked = true;
+    document.documentElement.classList.add('hero-scroll-locked');
+  }
+
+  function releaseLock() {
+    locked = false;
+    document.documentElement.classList.remove('hero-scroll-locked');
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
 
   function tick() {
     rafId = null;
-
-    // A nav-link click can trigger a long native smooth-scroll back through
-    // this pinned track. Seeking the video on every tick of that animation
-    // would compete with it for the main thread and show up as scroll
-    // jank, so scrubbing sits the animation out here and catches up in a
-    // single seek once main.js dispatches 'navscrollend'.
-    if (window.__navScrolling) return;
-
-    var target = computeTargetProgress();
-    var delta = target - smoothedProgress;
+    var delta = inputProgress - smoothedProgress;
     if (Math.abs(delta) < SETTLE_EPSILON) {
-      smoothedProgress = target;
+      smoothedProgress = inputProgress;
       applyProgress(smoothedProgress);
-      return; // caught up — stop ticking until the next scroll restarts it
+      if (smoothedProgress >= 1 - SETTLE_EPSILON) releaseLock();
+      return; // caught up — stop ticking until the next input restarts it
     }
     smoothedProgress += delta * SMOOTHING;
     applyProgress(smoothedProgress);
     rafId = requestAnimationFrame(tick);
   }
 
-  function onScroll() {
+  function requestTick() {
     if (rafId === null) rafId = requestAnimationFrame(tick);
   }
 
-  window.addEventListener('navscrollend', function () {
-    // Catches up in one immediate jump once a nav-triggered scroll settles,
-    // rather than easing all the way from wherever this was paused.
-    smoothedProgress = computeTargetProgress();
-    applyProgress(smoothedProgress);
+  function advance(deltaY) {
+    if (!locked) return;
+    inputProgress = Math.max(0, Math.min(1, inputProgress + deltaY / trackHeight()));
+    requestTick();
+  }
+
+  function onWheel(e) {
+    if (!locked) return;
+    e.preventDefault();
+    advance(e.deltaY);
+  }
+
+  function onTouchStart(e) {
+    if (!locked) return;
+    touchStartY = e.touches[0].clientY;
+  }
+
+  function onTouchMove(e) {
+    if (!locked || touchStartY === null) return;
+    e.preventDefault();
+    var y = e.touches[0].clientY;
+    advance(touchStartY - y);
+    touchStartY = y;
+  }
+
+  function onTouchEnd() {
+    touchStartY = null;
+  }
+
+  // Keyboard scrolling releases the lock outright rather than being eased
+  // like wheel/touch: overflow: hidden (see styles.css) would otherwise
+  // block a keyboard user's Space/Page Down/arrow-key scrolling exactly as
+  // hard as it blocks the mouse, and unlike a mouse or thumb there's no
+  // other gesture for them to retry with. Not preventing default here means
+  // the key's normal scroll behaviour still runs immediately after, on a
+  // now-unlocked page.
+  var SCROLL_KEYS = ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'];
+  function onKeydown(e) {
+    if (!locked) return;
+    if (SCROLL_KEYS.indexOf(e.key) === -1) return;
+    releaseLock();
+  }
+
+  // A nav-link click (main.js) is explicit "take me there now" intent —
+  // release the lock rather than fight that scroll or make someone who
+  // already knows where they're going sit through the rest of the video.
+  window.addEventListener('navscrollstart', function () {
+    if (locked) releaseLock();
   });
 
   function init() {
     duration = video.duration || 0;
-    smoothedProgress = computeTargetProgress();
-    applyProgress(smoothedProgress);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    applyProgress(0);
+
+    // Only lock if the visitor is actually starting at the hero. A direct
+    // link straight to e.g. #menu is the clearest case to skip — but the
+    // browser's own scroll-to-fragment for it can happen on its own
+    // schedule, sometimes after this runs, so checking scroll position
+    // alone isn't reliable: engaging the lock (and its overflow: hidden)
+    // right before that happens would block the fragment scroll completely,
+    // trapping the visitor at the hero they specifically linked past. The
+    // hash is known upfront and never changes underneath this check.
+    if (window.location.hash && window.location.hash !== '#') return;
+    if (track.getBoundingClientRect().top > 40) return;
+
+    engageLock();
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKeydown);
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
   }
 
   if (video.readyState >= 1) {
