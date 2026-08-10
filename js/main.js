@@ -724,12 +724,6 @@
         var elementPosition = target.getBoundingClientRect().top;
         var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-        // A nav click is explicit "take me there now" intent — jumping
-        // straight past the hero's scroll lock (js/hero.js) if it's still
-        // held, rather than making someone who already knows where they're
-        // going sit through the rest of a video first.
-        window.dispatchEvent(new Event('navscrollstart'));
-
         clearNavScrolling();
         window.__navScrolling = true;
         navScrollEndHandler = clearNavScrolling;
