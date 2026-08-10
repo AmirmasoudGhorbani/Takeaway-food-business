@@ -230,26 +230,65 @@ ul {
   bottom: -5%;
   border-radius: 50%;
   opacity: 0;
-  animation: ember-rise linear infinite;
+  /* Two independent animations: the slow climb (organic, multi-point drift
+     rather than a single straight line) and a fast brightness flicker layered
+     on top — real embers don't glow at a constant intensity, they pulse as
+     they tumble through the air. Keeping flicker on `filter` rather than
+     `opacity` avoids the two animations fighting over the same property
+     (the later-listed animation would just win outright and cancel the
+     rise's own fade envelope). */
+  animation: ember-rise var(--ember-duration, 20s) ease-in-out infinite,
+    ember-flicker var(--flicker-duration, 0.5s) ease-in-out infinite;
 }
 
 @keyframes ember-rise {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) scale(0.4);
     opacity: 0;
   }
-  8% {
-    opacity: 0.55;
+  9% {
+    opacity: 0.85;
+    transform: translate(calc(var(--ember-drift, 18px) * 0.2), -9vh) scale(1);
   }
-  50% {
-    transform: translate(var(--ember-drift, 18px), -55vh);
+  23% {
+    transform: translate(calc(var(--ember-drift, 18px) * -0.25), -23vh) scale(0.9);
+    opacity: 0.6;
   }
-  85% {
-    opacity: 0.3;
+  39% {
+    transform: translate(calc(var(--ember-drift, 18px) * 0.65), -39vh) scale(1.05);
+    opacity: 0.75;
+  }
+  55% {
+    transform: translate(var(--ember-drift, 18px), -58vh) scale(0.8);
+    opacity: 0.48;
+  }
+  73% {
+    transform: translate(calc(var(--ember-drift, 18px) * -0.45), -78vh) scale(0.6);
+    opacity: 0.28;
+  }
+  89% {
+    transform: translate(calc(var(--ember-drift, 18px) * -1.1), -98vh) scale(0.4);
+    opacity: 0.12;
   }
   100% {
-    transform: translate(calc(var(--ember-drift, 18px) * -1), -112vh);
+    transform: translate(calc(var(--ember-drift, 18px) * -1.5), -112vh) scale(0.15);
     opacity: 0;
+  }
+}
+
+@keyframes ember-flicker {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  35% {
+    filter: brightness(1.5);
+  }
+  60% {
+    filter: brightness(0.8);
+  }
+  82% {
+    filter: brightness(1.3);
   }
 }
 
@@ -260,8 +299,9 @@ ul {
   background: var(--ember-light);
   box-shadow: 0 0 4px var(--ember-light), 0 0 8px var(--ember);
   --ember-drift: 14px;
-  animation-duration: 19s;
-  animation-delay: -2s;
+  --ember-duration: 19s;
+  --flicker-duration: 0.42s;
+  animation-delay: -2s, -0.1s;
 }
 .ember--2 {
   left: 7%;
@@ -270,8 +310,9 @@ ul {
   background: var(--gold);
   box-shadow: 0 0 3px var(--gold), 0 0 6px var(--ember);
   --ember-drift: -20px;
-  animation-duration: 23s;
-  animation-delay: -9s;
+  --ember-duration: 23s;
+  --flicker-duration: 0.55s;
+  animation-delay: -9s, -0.3s;
 }
 .ember--3 {
   left: 93%;
@@ -280,8 +321,9 @@ ul {
   background: var(--ember);
   box-shadow: 0 0 5px var(--ember), 0 0 10px var(--ember-deep);
   --ember-drift: -16px;
-  animation-duration: 21s;
-  animation-delay: -14s;
+  --ember-duration: 21s;
+  --flicker-duration: 0.48s;
+  animation-delay: -14s, -0.05s;
 }
 .ember--4 {
   left: 96%;
@@ -290,8 +332,9 @@ ul {
   background: var(--ember-light);
   box-shadow: 0 0 3px var(--ember-light), 0 0 6px var(--ember);
   --ember-drift: 22px;
-  animation-duration: 17s;
-  animation-delay: -5s;
+  --ember-duration: 17s;
+  --flicker-duration: 0.6s;
+  animation-delay: -5s, -0.2s;
 }
 .ember--5 {
   left: 12%;
@@ -300,8 +343,9 @@ ul {
   background: var(--gold);
   box-shadow: 0 0 4px var(--gold), 0 0 8px var(--ember-deep);
   --ember-drift: -12px;
-  animation-duration: 25s;
-  animation-delay: -18s;
+  --ember-duration: 25s;
+  --flicker-duration: 0.38s;
+  animation-delay: -18s, -0.4s;
 }
 .ember--6 {
   left: 88%;
@@ -310,8 +354,9 @@ ul {
   background: var(--ember);
   box-shadow: 0 0 4px var(--ember), 0 0 8px var(--ember-deep);
   --ember-drift: 18px;
-  animation-duration: 20s;
-  animation-delay: -11s;
+  --ember-duration: 20s;
+  --flicker-duration: 0.52s;
+  animation-delay: -11s, -0.15s;
 }
 
 .scroll-glow {
