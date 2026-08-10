@@ -126,7 +126,7 @@
   var rafId = null;
   var freeScrubStarted = false;
 
-  var SMOOTHING = 0.15;
+  var SMOOTHING = 0.08;
   var SETTLE_EPSILON = 0.0006;
 
   function engageLock() {

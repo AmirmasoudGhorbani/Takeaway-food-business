@@ -797,7 +797,7 @@ ul {
    rotation, just spread across more scrolling (slower). */
 .hero-scroll-track {
   position: relative;
-  height: 275vh;
+  height: 340vh;
 }
 
 .hero {
@@ -3403,7 +3403,7 @@ ul {
      valuable part of the page on a small screen, so it's still covered
      faster here even after the same slow-down. */
   .hero-scroll-track {
-    height: 175vh;
+    height: 215vh;
   }
 
   .story__stats {
