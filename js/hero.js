@@ -39,13 +39,19 @@
     return;
   }
 
-  // ── Scroll-locked rotation ──
-  // Real scrolling is held (see .hero-scroll-locked in styles.css) until the
-  // donor has turned all the way through once: wheel/touch input advances a
-  // virtual progress instead of moving the page, and only once that's
-  // finished is the visitor let past the hero into the rest of the site.
-  // Manual currentTime seeking replaces autoplay/loop entirely — the two
-  // would otherwise fight each other.
+  // ── Scroll-scrubbed rotation ──
+  // The donor's rotation always tracks real scroll position through the
+  // hero — scrolling down spins it, scrolling back up rewinds it, exactly
+  // like a normal scroll-scrubbed video. Manual currentTime seeking
+  // replaces autoplay/loop entirely — the two would otherwise fight
+  // each other.
+  //
+  // On top of that: the very first time a visitor reaches the hero, real
+  // scrolling is held (see .hero-scroll-locked in styles.css) until the
+  // rotation has played all the way through once, so a fast scroll can't
+  // carry them past the hero mid-turn. Every visit after that — including
+  // scrolling back up to it later in the same session — is a normal,
+  // unlocked scroll-scrubber with no hold.
   video.removeAttribute('autoplay');
   video.removeAttribute('loop');
   video.pause();
@@ -80,46 +86,98 @@
     return height > 0 ? height : 1;
   }
 
+  function heroHeight() {
+    var height = hero.getBoundingClientRect().height;
+    return height > 0 ? height : 1;
+  }
+
+  // The hero is pinned (position: sticky) inside a taller track, so its
+  // on-screen position is identical for *any* scroll position within this
+  // distance — only once scroll passes it does the hero start unsticking
+  // and actually move. Mapping rotation progress to just this distance,
+  // rather than the full track, means the turn always finishes while the
+  // hero is still visually locked in place: releasing the scroll hold (or
+  // reconnecting scrubbing to real scroll position after it) never has to
+  // jump across a boundary the visitor could actually see.
+  function pinDistance() {
+    return Math.max(1, trackHeight() - heroHeight());
+  }
+
+  function computeTargetProgress() {
+    var rect = track.getBoundingClientRect();
+    var progress = rect.height > 0 ? -rect.top / pinDistance() : 0;
+    return Math.max(0, Math.min(1, progress));
+  }
+
   var locked = false;
-  // inputProgress is the raw target, advanced directly by wheel/touch deltas
-  // (it can jump around a lot — trackpad momentum sends uneven, sometimes
-  // large deltas in quick bursts). smoothedProgress is what's actually
-  // applied to the video, eased toward that target every frame rather than
-  // snapped straight to it — video seeking has real decode latency, and
-  // applying every raw input delta synchronously is what read as stutter
-  // the first time this shipped. Gating the lock's release on the *smoothed*
-  // value reaching the end (not the raw input) means a fast flick can't
-  // release the page before the rotation has actually finished playing out
-  // on screen — the actual point of holding scroll here in the first place.
+  var lockStartScrollY = 0;
+  // While locked, inputProgress is the raw target advanced directly by
+  // wheel/touch deltas (real scrolling can't move, so there's no scroll
+  // position to read instead). Once unlocked, the target is read fresh
+  // from real scroll position on every tick via computeTargetProgress()
+  // instead. Either way, smoothedProgress is what's actually applied to
+  // the video, eased toward that target every frame rather than snapped
+  // straight to it — video seeking has real decode latency, and applying
+  // every raw input delta synchronously is what read as stutter the first
+  // time this shipped.
   var inputProgress = 0;
   var smoothedProgress = 0;
   var touchStartY = null;
   var rafId = null;
+  var freeScrubStarted = false;
 
   var SMOOTHING = 0.15;
   var SETTLE_EPSILON = 0.0006;
 
   function engageLock() {
     locked = true;
+    lockStartScrollY = window.scrollY;
     document.documentElement.classList.add('hero-scroll-locked');
   }
 
   function releaseLock() {
+    if (!locked) return;
     locked = false;
     document.documentElement.classList.remove('hero-scroll-locked');
     if (rafId !== null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
+    window.removeEventListener('wheel', onWheel);
+    window.removeEventListener('keydown', onKeydown);
+    window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('touchend', onTouchEnd);
+
+    // Snaps real scroll forward to wherever the virtual progress ended up
+    // — invisibly, since that always lands within the sticky pin distance
+    // (see pinDistance() above), where the hero's on-screen position is
+    // identical for any scroll value in range. Skipping this would leave
+    // real scroll sitting wherever it was when the lock engaged (frozen
+    // for the whole hold) while the video shows a further-along frame, so
+    // the next bit of free scrolling would visibly rewind the donor back
+    // toward frame zero before catching back up to where it already was.
+    //
+    // Must be 'instant', not 'auto': this page sets `scroll-behavior:
+    // smooth` globally on <html>, and 'auto' defers to that CSS value
+    // rather than overriding it. An animated catch-up here would fire real
+    // scroll events partway through it, which free-scrub (started right
+    // below) would immediately act on — yanking the video back toward
+    // frame zero and then back up again as the animation played out.
+    window.scrollTo({ top: lockStartScrollY + smoothedProgress * pinDistance(), behavior: 'instant' });
+
+    beginFreeScrub();
   }
 
   function tick() {
     rafId = null;
-    var delta = inputProgress - smoothedProgress;
+    if (!locked && window.__navScrolling) return;
+    var target = locked ? inputProgress : computeTargetProgress();
+    var delta = target - smoothedProgress;
     if (Math.abs(delta) < SETTLE_EPSILON) {
-      smoothedProgress = inputProgress;
+      smoothedProgress = target;
       applyProgress(smoothedProgress);
-      if (smoothedProgress >= 1 - SETTLE_EPSILON) releaseLock();
+      if (locked && smoothedProgress >= 1 - SETTLE_EPSILON) releaseLock();
       return; // caught up — stop ticking until the next input restarts it
     }
     smoothedProgress += delta * SMOOTHING;
@@ -133,7 +191,7 @@
 
   function advance(deltaY) {
     if (!locked) return;
-    inputProgress = Math.max(0, Math.min(1, inputProgress + deltaY / trackHeight()));
+    inputProgress = Math.max(0, Math.min(1, inputProgress + deltaY / pinDistance()));
     requestTick();
   }
 
@@ -178,8 +236,27 @@
   // release the lock rather than fight that scroll or make someone who
   // already knows where they're going sit through the rest of the video.
   window.addEventListener('navscrollstart', function () {
-    if (locked) releaseLock();
+    releaseLock();
   });
+
+  // Once a nav click's own smooth-scroll animation settles, do one
+  // immediate, unsmoothed catch-up rather than easing all the way from
+  // wherever this was paused — matches how it snaps into place for any
+  // other sudden jump (e.g. the lock's own release above).
+  window.addEventListener('navscrollend', function () {
+    if (!freeScrubStarted) return;
+    smoothedProgress = computeTargetProgress();
+    applyProgress(smoothedProgress);
+  });
+
+  // Real-scroll-driven scrubbing, active for the rest of the page's life
+  // once the visitor is past the initial hold (or never needed one). This
+  // is what makes the donor turn again on a later visit back to the hero.
+  function beginFreeScrub() {
+    if (freeScrubStarted) return;
+    freeScrubStarted = true;
+    window.addEventListener('scroll', requestTick, { passive: true });
+  }
 
   function init() {
     duration = video.duration || 0;
@@ -193,8 +270,14 @@
     // right before that happens would block the fragment scroll completely,
     // trapping the visitor at the hero they specifically linked past. The
     // hash is known upfront and never changes underneath this check.
-    if (window.location.hash && window.location.hash !== '#') return;
-    if (track.getBoundingClientRect().top > 40) return;
+    if (window.location.hash && window.location.hash !== '#') {
+      beginFreeScrub();
+      return;
+    }
+    if (track.getBoundingClientRect().top > 40) {
+      beginFreeScrub();
+      return;
+    }
 
     engageLock();
     window.addEventListener('wheel', onWheel, { passive: false });
