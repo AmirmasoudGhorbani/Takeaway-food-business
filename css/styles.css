@@ -793,10 +793,11 @@ ul {
    ======================================== */
 /* Extra scroll runway for the pinned hero below — see js/hero.js. Height
    above 100vh, minus the 100vh the hero itself holds while stuck, is the
-   distance scrubbing the donor's rotation takes. */
+   distance scrubbing the donor's rotation takes — taller track, same
+   rotation, just spread across more scrolling (slower). */
 .hero-scroll-track {
   position: relative;
-  height: 220vh;
+  height: 275vh;
 }
 
 .hero {
@@ -3398,12 +3399,11 @@ ul {
     display: none;
   }
 
-  /* 220vh of runway is over two full screens of thumb-scrolling before
-     any content on a phone. The extra distance exists to scrub the
-     donor's rotation, which is the least valuable part of the page on a
-     small screen — shorter track, same rotation, just covered faster. */
+  /* Shorter runway than desktop — the donor's rotation is the least
+     valuable part of the page on a small screen, so it's still covered
+     faster here even after the same slow-down. */
   .hero-scroll-track {
-    height: 140vh;
+    height: 175vh;
   }
 
   .story__stats {
