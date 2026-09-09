@@ -329,3 +329,54 @@ single-developer project, but the dates below are real, not estimated.
 | Deployment method      | GitHub Actions → GitHub Pages, auto-deploy on push to `main` |
 | Domain at launch       | `amirmasoudghorbani.github.io/takeaway-food-business` (custom domain still TBC) |
 | Rollback mechanism     | Git history — every change is a revertible commit; used in practice once (the hero scroll-lock feature was added, found to break scrolling on a real device, and cleanly reverted with `git revert`) |
+
+---
+
+## 13. Custom Domain Launch Runbook
+
+Prepared ahead of time, against the handbook's Domain/DNS/Email and Migration/Redirects
+checklists, so buying the domain is the only remaining blocker — everything below is either
+already decided or a copy-paste job once the domain exists.
+
+### Already true, no action needed
+- **This is a single-page site** — there's exactly one URL to migrate (the root), not a
+  page-by-page redirect map.
+- **GitHub Pages redirects the old URL automatically.** The moment a custom domain is set in
+  the repo's Pages settings, GitHub 301-redirects
+  `amirmasoudghorbani.github.io/takeaway-food-business/` to the new domain on its own —
+  nothing to build for this.
+- **Every reference to the current URL lives in exactly 4 files**, all as the same base string
+  `https://amirmasoudghorbani.github.io/takeaway-food-business` — confirmed via a full-repo
+  search, 8 occurrences total:
+  - `index.html` — canonical link, `og:url`, `og:image` (×2), JSON-LD `url` + `image`
+  - `robots.txt` — `Sitemap:` line
+  - `sitemap.xml` — `<loc>`
+
+### Decide now (no domain needed yet)
+- **Canonical hostname: apex or `www`.** Recommendation — apex (`kebabstationkumeu.co.nz`) as
+  the canonical URL, with `www` set up to redirect to it. Simpler for a small local business,
+  and apex is what people will naturally say out loud or type.
+- **Custom email?** A matching address (e.g. `info@yourdomain`) needs its own decision —
+  Google Workspace or Zoho Mail are the common low-cost options. Not required to launch; the
+  site currently lists no email at all (phone + UberEats only). Only relevant if the domain
+  purchase includes email, or a registrar's free email forwarding is used.
+
+### On launch day, once the domain is bought (~15–20 minutes total)
+1. **DNS records** — set with whichever registrar/DNS host is chosen:
+   - Apex domain → four **A** records pointing to GitHub Pages' IPs: `185.199.108.153`,
+     `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - `www` → one **CNAME** record pointing to `amirmasoudghorbani.github.io`
+2. **Add a `CNAME` file** to the repo root containing just the domain name (e.g.
+   `kebabstationkumeu.co.nz`) — tell me the domain and I'll add this and push it.
+3. **Set the custom domain** in GitHub → repo Settings → Pages → Custom domain. This is the
+   step that turns on the automatic old→new redirect mentioned above.
+4. **Wait for DNS to propagate**, then enable **Enforce HTTPS** in the same Pages settings
+   once GitHub shows the certificate as issued (can take up to a few hours).
+5. **Swap the domain in the 4 files above** — a single find-and-replace of the base URL string
+   across `index.html`, `robots.txt`, and `sitemap.xml`. I can do this the moment the domain
+   is confirmed.
+6. **Search Console** — verify the new domain as its own property (or use the "Change of
+   Address" tool if the `github.io` URL was already verified beforehand) and submit the new
+   sitemap URL.
+7. **Re-run the full breakpoint/console-error check** against the live custom domain before
+   calling it done.
