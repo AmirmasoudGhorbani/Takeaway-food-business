@@ -313,3 +313,19 @@ node_modules/
 *.log
 .claude/settings.local.json
 ```
+
+---
+
+## 12. Launch Record
+
+Recorded retroactively from git/deploy history — no live formal sign-off step exists for a
+single-developer project, but the dates below are real, not estimated.
+
+| Field                 | Value |
+| ---------------------- | ----- |
+| First commit           | 2026-07-24 — "Initial commit: Kebab Station Kumeu marketing site" |
+| First live deployment  | 2026-07-31 05:25 UTC — first successful GitHub Pages build (run `e86c815d`) |
+| Responsible            | Amir Ghorbani (developer and site owner) |
+| Deployment method      | GitHub Actions → GitHub Pages, auto-deploy on push to `main` |
+| Domain at launch       | `amirmasoudghorbani.github.io/takeaway-food-business` (custom domain still TBC) |
+| Rollback mechanism     | Git history — every change is a revertible commit; used in practice once (the hero scroll-lock feature was added, found to break scrolling on a real device, and cleanly reverted with `git revert`) |
