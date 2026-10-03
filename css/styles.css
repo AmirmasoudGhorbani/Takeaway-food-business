@@ -2,7 +2,7 @@
    KEBAB STATION KUMEU
    Carved over fire, served fast.
    Charcoal & ember — cinematic, artisanal, fast-casual
-   Typography: Bricolage Grotesque (display) + Manrope (body)
+   Typography: Sora (display) + Manrope (body)
    ======================================== */
 
 :root {
@@ -30,7 +30,7 @@
   --border: rgba(245, 237, 224, 0.1);
   --border-strong: rgba(245, 237, 224, 0.16);
 
-  --font-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Sora", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 
