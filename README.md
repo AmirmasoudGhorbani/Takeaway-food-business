@@ -6,7 +6,7 @@ Marketing website for Kebab Station Kumeu — halal lamb and chicken doner, Kume
 
 ## Stack
 
-Static HTML/CSS/JS, deployed to GitHub Pages via GitHub Actions.
+Static HTML/CSS/JS, hosted on Cloudflare Pages.
 
 ## Structure
 
@@ -23,4 +23,5 @@ Open `index.html` directly in a browser, or serve the folder with any static fil
 
 ## Deployment
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which publishes the site to GitHub Pages.
+Cloudflare Pages is connected to this repository: every push to `main` deploys automatically
+(no build step; output directory `/`). DNS for `kebabstationkumeu.com` is also on Cloudflare.
