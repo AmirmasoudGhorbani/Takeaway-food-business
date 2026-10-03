@@ -9,15 +9,13 @@
 
     <!-- GitHub Pages returns this file's content for ANY unmatched path,
          but the browser still shows the URL the visitor actually hit —
-         e.g. /takeaway-food-business/some/deep/broken/link. Without a
+         e.g. /some/deep/broken/link. Without a
          <base>, every relative "css/styles.css" below would resolve
          against that broken path instead of the site root, so the 404
          page's own CSS, icons and "back home" link would each 404 too,
          with the failure getting worse the deeper the bad URL was.
-         TODO: change this to "/" if/when a custom domain replaces the
-         github.io project-page path (the same swap canonical/sitemap/
-         robots.txt need — see their own TODOs). -->
-    <base href="/takeaway-food-business/" />
+         The site is served from the root of kebabstationkumeu.com. -->
+    <base href="/" />
 
     <link rel="icon" type="image/png" href="assets/icons/favicon.png" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
