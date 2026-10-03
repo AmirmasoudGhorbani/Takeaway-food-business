@@ -322,46 +322,6 @@
     });
   }
 
-  // ── Count-up stats ──
-  // Animates any [data-count-to] element from 0 to its target once it
-  // scrolls into view. A plain rAF tween rather than routing through
-  // Motion — the one place on the page a number actually counts up
-  // shouldn't need a CDN fetch to succeed first.
-  var countEls = document.querySelectorAll('[data-count-to]');
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-    countEls.forEach(function (el) {
-      el.textContent = el.getAttribute('data-count-to') + (el.getAttribute('data-count-suffix') || '');
-    });
-  } else {
-    var countObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          var el = entry.target;
-          countObserver.unobserve(el);
-          var target = parseFloat(el.getAttribute('data-count-to'));
-          var suffix = el.getAttribute('data-count-suffix') || '';
-          var duration = 900;
-          var start = null;
-          function easeOutCubic(t) {
-            return 1 - Math.pow(1 - t, 3);
-          }
-          function tick(ts) {
-            if (start === null) start = ts;
-            var progress = Math.min((ts - start) / duration, 1);
-            el.textContent = Math.round(target * easeOutCubic(progress)) + suffix;
-            if (progress < 1) requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        });
-      },
-      { threshold: 0.6 }
-    );
-    countEls.forEach(function (el) {
-      countObserver.observe(el);
-    });
-  }
-
   // ── Call-to-order click feedback ──
   // A quick confirm pulse on every tel: CTA before the browser hands off to
   // the dialer — the tap otherwise gets zero visual acknowledgement beyond

@@ -30,14 +30,15 @@
   var isDataConscious = !!(connection && (connection.saveData || /2g/.test(connection.effectiveType || '')));
 
   // Reduced-motion and data-saver/slow-connection visitors both get the same
-  // treatment: don't fetch the video at all, just show the static poster.
+  // treatment: never set a src, so the video is never fetched and the
+  // static poster stays.
   if (prefersReducedMotion || isDataConscious) {
     video.removeAttribute('autoplay');
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
     return;
   }
+
+  var isPortraitSmall = window.matchMedia('(max-width: 768px) and (orientation: portrait)').matches;
+  video.src = (isPortraitSmall && video.dataset.srcPortrait) || video.dataset.src;
 
   // ── Scroll-scrubbed rotation ──
   // The donor's rotation tracks real scroll position through the hero —

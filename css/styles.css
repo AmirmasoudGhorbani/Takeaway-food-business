@@ -2,7 +2,7 @@
    KEBAB STATION KUMEU
    Carved over fire, served fast.
    Charcoal & ember — cinematic, artisanal, fast-casual
-   Typography: Sora (display) + Manrope (body)
+   Typography: Bricolage Grotesque (display) + Manrope (body)
    ======================================== */
 
 :root {
@@ -30,7 +30,7 @@
   --border: rgba(245, 237, 224, 0.1);
   --border-strong: rgba(245, 237, 224, 0.16);
 
-  --font-display: "Sora", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 
@@ -1317,7 +1317,7 @@ ul {
 .menu__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 2.2rem;
 }
 
@@ -1326,7 +1326,7 @@ ul {
   align-items: center;
   gap: 7px;
   flex: 0 0 auto;
-  padding: 9px 20px 9px 14px;
+  padding: 9px 18px 9px 14px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-strong);
   background: rgba(245, 237, 224, 0.05);
@@ -1358,6 +1358,28 @@ ul {
 .menu__tab:focus-visible {
   outline: 2px solid var(--ember-light);
   outline-offset: 2px;
+}
+
+/* Below full desktop width the nine chips no longer fit one row; a single
+   swipeable row (same treatment as phones, see the 768px block) beats a
+   lonely second row of two chips. */
+@media (max-width: 1199px) {
+  .menu__tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    margin-left: calc(-1 * clamp(18px, 5vw, 40px));
+    margin-right: calc(-1 * clamp(18px, 5vw, 40px));
+    padding-left: clamp(18px, 5vw, 40px);
+    padding-right: clamp(18px, 5vw, 40px);
+  }
+  .menu__tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .menu__tab {
+    scroll-snap-align: start;
+  }
 }
 
 /* Plasticity press reaction — same contact-point mechanic as .btn (see
@@ -1541,12 +1563,21 @@ ul {
   }
 }
 
+/* Beside the pinned banner on a tablet-width screen, two columns leave
+   each card too narrow for a name, description and price side by side. */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .menu__list {
+    grid-template-columns: 1fr;
+  }
+}
+
 .menu-item {
   position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 20px;
+  column-gap: 20px;
+  row-gap: 4px;
   padding: 18px 22px;
   /* Every card the same height regardless of content — a two-line name,
      one price line, or a stacked S/L price all fit within this, so
@@ -1608,6 +1639,7 @@ ul {
 
 .menu-item__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
@@ -1658,6 +1690,39 @@ ul {
 
 
 
+/* Price spans both rows so it stays vertically centred beside the
+   name + description pair, rather than aligning to the name alone. */
+.menu-item__price {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.menu-item__desc {
+  grid-column: 1;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+/* The one item worth steering an undecided customer towards — a warmer
+   border and a gold tag, quieter than the ember used for actions. */
+.menu-item--featured {
+  border-color: rgba(240, 167, 46, 0.4);
+}
+
+.menu-item__tag {
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background: rgba(240, 167, 46, 0.14);
+  border: 1px solid rgba(240, 167, 46, 0.45);
+  color: var(--gold);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 /* For items sold in two sizes (e.g. chips, wedges) — stacks S/L prices
    instead of a single figure, at a smaller scale so it doesn't outweigh
    the plain single-price items next to it in the grid. */
@@ -1707,20 +1772,22 @@ ul {
   margin-top: 0.3rem;
 }
 
+/* Exactly three deals, so three equal columns across the full container —
+   auto-fill left them bunched on the left with half the row empty. */
 .combos__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
 .combo-card {
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
-  padding: 18px 18px 16px;
+  padding: 24px 24px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   border: 1px solid var(--border);
   background: linear-gradient(
     145deg,
@@ -1811,8 +1878,14 @@ ul {
 .combo-card__name {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   color: var(--text-cream);
+}
+
+.combo-card__desc {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-dim);
 }
 
 .combo-card__price-row {
@@ -1825,7 +1898,7 @@ ul {
 .combo-card__price {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   color: var(--gold);
 }
 
@@ -2285,6 +2358,68 @@ ul {
 .reviews__header {
   margin-bottom: 2.6rem;
 }
+
+/* Desktop: heading + Google link on the left, the card deck on the right,
+   so the deck no longer floats alone in the middle of a wide, empty band. */
+@media (min-width: 900px) {
+  .reviews__layout {
+    display: grid;
+    grid-template-columns: 1fr minmax(380px, 460px);
+    align-items: center;
+    gap: var(--space-xl);
+  }
+  .reviews__header {
+    margin-bottom: 0;
+  }
+}
+
+.reviews__intro {
+  max-width: 34ch;
+  margin-top: var(--space-sm);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+
+.reviews__google {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: var(--space-md);
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-strong);
+  background: rgba(245, 237, 224, 0.05);
+  color: var(--text-cream);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: border-color var(--duration) var(--ease),
+    background var(--duration) var(--ease);
+}
+.reviews__google:hover {
+  border-color: rgba(240, 167, 46, 0.5);
+  background: rgba(240, 167, 46, 0.08);
+}
+.reviews__google:focus-visible {
+  outline: 2px solid var(--ember-light);
+  outline-offset: 2px;
+}
+.reviews__google-stars {
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+.reviews__google-arrow {
+  transition: transform var(--duration) var(--ease-out);
+}
+.reviews__google:hover .reviews__google-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviews__google,
+  .reviews__google-arrow {
+    transition: none;
+  }
+}
 .reviews__title {
   margin-top: 0.4rem;
 }
@@ -2542,11 +2677,15 @@ ul {
      not a static asset) — fading it in on 'load' (see main.js) instead of
      leaving it to pop in mid-fetch reads as intentional rather than slow. */
   opacity: 0;
+  /* Invisible but still on top until it loads — without this it would
+     swallow clicks meant for the fallback card's Google Maps link. */
+  pointer-events: none;
   transition: opacity 0.5s var(--ease-out);
 }
 
 .find-us__map iframe.is-loaded {
   opacity: 1;
+  pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2555,20 +2694,79 @@ ul {
   }
 }
 
-/* Sits behind the iframe (see z-index above) so it only shows during that
-   load gap — a branded placeholder instead of blank/white. */
+/* Sits behind the iframe (see z-index above), so it shows during the load
+   gap — and stays as a usable card if the embed is blocked or offline.
+   The faint street grid is pure CSS: two repeating line gradients plus one
+   wider "main road" band, so it costs no image request. */
 .find-us__map-placeholder {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  padding: var(--space-md);
+  text-align: center;
   color: var(--text-ghost);
+  background:
+    linear-gradient(
+      100deg,
+      transparent 46%,
+      rgba(245, 237, 224, 0.07) 46%,
+      rgba(245, 237, 224, 0.07) 50%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 46px,
+      rgba(245, 237, 224, 0.035) 46px 48px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 62px,
+      rgba(245, 237, 224, 0.035) 62px 64px
+    ),
+    var(--bg-deep);
+}
+
+.find-us__map-address {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  line-height: 1.25;
+  color: var(--text-cream);
+}
+.find-us__map-address span {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.find-us__map-link {
+  position: relative;
+  z-index: 3;
+  margin-top: 4px;
+  padding: 8px 4px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--ember-light);
+}
+.find-us__map-link:hover {
+  color: var(--gold);
+}
+.find-us__map-link:focus-visible {
+  outline: 2px solid var(--ember-light);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .find-us__map-placeholder .icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  color: var(--ember);
   animation: find-us-pin-pulse 1.6s var(--ease) infinite;
 }
 
@@ -2713,6 +2911,51 @@ ul {
   font-size: 0.9rem;
   line-height: 1.6;
   max-width: 300px;
+}
+
+.footer__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--space-md);
+}
+
+.footer__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.footer__badge--halal {
+  background: rgba(59, 209, 122, 0.12);
+  border: 1px solid rgba(59, 209, 122, 0.4);
+  color: #7fe6a6;
+  letter-spacing: 0.04em;
+}
+
+.footer__badge--link {
+  border: 1px solid var(--border-strong);
+  background: rgba(245, 237, 224, 0.05);
+  color: var(--text-cream);
+  transition: border-color var(--duration) var(--ease),
+    background var(--duration) var(--ease);
+}
+.footer__badge--link:hover {
+  border-color: rgba(232, 83, 31, 0.45);
+  background: var(--ember-soft);
+}
+.footer__badge--link:focus-visible {
+  outline: 2px solid var(--ember-light);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__badge--link {
+    transition: none;
+  }
 }
 
 .footer__heading {
@@ -2986,10 +3229,12 @@ ul {
     align-items: center;
     justify-content: center;
     position: fixed;
-    right: clamp(14px, 4vw, 22px);
-    /* Clear of the sticky order / builder bars that own the bottom edge. */
-    bottom: calc(84px + env(safe-area-inset-bottom));
-    z-index: 900;
+    right: clamp(16px, 5vw, 28px);
+    /* Docked inside the sticky order bar's row (same side padding) rather than floating above it, where it sat over the right-hand
+       column of whatever content was scrolling past. 58px bar button,
+       12px bar padding: (58 - 42) / 2 + 12 = 20px. */
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    z-index: 1000;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -3013,6 +3258,17 @@ ul {
   .to-top .icon {
     width: 19px;
     height: 19px;
+  }
+
+  /* Make room in the order bar for the docked button beside it. */
+  body:has(.to-top.is-visible) .sticky-order {
+    padding-right: calc(clamp(16px, 5vw, 28px) + 52px);
+  }
+
+  /* The builder's own bar puts its Call button where this would dock. */
+  body.builder-bar-active .to-top.is-visible {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -3291,30 +3547,10 @@ ul {
     mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
   }
 
-  /* Nine category chips wrapped onto five rows here — 260px, roughly a
-     third of the viewport, spent before a single menu item was visible.
-     One swipeable row instead, with scroll-snap so chips come to rest
-     aligned and the cut-off chip at the edge signals there is more. */
+  /* The tab row already scrolls sideways below 1200px (see the MENU
+     section); phones only need it a little tighter to the content. */
   .menu__tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     margin-bottom: 1.4rem;
-    /* Bleed to the screen edges so the row reads as scrollable rather
-       than as a clipped block, while chips still line up with the
-       container's text on both sides. */
-    margin-left: calc(-1 * clamp(18px, 5vw, 40px));
-    margin-right: calc(-1 * clamp(18px, 5vw, 40px));
-    padding-left: clamp(18px, 5vw, 40px);
-    padding-right: clamp(18px, 5vw, 40px);
-  }
-  .menu__tabs::-webkit-scrollbar {
-    display: none;
-  }
-  .menu__tab {
-    scroll-snap-align: start;
   }
 
   /* Step accordion — see the matching block in js/builder.js. Scoped to
@@ -3416,26 +3652,26 @@ ul {
   .menu__banner-title {
     font-size: 1.5rem;
   }
+  /* One row per dish on phones, price on the right — the way a printed
+     menu reads. Two narrow columns wrapped names like "Souvlaki Chicken"
+     mid-phrase and left no room for the descriptions. */
   .menu__list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 8px;
   }
   .menu-item {
-    grid-template-columns: 1fr;
-    /* Taller than the base min-height since names stack above the price
-       here instead of sitting beside it — tall enough for a two-line
-       name plus a stacked S/L price, so every card is this exact height. */
-    min-height: 125px;
-    /* Belt-and-braces alongside min-height: if a row-mate ever does end up
-       taller (see .menu__list align-items above), the price still sinks
-       to the card's bottom edge instead of leaving a gap under a short
-       name. */
-    align-content: space-between;
-    gap: 6px;
-    padding: 14px;
+    min-height: 0;
+    column-gap: 14px;
+    padding: 14px 16px;
+  }
+  .menu-item__name {
+    font-size: 0.95rem;
+  }
+  .menu-item__desc {
+    font-size: 0.78rem;
   }
   .menu-item__price {
-    justify-self: flex-start;
+    font-size: 1.1rem;
   }
 
   .combos__grid {
@@ -3474,6 +3710,9 @@ ul {
   }
   .footer__tagline {
     margin-inline: auto;
+  }
+  .footer__badges {
+    justify-content: center;
   }
   .footer__heading {
     margin-bottom: 6px;
