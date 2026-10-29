@@ -9,66 +9,24 @@
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── Preloader ──
-  // Keeps the page hidden behind a full-screen overlay until fonts, the
-  // hero video's metadata, and every other initially-requested resource
-  // have settled — so the first thing a visitor sees is the finished
-  // layout, not fonts swapping in or the hero popping in mid-fetch. Runs
-  // after hero.js (see index.html's script order: the two hero.js branches
-  // that touch #hero-video's src both execute synchronously before this
-  // module code runs), so checking the video's current src/readyState here
-  // already reflects whichever path hero.js took. Capped at 5s so a slow
-  // or blocked resource can never strand a visitor behind it, and the
-  // <noscript> rule in index.html hides the overlay outright when this
-  // script never runs at all.
+  // Budget includes the 250ms CSS fade, measured from navigation start.
+  // The poster makes the hero usable without waiting for video or window.load.
   (function preload() {
     var preloader = document.getElementById('preloader');
     if (!preloader) return;
-
-    var pageLoaded = new Promise(function (resolve) {
-      if (document.readyState === 'complete') resolve();
-      else window.addEventListener('load', resolve, { once: true });
+    var fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    var poster = document.getElementById('hero-poster');
+    var posterReady = poster && poster.decode ? poster.decode().catch(function () {}) : Promise.resolve();
+    var deadline = new Promise(function (resolve) {
+      setTimeout(resolve, Math.max(0, 1250 - performance.now()));
     });
-
-    var fontsReady =
-      document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-
-    var heroVideo = document.getElementById('hero-video');
-    var videoReady = new Promise(function (resolve) {
-      if (!heroVideo || !heroVideo.hasAttribute('src') || heroVideo.readyState >= 1) {
-        resolve();
-        return;
-      }
-      heroVideo.addEventListener('loadedmetadata', resolve, { once: true });
-      heroVideo.addEventListener('error', resolve, { once: true });
-    });
-
-    var timeout = new Promise(function (resolve) {
-      setTimeout(resolve, 5000);
-    });
-
-    var ready = Promise.race([Promise.all([pageLoaded, fontsReady, videoReady]), timeout]);
-
-    // The animated mark is a deliberate flourish, not just a stall
-    // indicator, so it's held on screen for a minimum stretch even when
-    // everything's ready instantly (a warm cache, a fast connection) —
-    // otherwise it'd just flash. Reduced-motion visitors skip this: there's
-    // no animation for the wait to show off, so it'd just be a delay.
-    var minDisplay = prefersReducedMotion
-      ? Promise.resolve()
-      : new Promise(function (resolve) {
-          setTimeout(resolve, 3000);
-        });
-
-    Promise.all([ready, minDisplay]).then(function () {
+    Promise.race([Promise.all([fontsReady, posterReady]), deadline]).then(function () {
+      var remove = function () { preloader.hidden = true; };
+      preloader.addEventListener('transitionend', function (event) {
+        if (event.target === preloader && event.propertyName === 'opacity') remove();
+      });
       preloader.classList.add('is-hidden');
-      // transitionend covers the normal fade; the fallback timer catches
-      // reduced-motion visitors, whose CSS drops the transition entirely
-      // (so transitionend would never fire) and anyone else it might miss.
-      var remove = function () {
-        preloader.hidden = true;
-      };
-      preloader.addEventListener('transitionend', remove, { once: true });
-      setTimeout(remove, 700);
+      setTimeout(remove, prefersReducedMotion ? 0 : 250);
     });
   })();
 

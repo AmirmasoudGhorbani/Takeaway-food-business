@@ -25,3 +25,8 @@ Open `index.html` directly in a browser, or serve the folder with any static fil
 
 Cloudflare Pages is connected to this repository: every push to `main` deploys automatically
 (no build step; output directory `/`). DNS for `kebabstationkumeu.com` is also on Cloudflare.
+
+## Regression checks
+
+Run `node --test tests/hero-startup.test.cjs` to check first-frame preparation,
+scroll handoff, media failure, and reduced-motion/data-saver fallbacks.

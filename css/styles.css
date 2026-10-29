@@ -126,7 +126,7 @@ ul {
   justify-content: center;
   background: var(--bg-base);
   opacity: 1;
-  transition: opacity var(--duration-slow) var(--ease-out);
+  transition: opacity 250ms var(--ease-out);
 }
 
 .preloader.is-hidden {
@@ -810,13 +810,20 @@ ul {
   pointer-events: none;
 }
 
+.hero__poster,
 .hero__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
   object-position: center center;
 }
+
+/* Keep an independent poster above the video through its first seek. */
+.hero__poster { z-index: 1; }
+.hero__poster.is-hidden { visibility: hidden; }
 
 .hero__video-scrim {
   position: absolute;
@@ -3474,6 +3481,7 @@ ul {
     width: 100%;
     max-width: none;
   }
+  .hero__poster,
   .hero__video {
     /* The spit sits around 72% across the source frame, and narrower
        viewports crop hard enough off both sides that a centred crop

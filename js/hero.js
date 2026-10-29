@@ -54,15 +54,51 @@
   video.removeAttribute('loop');
   video.pause();
 
+  var poster = document.getElementById('hero-poster');
+  var initialized = false;
+  var firstSeekComplete = false;
+  var firstFramePresented = false;
   var duration = 0;
   var seekingNow = false;
+  var firstFrameTime = 0.001;
+
+  function enableScrubbing() {
+    if (initialized || video.error || !firstSeekComplete || !firstFramePresented) return;
+    initialized = true;
+    if (poster) poster.classList.add('is-hidden');
+    smoothedProgress = computeTargetProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // Include scrolling that happened while the video was loading.
+  }
+
+  video.addEventListener('error', function () {
+    initialized = false;
+    if (poster) poster.classList.remove('is-hidden');
+  });
   video.addEventListener('seeking', function () { seekingNow = true; });
-  video.addEventListener('seeked', function () { seekingNow = false; });
+  video.addEventListener('seeked', function () {
+    seekingNow = false;
+    if (!firstSeekComplete && video.readyState >= 2) {
+      firstSeekComplete = true;
+      if (!video.requestVideoFrameCallback) {
+        // Older browsers lack a presentation callback. Allow a paint after
+        // the completed seek before handing off from the fallback image.
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            firstFramePresented = true;
+            enableScrubbing();
+          });
+        });
+      }
+      enableScrubbing();
+    }
+    if (initialized) onScroll();
+  });
 
   var track = document.getElementById('hero-scroll-track') || hero;
 
   function applyProgress(progress) {
-    if (!duration || seekingNow) return;
+    if (!initialized || !duration || seekingNow || video.readyState < 2) return;
 
     // The source clip used to be a boomerang (a forward pass, then the
     // same frames in reverse) built for ambient looping. The shipped file
@@ -72,7 +108,7 @@
 
     // Never land exactly on the final frame — some browsers stall or
     // flicker seeking right at a boundary.
-    time = Math.min(time, duration - 0.05);
+    time = Math.max(firstFrameTime, Math.min(time, duration - 0.05));
 
     if (Math.abs(video.currentTime - time) > 0.01) {
       video.currentTime = time;
@@ -116,7 +152,7 @@
     // would compete with it for the main thread and show up as scroll
     // jank, so scrubbing sits the animation out here and catches up in a
     // single seek once main.js dispatches 'navscrollend'.
-    if (window.__navScrolling) return;
+    if (!initialized || window.__navScrolling) return;
 
     var target = computeTargetProgress();
     var delta = target - smoothedProgress;
@@ -142,15 +178,24 @@
   });
 
   function init() {
-    duration = video.duration || 0;
-    smoothedProgress = computeTargetProgress();
-    applyProgress(smoothedProgress);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    duration = video.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    firstFrameTime = Math.min(0.001, duration / 2);
+    if (video.requestVideoFrameCallback) {
+      video.requestVideoFrameCallback(function () {
+        firstFramePresented = true;
+        enableScrubbing();
+      });
+    }
+    // A paused video at exactly zero can still be displaying only its native
+    // poster, even after loadeddata. Prime the decoder now, not on first scroll.
+    seekingNow = true;
+    video.currentTime = firstFrameTime;
   }
 
-  if (video.readyState >= 1) {
+  if (video.readyState >= 2) {
     init();
   } else {
-    video.addEventListener('loadedmetadata', init, { once: true });
+    video.addEventListener('loadeddata', init, { once: true });
   }
 })();
