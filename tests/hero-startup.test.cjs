@@ -137,3 +137,18 @@ test('pageshow restores a frame even at unchanged scroll position', () => {
   h.windowEvents.pagehide(); h.windowEvents.pageshow();
   assert(h.seeks.length>count);
 });
+
+test('tab return re-primes video even when readyState still reports enough data', () => {
+  const h = setup({playAllowed:true});
+  h.events.seeked();
+  const before=h.playCount();
+  h.hide(); h.show();
+  assert.equal(h.playCount(),before+1);
+  assert.equal(h.paused(),true);
+});
+test('each background cycle invalidates the previous playback unlock', () => {
+  const h = setup({playAllowed:true});
+  const before=h.playCount();
+  for(let i=0;i<3;i++){h.hide();h.show();h.events.seeked();}
+  assert.equal(h.playCount(),before+3);
+});

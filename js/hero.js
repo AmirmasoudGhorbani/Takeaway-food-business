@@ -288,6 +288,7 @@
     seekTimer = null;
     warming = false;
     warmGeneration++;
+    mediaUnlocked = false;
     video.pause();
   }
 
@@ -299,7 +300,9 @@
     // discarded the displayed frame while this tab was in the background.
     smoothedProgress = computeTargetProgress();
     if (scrubbing) applyProgress(smoothedProgress, true);
-    if (video.readyState < 2) { mediaUnlocked = false; warmMedia(); }
+    // readyState describes buffered data, not whether a suspended decoder is
+    // presenting frames again. Re-prime after every return, even at state 4.
+    warmMedia();
     onScroll();
   }
 
