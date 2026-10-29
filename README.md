@@ -31,8 +31,10 @@ Cloudflare Pages is connected to this repository: every push to `main` deploys a
 Run `node --test tests/hero-startup.test.cjs` to check first-frame preparation,
 scroll handoff, media failure, and reduced-motion/data-saver fallbacks.
 
-The iPhone cases in that file matter most: iOS treats `preload` as advisory and
-withholds media data until playback starts, so `loadeddata`, readyState 2 and a
-presented video frame may never arrive. Scroll-scrubbing must therefore start
-from metadata alone and never wait on decoded media — hiding the poster is the
-only thing allowed to wait for a real frame.
+The tests simulate metadata-only media, denied playback, missing frame/seek
+callbacks, tab suspension, and page restoration. Muted play/pause primes the
+decoder; touch/click retries a denied attempt. Scroll control does not wait for
+poster handoff. A one-second seek retry and visibility/pageshow recovery prevent
+an interrupted seek from permanently freezing the hero.
+
+These are controller regression tests, not physical iPhone Safari tests.

@@ -60,7 +60,12 @@
   var firstSeekComplete = false;
   var firstFramePresented = false;
   var duration = 0;
-  var seekingNow = false;
+  var seekTimer = null;
+  var lastSeekAt = -Infinity;
+  var warming = false;
+  var warmTimer = null;
+  var mediaUnlocked = false;
+  var warmGeneration = 0;
   var firstFrameTime = 0.001;
 
   // Turning the donor and handing off from the poster are two separate jobs,
@@ -97,7 +102,7 @@
   // completed seek and the arrival of data land in either order, so a
   // one-shot check inside a single handler misses whichever comes second.
   function noteFrameReady() {
-    if (firstSeekComplete || video.readyState < 2) return;
+    if (firstSeekComplete || video.seeking || video.readyState < 2) return;
     firstSeekComplete = true;
     // requestVideoFrameCallback is the precise signal where it fires, but a
     // paused video may never deliver one for a seek this small, so the
@@ -116,9 +121,9 @@
     posterHandedOff = false;
     if (poster) poster.classList.remove('is-hidden');
   });
-  video.addEventListener('seeking', function () { seekingNow = true; });
   video.addEventListener('seeked', function () {
-    seekingNow = false;
+    clearTimeout(seekTimer);
+    seekTimer = null;
     noteFrameReady();
     if (scrubbing) onScroll();
   });
@@ -127,12 +132,25 @@
 
   var track = document.getElementById('hero-scroll-track') || hero;
 
-  function applyProgress(progress) {
+  function seekTo(time) {
+    clearTimeout(seekTimer);
+    lastSeekAt = performance.now();
+    try { video.currentTime = time; } catch (_) { return; }
+    // Some suspended media pipelines omit seeked. Retry from current scroll
+    // instead of keeping a separate event-driven seeking latch forever.
+    seekTimer = setTimeout(function () {
+      seekTimer = null;
+      if (!document.hidden) applyProgress(computeTargetProgress(), true);
+    }, 1000);
+  }
+
+  function applyProgress(progress, force) {
     // No readyState gate here: assigning currentTime on a metadata-only
     // video is precisely what makes iOS fetch and draw that frame. A failed
     // one is a different matter — seeking that throws, so it stays untouched
     // behind its poster while the page goes on scrolling normally.
-    if (!scrubbing || !duration || seekingNow || video.error) return;
+    if (!scrubbing || !duration || video.error || document.hidden || warming) return;
+    if (!force && video.seeking && performance.now() - lastSeekAt < 1000) return;
 
     // The source clip used to be a boomerang (a forward pass, then the
     // same frames in reverse) built for ambient looping. The shipped file
@@ -144,8 +162,8 @@
     // flicker seeking right at a boundary.
     time = Math.max(firstFrameTime, Math.min(time, duration - 0.05));
 
-    if (Math.abs(video.currentTime - time) > 0.01) {
-      video.currentTime = time;
+    if (force || Math.abs(video.currentTime - time) > 0.01) {
+      seekTo(time);
     }
   }
 
@@ -186,7 +204,7 @@
     // would compete with it for the main thread and show up as scroll
     // jank, so scrubbing sits the animation out here and catches up in a
     // single seek once main.js dispatches 'navscrollend'.
-    if (!scrubbing || window.__navScrolling) return;
+    if (!scrubbing || document.hidden || window.__navScrolling) return;
 
     var target = computeTargetProgress();
     var delta = target - smoothedProgress;
@@ -201,7 +219,7 @@
   }
 
   function onScroll() {
-    if (rafId === null) rafId = requestAnimationFrame(tick);
+    if (!document.hidden && rafId === null) rafId = requestAnimationFrame(tick);
   }
 
   window.addEventListener('navscrollend', function () {
@@ -231,11 +249,68 @@
     // poster, even after loadeddata. Prime the decoder now, not on first
     // scroll — and on iOS this seek is also what prompts the fetch that
     // `preload` never triggered.
-    seekingNow = true;
-    video.currentTime = firstFrameTime;
+    seekTo(firstFrameTime);
     startScrubbing();
     return true;
   }
+
+  // Muted play/pause primes media on devices that do not decode from preload
+  // or seeks alone. A denied attempt is retried from an actual touch/click.
+  function warmMedia() {
+    if (warming || mediaUnlocked || document.hidden || video.error) return;
+    warming = true;
+    var generation = ++warmGeneration;
+    video.muted = true;
+    video.playsInline = true;
+    function finish(success) {
+      if (!warming || generation !== warmGeneration) return;
+      clearTimeout(warmTimer);
+      warming = false;
+      if (success) mediaUnlocked = true;
+      video.pause();
+      init();
+      noteFrameReady();
+      if (scrubbing && success) applyProgress(computeTargetProgress(), true);
+    }
+    warmTimer = setTimeout(function () { finish(false); }, 1500);
+    try {
+      var playing = video.play();
+      if (playing && playing.then) playing.then(function () { finish(true); }, function () { finish(false); });
+      else finish(true);
+    } catch (_) { finish(false); }
+  }
+
+  function suspend() {
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    rafId = null;
+    clearTimeout(seekTimer);
+    clearTimeout(warmTimer);
+    seekTimer = null;
+    warming = false;
+    warmGeneration++;
+    video.pause();
+  }
+
+  function resume() {
+    if (document.hidden) return;
+    suspend();
+    init();
+    // Re-seek even if currentTime already matches: the compositor may have
+    // discarded the displayed frame while this tab was in the background.
+    smoothedProgress = computeTargetProgress();
+    if (scrubbing) applyProgress(smoothedProgress, true);
+    if (video.readyState < 2) { mediaUnlocked = false; warmMedia(); }
+    onScroll();
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) suspend();
+    else resume();
+  });
+  window.addEventListener('pagehide', suspend);
+  window.addEventListener('pageshow', resume);
+  window.addEventListener('touchend', warmMedia, { passive: true });
+  window.addEventListener('click', warmMedia, { passive: true });
 
   // Metadata is the whole prerequisite: it carries the duration, and it is
   // the last readiness event an iPhone guarantees without playback. Whichever
@@ -245,4 +320,5 @@
     video.addEventListener('loadedmetadata', init);
     video.addEventListener('durationchange', init);
   }
+  warmMedia();
 })();
