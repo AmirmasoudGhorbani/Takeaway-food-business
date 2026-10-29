@@ -55,50 +55,84 @@
   video.pause();
 
   var poster = document.getElementById('hero-poster');
-  var initialized = false;
+  var scrubbing = false;
+  var posterHandedOff = false;
   var firstSeekComplete = false;
   var firstFramePresented = false;
   var duration = 0;
   var seekingNow = false;
   var firstFrameTime = 0.001;
 
-  function enableScrubbing() {
-    if (initialized || video.error || !firstSeekComplete || !firstFramePresented) return;
-    initialized = true;
-    if (poster) poster.classList.add('is-hidden');
+  // Turning the donor and handing off from the poster are two separate jobs,
+  // deliberately not gated on each other.
+  //
+  // Scrubbing needs nothing but the clip's duration, so it starts as soon as
+  // metadata lands. It must never wait on decoded media: iOS treats `preload`
+  // as advisory and withholds media data until playback starts, so
+  // `loadeddata`, readyState 2 and a presented frame can all be missing for
+  // an entire visit. Holding the scroll listener behind those signals is what
+  // left the hero frozen on real iPhones.
+  function startScrubbing() {
+    if (scrubbing || !duration) return;
+    scrubbing = true;
     smoothedProgress = computeTargetProgress();
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll(); // Include scrolling that happened while the video was loading.
   }
 
+  // The cosmetic half, which does wait for a real frame — that wait is what
+  // keeps the first scroll from exposing a video with nothing drawn in it. If
+  // the frame never comes, the poster just stays and scrolling carries on.
+  function handOffPoster() {
+    if (posterHandedOff || video.error || !firstSeekComplete || !firstFramePresented) return;
+    posterHandedOff = true;
+    if (poster) poster.classList.add('is-hidden');
+    // Pick up wherever scroll has actually reached, rather than easing out of
+    // whatever position startup happened to leave behind.
+    smoothedProgress = computeTargetProgress();
+    applyProgress(smoothedProgress);
+  }
+
+  // Runs from every event that can first make a frame drawable: on iOS the
+  // completed seek and the arrival of data land in either order, so a
+  // one-shot check inside a single handler misses whichever comes second.
+  function noteFrameReady() {
+    if (firstSeekComplete || video.readyState < 2) return;
+    firstSeekComplete = true;
+    // requestVideoFrameCallback is the precise signal where it fires, but a
+    // paused video may never deliver one for a seek this small, so the
+    // completed-seek paint runs too. Having the API must not be able to leave
+    // the poster up forever.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        firstFramePresented = true;
+        handOffPoster();
+      });
+    });
+    handOffPoster();
+  }
+
   video.addEventListener('error', function () {
-    initialized = false;
+    posterHandedOff = false;
     if (poster) poster.classList.remove('is-hidden');
   });
   video.addEventListener('seeking', function () { seekingNow = true; });
   video.addEventListener('seeked', function () {
     seekingNow = false;
-    if (!firstSeekComplete && video.readyState >= 2) {
-      firstSeekComplete = true;
-      if (!video.requestVideoFrameCallback) {
-        // Older browsers lack a presentation callback. Allow a paint after
-        // the completed seek before handing off from the fallback image.
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            firstFramePresented = true;
-            enableScrubbing();
-          });
-        });
-      }
-      enableScrubbing();
-    }
-    if (initialized) onScroll();
+    noteFrameReady();
+    if (scrubbing) onScroll();
   });
+  video.addEventListener('canplay', noteFrameReady);
+  video.addEventListener('loadeddata', noteFrameReady);
 
   var track = document.getElementById('hero-scroll-track') || hero;
 
   function applyProgress(progress) {
-    if (!initialized || !duration || seekingNow || video.readyState < 2) return;
+    // No readyState gate here: assigning currentTime on a metadata-only
+    // video is precisely what makes iOS fetch and draw that frame. A failed
+    // one is a different matter — seeking that throws, so it stays untouched
+    // behind its poster while the page goes on scrolling normally.
+    if (!scrubbing || !duration || seekingNow || video.error) return;
 
     // The source clip used to be a boomerang (a forward pass, then the
     // same frames in reverse) built for ambient looping. The shipped file
@@ -152,7 +186,7 @@
     // would compete with it for the main thread and show up as scroll
     // jank, so scrubbing sits the animation out here and catches up in a
     // single seek once main.js dispatches 'navscrollend'.
-    if (!initialized || window.__navScrolling) return;
+    if (!scrubbing || window.__navScrolling) return;
 
     var target = computeTargetProgress();
     var delta = target - smoothedProgress;
@@ -177,25 +211,38 @@
     applyProgress(smoothedProgress);
   });
 
+  var started = false;
+
   function init() {
+    if (started) return true;
     duration = video.duration;
-    if (!Number.isFinite(duration) || duration <= 0) return;
+    // readyState can report metadata before the duration is actually
+    // readable, so a single early attempt must not be the only one.
+    if (!Number.isFinite(duration) || duration <= 0) return false;
+    started = true;
     firstFrameTime = Math.min(0.001, duration / 2);
     if (video.requestVideoFrameCallback) {
       video.requestVideoFrameCallback(function () {
         firstFramePresented = true;
-        enableScrubbing();
+        handOffPoster();
       });
     }
     // A paused video at exactly zero can still be displaying only its native
-    // poster, even after loadeddata. Prime the decoder now, not on first scroll.
+    // poster, even after loadeddata. Prime the decoder now, not on first
+    // scroll — and on iOS this seek is also what prompts the fetch that
+    // `preload` never triggered.
     seekingNow = true;
     video.currentTime = firstFrameTime;
+    startScrubbing();
+    return true;
   }
 
-  if (video.readyState >= 2) {
-    init();
-  } else {
-    video.addEventListener('loadeddata', init, { once: true });
+  // Metadata is the whole prerequisite: it carries the duration, and it is
+  // the last readiness event an iPhone guarantees without playback. Whichever
+  // of these first yields a usable duration starts the hero; the rest are
+  // no-ops after that.
+  if (!init()) {
+    video.addEventListener('loadedmetadata', init);
+    video.addEventListener('durationchange', init);
   }
 })();
