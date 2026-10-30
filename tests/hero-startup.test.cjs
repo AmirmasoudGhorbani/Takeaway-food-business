@@ -4,6 +4,7 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../js/hero.js'), 'utf8');
 function setup({ frameCallback = true, reduced = false, dataSaver = false, readyState = 4, playAllowed = false } = {}) {
+  const recovery = [];
   const events = {}, windowEvents = {}, documentEvents = {}, frames = [], seeks = [], timers = new Map();
   let now = 0, timerId = 0, documentHidden = false, playCount = 0, paused = true, allowPlay = playAllowed;
   let position = 0, hidden = false, frame, scroll = 0, ready = readyState;
@@ -13,7 +14,7 @@ function setup({ frameCallback = true, reduced = false, dataSaver = false, ready
     seeking: false, get paused() { return paused; },
     error: null, dataset: { src: 'desktop.mp4', srcPortrait: 'mobile.mp4' },
     removeAttribute() {}, pause() { paused = true; },
-    play() { playCount++; paused = false; return { then(resolve, reject) { if (allowPlay) resolve(); else reject(); } }; },
+    play() { playCount++; paused = false; return { then(resolve, reject) { if (allowPlay) resolve(); else reject({name:'NotAllowedError',message:'Playback blocked'}); } }; },
     removeEventListener(name) { delete events[name]; },
     addEventListener(name, fn) { events[name] = () => { if(name === 'seeked') video.seeking = false; fn(); }; },
     get currentTime() { return position; }, set currentTime(value) { position = value; video.seeking = true; seeks.push(value); },
@@ -23,11 +24,11 @@ function setup({ frameCallback = true, reduced = false, dataSaver = false, ready
   const hero = { querySelectorAll: () => [], getBoundingClientRect: () => ({ top: -scroll, height: 2000 }) };
   vm.runInNewContext(source, {
     document: { get hidden() { return documentHidden; }, addEventListener: (name, fn) => { documentEvents[name] = fn; }, getElementById: id => ({ hero, 'hero-video': video, 'hero-poster': poster, 'hero-scroll-track': hero })[id] },
-    window: { matchMedia: q => ({ matches: q.includes('reduced-motion') && reduced }), addEventListener: (name, fn) => { windowEvents[name] = fn; } },
+    window: { __heroRecoveryLog: message => recovery.push(message), matchMedia: q => ({ matches: q.includes('reduced-motion') && reduced }), addEventListener: (name, fn) => { windowEvents[name] = fn; } },
     performance: { now: () => now }, setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, {fn, time:now+ms}); return id; }, clearTimeout: id => timers.delete(id), cancelAnimationFrame: id => { frames[id-1] = null; },
     navigator: { connection: { saveData: dataSaver } }, requestAnimationFrame: fn => { frames.push(fn); return frames.length; }
   });
-  return { video, seeks, events, windowEvents, documentEvents,
+  return { recovery, video, seeks, events, windowEvents, documentEvents,
            hide: () => { documentHidden = true; documentEvents.visibilitychange(); },
            show: () => { documentHidden = false; documentEvents.visibilitychange(); },
            playCount: () => playCount, paused: () => paused, allowPlay: () => {allowPlay = true;},
@@ -173,4 +174,15 @@ test('backgrounding during frame warm-up cancels it and permits a new one', () =
   h.hide(); assert.equal(h.paused(),true); assert.equal(h.events.timeupdate,undefined);
   h.show(); assert.equal(h.playCount(),2); assert.equal(h.paused(),false);
   h.events.seeked(); h.present(); assert.equal(h.paused(),true);
+});
+
+
+test('diagnostics distinguish rejected playback from a successful frame recovery', () => {
+  const h=setup();
+  assert(h.recovery.some(line => line.includes('play rejected: NotAllowedError: Playback blocked')));
+  h.allowPlay(); h.windowEvents.touchend({type:'touchend'});
+  assert(h.recovery.includes('touchend: play requested'));
+  assert(h.recovery.includes('play resolved'));
+  h.events.seeked(); h.present();
+  assert(h.recovery.some(line => line.includes('finish: frame callback')));
 });

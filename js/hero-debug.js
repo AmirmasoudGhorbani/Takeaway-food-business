@@ -12,6 +12,24 @@
   text.style.cssText = 'white-space:pre-wrap;margin:0 0 8px;font:inherit;';
   panel.appendChild(text);
   var events = [];
+  var recovery = [];
+  var frameCount = 0;
+  var frameMediaTime = null;
+  var frameAt = null;
+  var frameId = null;
+  var closed = false;
+  window.__heroRecoveryLog = function (message) {
+    recovery.push((performance.now() / 1000).toFixed(2) + 's ' + message);
+    if (recovery.length > 24) recovery.shift();
+  };
+  function observeFrame(now, metadata) {
+    if (closed) return;
+    frameCount++;
+    frameMediaTime = metadata.mediaTime;
+    frameAt = performance.now();
+    frameId = video.requestVideoFrameCallback(observeFrame);
+  }
+  if (video.requestVideoFrameCallback) frameId = video.requestVideoFrameCallback(observeFrame);
   var outcome = 'not tested';
   var priorTime = video.currentTime;
   var advances = 0;
@@ -22,7 +40,8 @@
     if (Math.abs(video.currentTime - priorTime) > 0.01) advances++;
     priorTime = video.currentTime;
     text.textContent = [
-      'HERO DIAGNOSTICS v1',
+      'HERO DIAGNOSTICS v2 (frame-wait-2)',
+      'Page: ' + document.visibilityState + ' | browser: ' + navigator.userAgent,
       'Scroll: ' + Math.round(window.scrollY),
       'Time: ' + video.currentTime.toFixed(3) + ' / ' + video.duration + ' (changes: ' + advances + ')',
       'Ready: ' + video.readyState + ' | network: ' + video.networkState,
@@ -31,10 +50,12 @@
       'Reduce motion: ' + matchMedia('(prefers-reduced-motion: reduce)').matches,
       'Save data: ' + !!(navigator.connection && navigator.connection.saveData),
       'Frame callback API: ' + !!video.requestVideoFrameCallback,
+      'Presented callbacks: ' + frameCount + ' | media time: ' + (frameMediaTime === null ? 'none' : frameMediaTime.toFixed(3)) + ' | age: ' + (frameAt === null ? 'none' : Math.round(performance.now() - frameAt) + 'ms'),
       'Source: ' + (video.getAttribute('src') || 'none'),
       'Error: ' + (video.error ? video.error.code + ' ' + video.error.message : 'none'),
       'Play test: ' + outcome,
-      'Events: ' + events.join(', ')
+      'Events: ' + events.join(', '),
+      'Recovery log:\n' + recovery.join('\n')
     ].join('\n');
   }
   function button(label, action) {
@@ -54,15 +75,22 @@
     render();
   });
   button('Test playback', function () {
+    window.__heroRecoveryLog('TEST: user playback requested');
     video.muted = true;
     var result = video.play();
     if (result && result.then) result.then(function () {
-      outcome = 'allowed'; render();
-      setTimeout(function () { video.pause(); render(); }, 500);
+      outcome = 'allowed'; window.__heroRecoveryLog('TEST: play resolved'); render();
+      setTimeout(function () { video.pause(); window.__heroRecoveryLog('TEST: paused after 500ms'); render(); }, 500);
     }, function (error) { outcome = error.name + ': ' + error.message; render(); });
   });
   var timer = setInterval(render, 250);
-  button('Close', function () { clearInterval(timer); panel.remove(); });
+  button('Close', function () {
+    closed = true;
+    clearInterval(timer);
+    if (frameId !== null && video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(frameId);
+    delete window.__heroRecoveryLog;
+    panel.remove();
+  });
   document.body.appendChild(panel);
   render();
 })();

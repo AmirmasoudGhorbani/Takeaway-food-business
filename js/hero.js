@@ -69,6 +69,12 @@
   var warmCleanup = null;
   var firstFrameTime = 0.001;
 
+  // The opt-in panel owns this hook; normal visits do not collect a log.
+  function recoveryLog(message) {
+    if (window.__heroRecoveryLog) window.__heroRecoveryLog(message);
+  }
+  recoveryLog('hero build frame-wait-2');
+
   // Turning the donor and handing off from the poster are two separate jobs,
   // deliberately not gated on each other.
   //
@@ -257,14 +263,21 @@
 
   // Muted play/pause primes media on devices that do not decode from preload
   // or seeks alone. A denied attempt is retried from an actual touch/click.
-  function warmMedia() {
-    if (warming || mediaUnlocked || document.hidden || video.error) return;
+  function warmMedia(event) {
+    var trigger = event && event.type || 'automatic';
+    if (warming || mediaUnlocked || document.hidden || video.error) {
+      recoveryLog(trigger + ': skipped (warming=' + warming + ', unlocked=' + mediaUnlocked + ', hidden=' + document.hidden + ')');
+      return;
+    }
+    var warmStarted = performance.now();
+    recoveryLog(trigger + ': play requested');
     warming = true;
     var generation = ++warmGeneration;
     video.muted = true;
     video.playsInline = true;
-    function finish(success) {
+    function finish(success, reason) {
       if (!warming || generation !== warmGeneration) return;
+      recoveryLog('finish: ' + reason + ' after ' + Math.round(performance.now() - warmStarted) + 'ms');
       clearTimeout(warmTimer);
       if (warmCleanup) { warmCleanup(); warmCleanup = null; }
       warming = false;
@@ -276,15 +289,16 @@
     }
     function waitForPicture() {
       if (!warming || generation !== warmGeneration) return;
+      recoveryLog('play resolved');
       var startTime = video.currentTime;
       var frameId = null;
       function progressed() {
         if (!video.paused && !video.seeking && video.readyState >= 2 &&
-            Math.abs(video.currentTime - startTime) >= 0.04) finish(true);
+            Math.abs(video.currentTime - startTime) >= 0.04) finish(true, 'time advanced');
       }
       function presented() {
         if (!warming || generation !== warmGeneration) return;
-        if (!video.seeking && video.readyState >= 2) finish(true);
+        if (!video.seeking && video.readyState >= 2) finish(true, 'frame callback');
         else frameId = video.requestVideoFrameCallback(presented);
       }
       warmCleanup = function () {
@@ -296,15 +310,16 @@
       // play() resolving only grants playback. Let Safari actually present a
       // new picture before pausing; immediate pause can preserve a stale frame.
     }
-    warmTimer = setTimeout(function () { finish(false); }, 1500);
+    warmTimer = setTimeout(function () { finish(false, 'timeout'); }, 1500);
     try {
       var playing = video.play();
-      if (playing && playing.then) playing.then(waitForPicture, function () { finish(false); });
+      if (playing && playing.then) playing.then(waitForPicture, function (error) { finish(false, 'play rejected: ' + (error ? error.name + ': ' + error.message : 'unknown')); });
       else waitForPicture();
-    } catch (_) { finish(false); }
+    } catch (error) { finish(false, 'play threw: ' + error.name + ': ' + error.message); }
   }
 
   function suspend() {
+    recoveryLog('suspend (hidden=' + document.hidden + ', warming=' + warming + ')');
     if (rafId !== null) cancelAnimationFrame(rafId);
     rafId = null;
     clearTimeout(seekTimer);
@@ -318,6 +333,7 @@
   }
 
   function resume() {
+    recoveryLog('resume (hidden=' + document.hidden + ')');
     if (document.hidden) return;
     suspend();
     init();
