@@ -66,6 +66,7 @@
   var warmTimer = null;
   var mediaUnlocked = false;
   var warmGeneration = 0;
+  var warmCleanup = null;
   var firstFrameTime = 0.001;
 
   // Turning the donor and handing off from the poster are two separate jobs,
@@ -265,6 +266,7 @@
     function finish(success) {
       if (!warming || generation !== warmGeneration) return;
       clearTimeout(warmTimer);
+      if (warmCleanup) { warmCleanup(); warmCleanup = null; }
       warming = false;
       if (success) mediaUnlocked = true;
       video.pause();
@@ -272,11 +274,33 @@
       noteFrameReady();
       if (scrubbing && success) applyProgress(computeTargetProgress(), true);
     }
+    function waitForPicture() {
+      if (!warming || generation !== warmGeneration) return;
+      var startTime = video.currentTime;
+      var frameId = null;
+      function progressed() {
+        if (!video.paused && !video.seeking && video.readyState >= 2 &&
+            Math.abs(video.currentTime - startTime) >= 0.04) finish(true);
+      }
+      function presented() {
+        if (!warming || generation !== warmGeneration) return;
+        if (!video.seeking && video.readyState >= 2) finish(true);
+        else frameId = video.requestVideoFrameCallback(presented);
+      }
+      warmCleanup = function () {
+        video.removeEventListener('timeupdate', progressed);
+        if (frameId !== null && video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(frameId);
+      };
+      video.addEventListener('timeupdate', progressed);
+      if (video.requestVideoFrameCallback) frameId = video.requestVideoFrameCallback(presented);
+      // play() resolving only grants playback. Let Safari actually present a
+      // new picture before pausing; immediate pause can preserve a stale frame.
+    }
     warmTimer = setTimeout(function () { finish(false); }, 1500);
     try {
       var playing = video.play();
-      if (playing && playing.then) playing.then(function () { finish(true); }, function () { finish(false); });
-      else finish(true);
+      if (playing && playing.then) playing.then(waitForPicture, function () { finish(false); });
+      else waitForPicture();
     } catch (_) { finish(false); }
   }
 
@@ -285,6 +309,7 @@
     rafId = null;
     clearTimeout(seekTimer);
     clearTimeout(warmTimer);
+    if (warmCleanup) { warmCleanup(); warmCleanup = null; }
     seekTimer = null;
     warming = false;
     warmGeneration++;

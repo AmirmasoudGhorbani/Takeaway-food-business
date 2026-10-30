@@ -10,10 +10,11 @@ function setup({ frameCallback = true, reduced = false, dataSaver = false, ready
   const video = {
     get readyState() { return ready; },
     get duration() { return ready >= 1 ? 14 : NaN; },
-    seeking: false,
+    seeking: false, get paused() { return paused; },
     error: null, dataset: { src: 'desktop.mp4', srcPortrait: 'mobile.mp4' },
     removeAttribute() {}, pause() { paused = true; },
     play() { playCount++; paused = false; return { then(resolve, reject) { if (allowPlay) resolve(); else reject(); } }; },
+    removeEventListener(name) { delete events[name]; },
     addEventListener(name, fn) { events[name] = () => { if(name === 'seeked') video.seeking = false; fn(); }; },
     get currentTime() { return position; }, set currentTime(value) { position = value; video.seeking = true; seeks.push(value); },
     ...(frameCallback ? { requestVideoFrameCallback(fn) { frame = fn; } } : {})
@@ -106,13 +107,15 @@ test('scrolling is never gated behind a presented video frame', () => {
 
 test('muted decoder warm-up pauses again instead of playing continuously', () => {
   const h = setup({playAllowed:true});
-  assert.equal(h.playCount(),1); assert.equal(h.paused(),true);
+  assert.equal(h.playCount(),1); assert.equal(h.paused(),false);
+  h.events.seeked(); h.present(); assert.equal(h.paused(),true);
   assert.equal(h.video.muted,true); assert.equal(h.video.playsInline,true);
 });
 test('denied startup play is retried on touch and resumes scroll seeking', () => {
   const h = setup({readyState:1});
   h.allowPlay(); h.windowEvents.touchend();
-  assert.equal(h.playCount(),2); assert.equal(h.paused(),true);
+  assert.equal(h.playCount(),2); assert.equal(h.paused(),false);
+  h.setReadyState(4); h.events.seeked(); h.present(); assert.equal(h.paused(),true);
   h.events.seeked(); h.scroll(1000); h.windowEvents.scroll(); h.tick();
   assert(h.seeks.at(-1)>0.001);
 });
@@ -144,11 +147,30 @@ test('tab return re-primes video even when readyState still reports enough data'
   const before=h.playCount();
   h.hide(); h.show();
   assert.equal(h.playCount(),before+1);
-  assert.equal(h.paused(),true);
+  assert.equal(h.paused(),false);
+  h.events.seeked(); h.present(); assert.equal(h.paused(),true);
 });
 test('each background cycle invalidates the previous playback unlock', () => {
   const h = setup({playAllowed:true});
   const before=h.playCount();
   for(let i=0;i<3;i++){h.hide();h.show();h.events.seeked();}
   assert.equal(h.playCount(),before+3);
+});
+
+test('no presented frame times out and allows a fresh gesture retry', () => {
+  const h=setup({playAllowed:true});
+  assert.equal(h.paused(),false);
+  h.advance(1500); assert.equal(h.paused(),true);
+  h.windowEvents.touchend(); assert.equal(h.playCount(),2);
+});
+test('time progression recovers when Safari does not deliver a frame callback', () => {
+  const h=setup({playAllowed:true,frameCallback:false});
+  h.events.seeked(); h.video.currentTime=0.2; h.video.seeking=false;
+  h.events.timeupdate(); assert.equal(h.paused(),true);
+});
+test('backgrounding during frame warm-up cancels it and permits a new one', () => {
+  const h=setup({playAllowed:true});
+  h.hide(); assert.equal(h.paused(),true); assert.equal(h.events.timeupdate,undefined);
+  h.show(); assert.equal(h.playCount(),2); assert.equal(h.paused(),false);
+  h.events.seeked(); h.present(); assert.equal(h.paused(),true);
 });
